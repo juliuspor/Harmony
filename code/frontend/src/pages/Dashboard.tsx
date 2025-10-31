@@ -197,7 +197,7 @@ export default function Dashboard() {
                 {project.id === "2" && (
                   <div className="w-full h-48 overflow-hidden">
                     <img 
-                      src="/images/projects/teambuilding.png" 
+                      src="/images/projects/teambuilding.webp" 
                       alt="Team Building" 
                       className="w-full h-full object-cover"
                     />
