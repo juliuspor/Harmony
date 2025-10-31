@@ -47,16 +47,16 @@ const trendData = [
 const mockProjects: Project[] = [
   {
     id: "1",
-    title: "Make Basel Greener 🌳",
-    goal: "Find the best ideas for making our Basel office more sustainable",
+    title: "Green city Basel 🌳",
+    goal: "Collecting the best ideas for making Basel more sustainable",
     status: "collecting",
     ideasCount: 23,
     lastActivity: "2 hours ago",
   },
   {
     id: "2",
-    title: "Next Team-Building Adventure ⛹🏻‍♂️",
-    goal: "Discover exciting team activities for Q2",
+    title: "Team-Building Adventure ⛹🏻‍♂️",
+    goal: "Ideation on the best team-building activities for the next quarter.",
     status: "synthesizing",
     ideasCount: 45,
     lastActivity: "1 day ago",
@@ -64,7 +64,7 @@ const mockProjects: Project[] = [
   {
     id: "3",
     title: "From chemical plants to food production 🏭",
-    goal: "How do we bring together industry professionals from diverse backgrounds?",
+    goal: "Ideating on how to bring together industry professionals from diverse backgrounds?",
     status: "synthesizing",
     ideasCount: 23,
     lastActivity: "3 days ago",
