@@ -92,27 +92,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Monthly Idea Trends</CardTitle>
-            <CardDescription>Ideas collected per project over time</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="month" className="text-muted-foreground" />
-                <YAxis className="text-muted-foreground" />
-                <RechartsTooltip />
-                <Legend />
-                <Line type="monotone" dataKey="project1" stroke="hsl(0, 70%, 40%)" name="Make Basel Greener" strokeWidth={2} />
-                <Line type="monotone" dataKey="project2" stroke="hsl(220, 80%, 45%)" name="Team-Building" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <div>
+        <div className="mb-8">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-foreground">Your Projects</h2>
             <div className="flex gap-3">
@@ -164,6 +144,26 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Monthly Idea Trends</CardTitle>
+            <CardDescription>Ideas collected per project over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <XAxis dataKey="month" className="text-muted-foreground" />
+                <YAxis className="text-muted-foreground" />
+                <RechartsTooltip />
+                <Legend />
+                <Line type="monotone" dataKey="project1" stroke="hsl(0, 70%, 40%)" name="Make Basel Greener" strokeWidth={2} />
+                <Line type="monotone" dataKey="project2" stroke="hsl(220, 80%, 45%)" name="Team-Building" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
