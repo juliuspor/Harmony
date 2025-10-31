@@ -1,10 +1,31 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Plus, Lightbulb, TrendingUp, ArrowUpDown, Filter } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Project {
   id: string;
@@ -34,13 +55,37 @@ const mockProjects: Project[] = [
   },
   {
     id: "2",
-    title: "Next Team-Building Adventure 🚀",
+    title: "Next Team-Building Adventure ⛹🏻‍♂️",
     goal: "Discover exciting team activities for Q2",
     status: "synthesizing",
     ideasCount: 45,
     lastActivity: "1 day ago",
   },
+  {
+    id: "3",
+    title: "From chemical plants to food production 🏭",
+    goal: "How do we bring together industry professionals from diverse backgrounds?",
+    status: "synthesizing",
+    ideasCount: 23,
+    lastActivity: "3 days ago",
+  },
 ];
+
+const CustomLegend = ({ payload }: any) => {
+  return (
+    <div className="flex items-center justify-center gap-6 mt-4">
+      {payload.map((entry: any, index: number) => (
+        <div key={`legend-${index}`} className="flex items-center gap-2">
+          <div
+            className="w-3 h-3 rounded-sm"
+            style={{ backgroundColor: entry.color }}
+          />
+          <span className="text-sm text-muted-foreground">{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -55,7 +100,9 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground">Harmony</h1>
-              <p className="mt-1 text-muted-foreground">Transform opinions into intelligence</p>
+              <p className="mt-1 text-muted-foreground">
+                Transform opinions into intelligence
+              </p>
             </div>
             <Button onClick={() => navigate("/projects/new")} size="lg">
               <Plus className="mr-2 h-5 w-5" />
@@ -71,8 +118,12 @@ export default function Dashboard() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Active Projects</p>
-                  <p className="mt-2 text-3xl font-bold text-foreground">{projects.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Active Projects
+                  </p>
+                  <p className="mt-2 text-3xl font-bold text-foreground">
+                    {projects.length}
+                  </p>
                 </div>
                 <Lightbulb className="h-12 w-12 text-foreground" />
               </div>
@@ -83,7 +134,9 @@ export default function Dashboard() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Insights Generated</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Insights Generated
+                  </p>
                   <p className="mt-2 text-3xl font-bold text-foreground">12</p>
                 </div>
                 <TrendingUp className="h-12 w-12 text-foreground" />
@@ -94,7 +147,9 @@ export default function Dashboard() {
 
         <div className="mb-8">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-foreground">Your Projects</h2>
+            <h2 className="text-2xl font-bold text-foreground">
+              Your Projects
+            </h2>
             <div className="flex gap-3">
               <Select value={filterBy} onValueChange={setFilterBy}>
                 <SelectTrigger className="w-[160px]">
@@ -129,15 +184,21 @@ export default function Dashboard() {
               >
                 <CardHeader>
                   <CardTitle className="text-xl">{project.title}</CardTitle>
-                  <CardDescription className="mt-2 h-10 line-clamp-2">{project.goal}</CardDescription>
+                  <CardDescription className="mt-2 h-10 line-clamp-2">
+                    {project.goal}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-1">
-                      <span className="font-semibold text-foreground">{project.ideasCount}</span>
+                      <span className="font-semibold text-foreground">
+                        {project.ideasCount}
+                      </span>
                       <span className="text-muted-foreground">new ideas</span>
                     </div>
-                    <span className="text-muted-foreground">{project.lastActivity}</span>
+                    <span className="text-muted-foreground">
+                      {project.lastActivity}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -148,18 +209,35 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Monthly Idea Trends</CardTitle>
-            <CardDescription>Ideas collected per project over time</CardDescription>
+            <CardDescription>
+              Ideas collected per project over time
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  className="stroke-border"
+                />
                 <XAxis dataKey="month" className="text-muted-foreground" />
                 <YAxis className="text-muted-foreground" />
                 <RechartsTooltip />
-                <Legend />
-                <Line type="monotone" dataKey="project1" stroke="hsl(0, 70%, 40%)" name="Make Basel Greener" strokeWidth={2} />
-                <Line type="monotone" dataKey="project2" stroke="hsl(220, 80%, 45%)" name="Team-Building" strokeWidth={2} />
+                <Legend iconType="square" content={<CustomLegend />} />
+                <Line
+                  type="monotone"
+                  dataKey="project1"
+                  stroke="hsl(0, 70%, 40%)"
+                  name="Make Basel Greener"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="project2"
+                  stroke="hsl(220, 80%, 45%)"
+                  name="Team-Building"
+                  strokeWidth={2}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
