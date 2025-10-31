@@ -187,7 +187,7 @@ export default function ProjectDetail() {
                         onClick={handleStartAnalysis}
                       >
                         <Sparkles className="mr-2 h-5 w-5" />
-                        Start Synthesis
+                        Start Simulation
                       </Button>
                     </div>
                   </CardContent>
