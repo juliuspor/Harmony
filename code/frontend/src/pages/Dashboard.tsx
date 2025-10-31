@@ -182,9 +182,36 @@ export default function Dashboard() {
             {projects.map((project) => (
               <Card
                 key={project.id}
-                className="cursor-pointer transition-all hover:shadow-lg"
+                className="cursor-pointer transition-all hover:shadow-lg overflow-hidden"
                 onClick={() => navigate(`/projects/${project.id}`)}
               >
+                {project.id === "1" && (
+                  <div className="w-full h-48 overflow-hidden">
+                    <img 
+                      src="/images/projects/Basel.jpeg" 
+                      alt="Basel" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                {project.id === "2" && (
+                  <div className="w-full h-48 overflow-hidden">
+                    <img 
+                      src="/images/projects/teambuilding.png" 
+                      alt="Team Building" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                {project.id === "3" && (
+                  <div className="w-full h-48 overflow-hidden">
+                    <img 
+                      src="/images/projects/industry.jpeg" 
+                      alt="Industry" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
                 <CardHeader>
                   <CardTitle className="text-xl">{project.title}</CardTitle>
                   <CardDescription className="mt-2 h-10 line-clamp-2">

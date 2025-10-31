@@ -17,14 +17,34 @@ export default function ProjectDetail() {
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
 
   // Mock data - in real app would fetch based on id
-  const project = {
-    id,
-    title: "Make Basel Greener 🌳",
-    goal: "Find the best ideas for making our Basel office more sustainable",
-    status: "collecting",
-    ideasCount: 23,
-    lastActivity: "2 hours ago",
+  const projectsData: Record<string, any> = {
+    "1": {
+      id: "1",
+      title: "Green city Basel 🌳",
+      goal: "Collecting the best ideas for making Basel more sustainable",
+      status: "collecting",
+      ideasCount: 23,
+      lastActivity: "2 hours ago",
+    },
+    "2": {
+      id: "2",
+      title: "Team-Building Adventure ⛹🏻‍♂️",
+      goal: "Ideation on the best team-building activities for the next quarter.",
+      status: "synthesizing",
+      ideasCount: 45,
+      lastActivity: "1 day ago",
+    },
+    "3": {
+      id: "3",
+      title: "From chemical plants to food production 🏭",
+      goal: "Ideating on how to bring together industry professionals from diverse backgrounds?",
+      status: "synthesizing",
+      ideasCount: 23,
+      lastActivity: "3 days ago",
+    },
   };
+
+  const project = projectsData[id || "1"] || projectsData["1"];
 
   // Handler for starting analysis
   const handleStartAnalysis = () => {
