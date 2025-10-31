@@ -205,12 +205,16 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-
+        <div className="mb-6">
+        <h2 className="text-2xl font-bold text-foreground">
+              Insights
+        </h2>
+        </div>
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Idea Trends</CardTitle>
+            <CardTitle>Monthly Trends</CardTitle>
             <CardDescription>
-              Ideas collected per project over time
+              Ideas collected per project and month
             </CardDescription>
           </CardHeader>
           <CardContent>
