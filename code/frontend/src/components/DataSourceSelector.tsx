@@ -1,14 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { MessageSquare, Mail, Mic, FileText, Users } from "lucide-react";
+import { MessageSquare, Mail, Users, MessageCircle } from "lucide-react";
 
 interface DataSource {
   id: string;
   name: string;
   description: string;
   icon: React.ReactNode;
-  comingSoon?: boolean;
 }
 
 const dataSources: DataSource[] = [
@@ -17,34 +16,24 @@ const dataSources: DataSource[] = [
     name: "Slack",
     description: "Monitor channels for new ideas and discussions",
     icon: <MessageSquare className="h-6 w-6" />,
-    comingSoon: true,
   },
   {
     id: "teams",
     name: "Microsoft Teams",
     description: "Watch team chats and conversations",
     icon: <Users className="h-6 w-6" />,
-    comingSoon: true,
   },
   {
     id: "outlook",
     name: "Outlook",
     description: "Scan emails sent to specific addresses",
     icon: <Mail className="h-6 w-6" />,
-    comingSoon: true,
   },
   {
-    id: "audio",
-    name: "Meeting Audio",
-    description: "Live transcription from meetings",
-    icon: <Mic className="h-6 w-6" />,
-    comingSoon: true,
-  },
-  {
-    id: "documents",
-    name: "Documents",
-    description: "Upload PDFs, TXTs, or CSVs",
-    icon: <FileText className="h-6 w-6" />,
+    id: "discord",
+    name: "Discord",
+    description: "Monitor servers for new ideas and conversations",
+    icon: <MessageCircle className="h-6 w-6" />,
   },
 ];
 
@@ -67,35 +56,29 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
       {dataSources.map((source) => (
         <Card
           key={source.id}
-          className={`cursor-pointer transition-all ${
+          className={`transition-all ${
             selectedSources.includes(source.id)
               ? "border-primary bg-primary/5"
               : "hover:border-primary/50"
-          } ${source.comingSoon ? "opacity-60" : ""}`}
-          onClick={() => !source.comingSoon && handleToggle(source.id)}
+          }`}
         >
-          <CardContent className="flex items-start space-x-4 p-6">
-            <div className="text-primary">{source.icon}</div>
-            <div className="flex-1 space-y-1">
-              <div className="flex items-center justify-between">
-                <Label
-                  htmlFor={source.id}
-                  className="cursor-pointer font-semibold text-foreground"
-                >
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-start space-x-4 flex-1">
+              <div className="text-primary">{source.icon}</div>
+              <div className="flex-1 space-y-1">
+                <Label className="font-semibold text-foreground">
                   {source.name}
                 </Label>
-                <Checkbox
-                  id={source.id}
-                  checked={selectedSources.includes(source.id)}
-                  disabled={source.comingSoon}
-                  onCheckedChange={() => !source.comingSoon && handleToggle(source.id)}
-                />
+                <p className="text-sm text-muted-foreground">{source.description}</p>
               </div>
-              <p className="text-sm text-muted-foreground">{source.description}</p>
-              {source.comingSoon && (
-                <p className="text-xs font-medium text-warning">Coming Soon</p>
-              )}
             </div>
+            <Button
+              onClick={() => handleToggle(source.id)}
+              variant={selectedSources.includes(source.id) ? "default" : "outline"}
+              className="ml-4"
+            >
+              {selectedSources.includes(source.id) ? "Connected" : "Connect"}
+            </Button>
           </CardContent>
         </Card>
       ))}

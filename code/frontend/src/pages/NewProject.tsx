@@ -60,7 +60,7 @@ export default function NewProject() {
             Back to Dashboard
           </Button>
           <h1 className="text-3xl font-bold text-foreground">Create New Project</h1>
-          <p className="mt-1 text-muted-foreground">Let's set up your wisdom gathering campaign</p>
+          <p className="mt-1 text-muted-foreground">Let's set up your Harmony campaign</p>
         </div>
       </header>
 
@@ -134,7 +134,7 @@ export default function NewProject() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
-            <Button onClick={handleLaunch} className="bg-success hover:bg-success/90">
+            <Button onClick={handleLaunch}>
               <Check className="mr-2 h-4 w-4" />
               Launch Campaign
             </Button>

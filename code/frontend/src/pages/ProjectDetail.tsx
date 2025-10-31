@@ -32,7 +32,7 @@ export default function ProjectDetail() {
               <h1 className="text-3xl font-bold text-foreground">{project.title}</h1>
               <p className="mt-1 text-muted-foreground">{project.goal}</p>
             </div>
-            <Badge className="bg-accent text-accent-foreground">Collecting Ideas</Badge>
+            <Badge className="bg-accent text-accent-foreground">Active</Badge>
           </div>
         </div>
       </header>
@@ -43,7 +43,7 @@ export default function ProjectDetail() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">Total Ideas</p>
-                <p className="mt-2 text-4xl font-bold text-primary">{project.ideasCount}</p>
+                <p className="mt-2 text-4xl font-bold text-foreground">{project.ideasCount}</p>
               </div>
             </CardContent>
           </Card>
@@ -70,7 +70,7 @@ export default function ProjectDetail() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">Consensus Score</p>
-                <p className="mt-2 text-4xl font-bold text-success">78%</p>
+                <p className="mt-2 text-4xl font-bold text-foreground">78%</p>
               </div>
             </CardContent>
           </Card>

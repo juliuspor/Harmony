@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Lightbulb, Users, TrendingUp } from "lucide-react";
+import { Plus, Lightbulb, TrendingUp, ArrowUpDown, Filter } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Project {
   id: string;
@@ -13,6 +14,14 @@ interface Project {
   ideasCount: number;
   lastActivity: string;
 }
+
+const trendData = [
+  { month: "Jun", project1: 12, project2: 15 },
+  { month: "Jul", project1: 18, project2: 22 },
+  { month: "Aug", project1: 23, project2: 30 },
+  { month: "Sep", project1: 20, project2: 35 },
+  { month: "Oct", project1: 31, project2: 45 },
+];
 
 const mockProjects: Project[] = [
   {
@@ -33,16 +42,11 @@ const mockProjects: Project[] = [
   },
 ];
 
-const statusConfig = {
-  designing: { label: "Designing", color: "bg-muted text-muted-foreground" },
-  collecting: { label: "Collecting Ideas", color: "bg-accent text-accent-foreground" },
-  synthesizing: { label: "Synthesizing", color: "bg-primary text-primary-foreground" },
-  complete: { label: "Complete", color: "bg-success text-success-foreground" },
-};
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const [projects] = useState<Project[]>(mockProjects);
+  const [sortBy, setSortBy] = useState<string>("recent");
+  const [filterBy, setFilterBy] = useState<string>("all");
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,8 +54,8 @@ export default function Dashboard() {
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">The Wisdom Hub</h1>
-              <p className="mt-1 text-muted-foreground">Transform diverse opinions into clear, actionable wisdom</p>
+              <h1 className="text-3xl font-bold text-foreground">Harmony</h1>
+              <p className="mt-1 text-muted-foreground">Transform opinions into intelligence</p>
             </div>
             <Button onClick={() => navigate("/projects/new")} size="lg">
               <Plus className="mr-2 h-5 w-5" />
@@ -62,7 +66,7 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-6 py-8">
-        <div className="mb-8 grid gap-6 md:grid-cols-3">
+        <div className="mb-8 grid gap-6 md:grid-cols-2">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -70,21 +74,7 @@ export default function Dashboard() {
                   <p className="text-sm font-medium text-muted-foreground">Active Projects</p>
                   <p className="mt-2 text-3xl font-bold text-foreground">{projects.length}</p>
                 </div>
-                <Lightbulb className="h-12 w-12 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Ideas</p>
-                  <p className="mt-2 text-3xl font-bold text-foreground">
-                    {projects.reduce((sum, p) => sum + p.ideasCount, 0)}
-                  </p>
-                </div>
-                <Users className="h-12 w-12 text-accent" />
+                <Lightbulb className="h-12 w-12 text-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -96,14 +86,60 @@ export default function Dashboard() {
                   <p className="text-sm font-medium text-muted-foreground">Insights Generated</p>
                   <p className="mt-2 text-3xl font-bold text-foreground">12</p>
                 </div>
-                <TrendingUp className="h-12 w-12 text-success" />
+                <TrendingUp className="h-12 w-12 text-foreground" />
               </div>
             </CardContent>
           </Card>
         </div>
 
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Monthly Idea Trends</CardTitle>
+            <CardDescription>Ideas collected per project over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <XAxis dataKey="month" className="text-muted-foreground" />
+                <YAxis className="text-muted-foreground" />
+                <RechartsTooltip />
+                <Legend />
+                <Line type="monotone" dataKey="project1" stroke="hsl(0, 70%, 40%)" name="Make Basel Greener" strokeWidth={2} />
+                <Line type="monotone" dataKey="project2" stroke="hsl(220, 80%, 45%)" name="Team-Building" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
         <div>
-          <h2 className="mb-6 text-2xl font-bold text-foreground">Your Wisdom Projects</h2>
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-foreground">Your Projects</h2>
+            <div className="flex gap-3">
+              <Select value={filterBy} onValueChange={setFilterBy}>
+                <SelectTrigger className="w-[160px]">
+                  <Filter className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Projects</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="complete">Complete</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[160px]">
+                  <ArrowUpDown className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">Most Recent</SelectItem>
+                  <SelectItem value="ideas">Most Ideas</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
               <Card
@@ -112,19 +148,15 @@ export default function Dashboard() {
                 onClick={() => navigate(`/projects/${project.id}`)}
               >
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-xl">{project.title}</CardTitle>
-                    <Badge className={statusConfig[project.status].color}>
-                      {statusConfig[project.status].label}
-                    </Badge>
-                  </div>
-                  <CardDescription className="mt-2">{project.goal}</CardDescription>
+                  <CardTitle className="text-xl">{project.title}</CardTitle>
+                  <CardDescription className="mt-2 h-10 line-clamp-2">{project.goal}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      <span className="font-semibold text-primary">{project.ideasCount}</span> new ideas
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold text-foreground">{project.ideasCount}</span>
+                      <span className="text-muted-foreground">new ideas</span>
+                    </div>
                     <span className="text-muted-foreground">{project.lastActivity}</span>
                   </div>
                 </CardContent>
