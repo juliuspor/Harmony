@@ -99,7 +99,10 @@ export default function Dashboard() {
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Harmony</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold text-foreground">Harmony</h1>
+                <img src="/harmony_logo.png" alt="Harmony Logo" className="h-8 w-8" />
+              </div>
               <p className="mt-1 text-muted-foreground">
                 Transform opinions into intelligence
               </p>
@@ -205,12 +208,16 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-
+        <div className="mb-6">
+        <h2 className="text-2xl font-bold text-foreground">
+              Insights
+        </h2>
+        </div>
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Idea Trends</CardTitle>
+            <CardTitle>Monthly Trends</CardTitle>
             <CardDescription>
-              Ideas collected per project over time
+              Ideas collected per project and month
             </CardDescription>
           </CardHeader>
           <CardContent>
