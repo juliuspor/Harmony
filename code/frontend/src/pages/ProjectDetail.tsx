@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Sparkles, MessageSquare, BarChart3 } from "lucide-react";
+import { ArrowLeft, Sparkles, BarChart3, Network, Users } from "lucide-react";
 import { DebateSimulation } from "@/components/DebateSimulation";
 import type { ConsensusResult } from "@/components/DebateSimulation";
 
@@ -137,117 +137,77 @@ export default function ProjectDetail() {
           </Card>
         </div>
 
-        <Tabs defaultValue="visualization" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="visualization">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Visualization
-            </TabsTrigger>
-            <TabsTrigger value="feed">
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Live Feed
-            </TabsTrigger>
-            <TabsTrigger value="themes">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Key Themes
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="visualization">
-            <Card>
-              <CardHeader>
-                <CardTitle>Idea Clusters</CardTitle>
-                <CardDescription>Interactive visualization of collected ideas grouped by similarity</CardDescription>
-              </CardHeader>
-              <CardContent className="flex h-96 items-center justify-center bg-muted/30">
-                <div className="text-center">
-                  <BarChart3 className="mx-auto h-16 w-16 text-muted-foreground" />
-                  <p className="mt-4 text-muted-foreground">
-                    Visualization will appear here once you run the analysis
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="feed">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Ideas</CardTitle>
-                <CardDescription>New contributions from your connected sources</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="border-b border-border pb-4 last:border-0">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium text-foreground">Sample idea from contributor {i}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          This is a placeholder for actual idea content from Slack, email, or other sources...
-                        </p>
-                      </div>
-                      <Badge variant="outline">Slack</Badge>
-                    </div>
-                    <p className="mt-2 text-xs text-muted-foreground">{i} hour{i > 1 ? 's' : ''} ago</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="themes">
-            <Card>
-              <CardHeader>
-                <CardTitle>Identified Themes</CardTitle>
-                <CardDescription>AI-generated categories from your collected ideas</CardDescription>
-              </CardHeader>
-              <CardContent className="flex h-96 items-center justify-center bg-muted/30">
-                <div className="text-center">
-                  <Sparkles className="mx-auto h-16 w-16 text-muted-foreground" />
-                  <p className="mt-4 text-muted-foreground">Run analysis to identify key themes and patterns</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
         {/* Synthesize Section */}
-        <Card ref={synthesizeSectionRef} className="mt-8 overflow-visible">
-          <CardHeader>
-            <CardTitle>Synthesize</CardTitle>
-            <CardDescription>AI agents simulate debate to form consensus from your collected ideas</CardDescription>
-          </CardHeader>
-          <CardContent className={!isAnalyzing && !analysisResult ? "flex h-96 items-center justify-center bg-muted/30" : "overflow-visible !pb-6"}>
-            {!isAnalyzing && !analysisResult ? (
-              <div className="text-center">
-                <Sparkles className="mx-auto h-16 w-16 text-muted-foreground" />
-                <p className="mt-4 text-muted-foreground mb-6">
-                  Start the simulated debate to synthesize insights
-                </p>
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90"
-                  onClick={handleStartAnalysis}
-                >
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Start Synthesis
-                </Button>
-              </div>
-            ) : isAnalyzing && !analysisResult ? (
-              <div ref={loadingSectionRef} className="w-full overflow-visible">
-                <DebateSimulation
-                  duration={5000}
-                  autoStart={true}
-                  onComplete={handleAnalysisComplete}
-                />
-              </div>
-            ) : analysisResult ? (
-              <div className="w-full overflow-visible pb-4">
-                <DebateSimulation result={analysisResult} autoStart={false} />
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
+        <div ref={synthesizeSectionRef} className="mt-8">
+          <Tabs defaultValue="clusters" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="clusters">
+                <Network className="mr-2 h-4 w-4" />
+                Cluster Info
+              </TabsTrigger>
+              <TabsTrigger value="debate">
+                <Users className="mr-2 h-4 w-4" />
+                Agent Debate
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="clusters">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Idea Clusters</CardTitle>
+                  <CardDescription>Interactive visualization of collected ideas grouped by similarity</CardDescription>
+                </CardHeader>
+                <CardContent className="flex h-96 items-center justify-center bg-muted/30">
+                  <div className="text-center">
+                    <BarChart3 className="mx-auto h-16 w-16 text-muted-foreground" />
+                    <p className="mt-4 text-muted-foreground">
+                      Visualization will appear here once you run the analysis
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="debate">
+              {!isAnalyzing && !analysisResult ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Synthesize</CardTitle>
+                    <CardDescription>AI agents simulate debate to form consensus from your collected ideas</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex h-96 items-center justify-center bg-muted/30">
+                    <div className="text-center">
+                      <Sparkles className="mx-auto h-16 w-16 text-muted-foreground" />
+                      <p className="mt-4 text-muted-foreground mb-6">
+                        Start the simulated debate to synthesize insights
+                      </p>
+                      <Button
+                        size="lg"
+                        className="bg-primary hover:bg-primary/90"
+                        onClick={handleStartAnalysis}
+                      >
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        Start Synthesis
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : isAnalyzing && !analysisResult ? (
+                <div ref={loadingSectionRef} className="w-full overflow-visible">
+                  <DebateSimulation
+                    duration={5000}
+                    autoStart={true}
+                    onComplete={handleAnalysisComplete}
+                  />
+                </div>
+              ) : analysisResult ? (
+                <div className="w-full overflow-visible pb-4">
+                  <DebateSimulation result={analysisResult} autoStart={false} />
+                </div>
+              ) : null}
+            </TabsContent>
+          </Tabs>
+        </div>
       </main>
     </div>
   );
