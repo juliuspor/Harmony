@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import cosine_distances
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 _model = None
 
@@ -18,6 +18,28 @@ def get_model() -> SentenceTransformer:
 def embed_opinions(opinions: List[str]) -> np.ndarray:
     model = get_model()
     return model.encode(opinions, convert_to_numpy=True, normalize_embeddings=True)
+
+
+def cluster_from_embeddings(embeddings: np.ndarray, opinions: List[str]) -> Tuple[List[List[str]], int, float]:
+    """
+    Cluster opinions given pre-computed embeddings
+    """
+    if len(opinions) < 2:
+        raise ValueError("Need at least 2 opinions")
+    
+    # Step 1: Select optimal k
+    optimal_k, silhouette = select_optimal_k(embeddings)
+    
+    # Step 2: Cluster with optimal k
+    kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
+    labels = kmeans.fit_predict(embeddings)
+    
+    # Step 3: Group original texts by cluster
+    clusters = [[] for _ in range(optimal_k)]
+    for opinion, label in zip(opinions, labels):
+        clusters[label].append(opinion)
+    
+    return clusters, optimal_k, float(silhouette)
 
 
 def select_optimal_k(embeddings: np.ndarray, k_range: List[int] = [2, 3, 4, 5, 6]) -> Tuple[int, float]:
@@ -42,10 +64,14 @@ def select_optimal_k(embeddings: np.ndarray, k_range: List[int] = [2, 3, 4, 5, 6
     return best_k, best_score
 
 
-def cluster_opinions(opinions: List[str]) -> Tuple[List[List[str]], int, float]:
+def cluster_opinions(opinions: List[str], embeddings: Optional[np.ndarray] = None) -> Tuple[List[List[str]], int, float]:
     """
     Cluster opinions by semantic similarity using BAAI/bge-small-en-v1.5 embeddings
     and k-means with automatic k selection (k ∈ {2,3,4,5,6}).
+    
+    Args:
+        opinions: List of opinion texts
+        embeddings: Optional pre-computed embeddings. If None, will compute them.
     
     Returns: (clusters, num_clusters, silhouette_score)
     """
@@ -54,19 +80,8 @@ def cluster_opinions(opinions: List[str]) -> Tuple[List[List[str]], int, float]:
     if len(opinions) > 200:
         raise ValueError("Maximum 200 opinions")
     
-    # Step 1: Embed opinions with L2 normalization
-    embeddings = embed_opinions(opinions)
+    # Step 1: Embed opinions with L2 normalization (if not provided)
+    if embeddings is None:
+        embeddings = embed_opinions(opinions)
     
-    # Step 2: Select optimal k
-    optimal_k, silhouette = select_optimal_k(embeddings)
-    
-    # Step 3: Cluster with optimal k
-    kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
-    labels = kmeans.fit_predict(embeddings)
-    
-    # Step 4: Group original texts by cluster
-    clusters = [[] for _ in range(optimal_k)]
-    for opinion, label in zip(opinions, labels):
-        clusters[label].append(opinion)
-    
-    return clusters, optimal_k, float(silhouette)
+    return cluster_from_embeddings(embeddings, opinions)

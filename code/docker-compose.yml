@@ -5,4 +5,9 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
+    volumes:
+      - chroma_data:/app/chroma_db
     restart: unless-stopped
+
+volumes:
+  chroma_data:

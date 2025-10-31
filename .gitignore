@@ -11,6 +11,9 @@ ENV/
 .cache/
 models/
 
+# ChromaDB vector database
+chroma_db/
+
 # Node
 node_modules/
 dist/
