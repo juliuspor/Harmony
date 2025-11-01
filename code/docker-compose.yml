@@ -24,6 +24,8 @@ services:
       - ./backend:/app
       - chroma_data:/app/chroma_db
       - ./data:/data
+    env_file:
+      - ./backend/.env
     environment:
       - OPENAI_API_KEY_HACK=${OPENAI_API_KEY_HACK}
       - SLACK_CLIENT_ID=${SLACK_CLIENT_ID}
