@@ -47,7 +47,7 @@ const trendData = [
 const mockProjects: Project[] = [
   {
     id: "1",
-    title: "Green city Basel 🌳",
+    title: "Green City Basel 🌳",
     goal: "Collecting the best ideas for making Basel more sustainable",
     status: "collecting",
     ideasCount: 23,
@@ -63,7 +63,7 @@ const mockProjects: Project[] = [
   },
   {
     id: "3",
-    title: "From chemical plants to food production 🏭",
+    title: "From Chemical Plants to Food Production 🏭",
     goal: "Ideating on how to bring together industry professionals from diverse backgrounds?",
     status: "synthesizing",
     ideasCount: 23,
@@ -104,7 +104,7 @@ export default function Dashboard() {
                 <img src="/harmony_logo.png" alt="Harmony Logo" className="h-8 w-8" />
               </div>
               <p className="mt-1 text-muted-foreground">
-                Transform opinions into intelligence
+                Transforming opinions into intelligence
               </p>
             </div>
             <Button onClick={() => navigate("/projects/new")} size="lg">

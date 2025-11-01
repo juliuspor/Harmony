@@ -20,7 +20,7 @@ export default function ProjectDetail() {
   const projectsData: Record<string, any> = {
     "1": {
       id: "1",
-      title: "Green city Basel 🌳",
+      title: "Green City Basel 🌳",
       goal: "Collecting the best ideas for making Basel more sustainable",
       status: "collecting",
       ideasCount: 23,
@@ -36,7 +36,7 @@ export default function ProjectDetail() {
     },
     "3": {
       id: "3",
-      title: "From chemical plants to food production 🏭",
+      title: "From Chemical Plants to Food Production 🏭",
       goal: "Ideating on how to bring together industry professionals from diverse backgrounds?",
       status: "synthesizing",
       ideasCount: 23,
