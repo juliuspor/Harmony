@@ -96,28 +96,10 @@ graph TB
 ### Prerequisites
 
 - Docker and Docker Compose
-- Python 3.9+
-- Node.js 18+
 
 ### Setup Instructions
 
-**1. Install Backend Dependencies**
-
-```bash
-cd code/backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-**2. Install Frontend Dependencies**
-
-```bash
-cd code/frontend
-npm install
-```
-
-**3. Configure Environment Variables**
+**1. Configure Environment Variables**
 
 Create a `.env` file in the `code` directory:
 
@@ -138,23 +120,17 @@ DISCORD_BOT_TOKEN=your_discord_bot_token
 DISCORD_DEFAULT_CHANNEL_ID=your_discord_channel_id
 ```
 
-**4. Start Backend Services (MongoDB + Backend API)**
+**2. Start All Services **
 
 ```bash
 cd code
 docker-compose up --build
 ```
 
-Backend API will be available at `http://localhost:8000`
-
-**5. Start Frontend**
-
-```bash
-cd code/frontend
-npm run dev
-```
-
-Frontend will be available at `http://localhost:5173`
+That's it! Docker Compose will orchestrate all services:
+- **MongoDB**: `mongodb://localhost:27017`
+- **Backend API**: `http://localhost:8000`
+- **Frontend**: `http://localhost:8080`
 
 ## How It Works
 
@@ -228,8 +204,9 @@ BaselHack/
 │   │   │   └── lib/                          # API client & utilities
 │   │   ├── public/                           # Static assets (images, icons, logos)
 │   │   ├── package.json                      # Node dependencies
-│   │   └── vite.config.ts                    # Build configuration
-│   └── docker-compose.yml                    # Service orchestration (MongoDB + Backend)
+│   │   ├── vite.config.ts                    # Build configuration
+│   │   └── Dockerfile                        # Frontend container config
+│   └── docker-compose.yml                    # Service orchestration (MongoDB + Backend + Frontend)
 ├── assets/                                   # Additional project assets
 ├── documentation/                            # Project documentation
 └── README.md                                 # This file
