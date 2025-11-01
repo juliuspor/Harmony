@@ -17,6 +17,7 @@ class ClusterResponse(BaseModel):
     num_clusters: int
     silhouette_score: float
     summaries: List[str]
+    titles: List[str]
 
 
 class SuggestCampaignResponse(BaseModel):
