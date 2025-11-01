@@ -5,7 +5,7 @@ An intelligent platform that transforms community opinions into **intelligence**
 ## Features
 
 ### Ideation Intelligence Platform 
-- **Campaign Management**: Create and launch Ideation campaigns to collect community input from different sources. 
+- **Campaign Management**: Create and launch ideation campaigns to collect community input from different sources. 
 - **Real-time Monitoring**: Live ingestion showing submissions as they arrive from connected platforms.
 
 ### Semantic Intelligence
@@ -95,7 +95,7 @@ graph TB
 
 ### Prerequisites
 
-- Docker and Docker Compose
+- Docker
 
 ### Setup Instructions
 
@@ -120,7 +120,7 @@ DISCORD_BOT_TOKEN=your_discord_bot_token
 DISCORD_DEFAULT_CHANNEL_ID=your_discord_channel_id
 ```
 
-**2. Start All Services **
+**2. Start All Services**
 
 ```bash
 cd code
