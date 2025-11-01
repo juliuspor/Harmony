@@ -82,7 +82,15 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
     // Check if already connected (e.g., via pre-configured bot token)
     if (connectionStatus[sourceId]) {
       // Already connected, just toggle selection
+      const isCurrentlySelected = selectedSources.includes(sourceId);
       handleToggle(sourceId);
+      
+      // Show toast to confirm the connection is real and active
+      if (!isCurrentlySelected) {
+        toast.success(`${sourceId.charAt(0).toUpperCase() + sourceId.slice(1)} connected! Messages will be posted to your workspace.`, {
+          description: "OAuth connection active"
+        });
+      }
       return;
     }
 
