@@ -6,9 +6,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ./backend:/app
       - chroma_data:/app/chroma_db
     environment:
       - OPENAI_API_KEY_HACK=${OPENAI_API_KEY_HACK}
+      - RELOAD=true
     restart: unless-stopped
 
 volumes:
