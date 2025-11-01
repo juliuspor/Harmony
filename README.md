@@ -89,7 +89,7 @@ graph TB
 ### Tech Stack
 
 **Backend**: FastAPI • MongoDB • ChromaDB • OpenAI/CrewAI • Slack/Discord SDK  
-**Frontend**: React + TypeScript • Vite • Tailwind CSS • shadcn/ui  
+**Frontend**: React + TypeScript • Vite • Tailwind CSS  
 **Intelligence**: Multi-agent debates with Agent-to-Agent (A2A) communication
 
 ## Getting Started
