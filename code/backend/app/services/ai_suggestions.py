@@ -72,7 +72,7 @@ No Markdown formatting, only new lines afer the hello message, just plain text. 
     
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
                 {
                     "role": "system",
