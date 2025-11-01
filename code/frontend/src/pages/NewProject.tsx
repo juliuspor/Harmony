@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Target, Sparkles, Rocket, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { StepIndicator } from "@/components/StepIndicator";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -108,10 +109,30 @@ export default function NewProject() {
     { number: 3, title: "Design Campaign", description: "How" },
   ];
 
+  // Get step icon and color
+  const getStepIcon = (step: number) => {
+    switch (step) {
+      case 1: return Target;
+      case 2: return Zap;
+      case 3: return Rocket;
+      default: return Target;
+    }
+  };
+
+  const getStepGradient = () => {
+    return "from-purple-500 to-pink-500";
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b-2 border-border bg-card shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-8 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-8 py-5">
           <Button 
             variant="ghost" 
             onClick={() => navigate("/")} 
@@ -119,104 +140,224 @@ export default function NewProject() {
             size="sm"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+            Back to Dashboard
           </Button>
-          <h1 className="text-4xl font-bold text-foreground mb-2 tracking-tight leading-tight">Create new project</h1>
-          <p className="text-base text-muted-foreground font-medium">Set up your Harmony campaign in three simple steps</p>
+          <div className="flex items-center gap-4">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
+              >
+                <Sparkles className="h-7 w-7 text-white" />
+              </motion.div>
+            <div>
+              <h1 className="text-4xl font-bold text-foreground mb-1 tracking-tight leading-tight">Create New Project</h1>
+              <p className="text-base text-muted-foreground font-medium">Launch your Harmony campaign in three simple steps</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-8 py-12">
-        <StepIndicator steps={steps} currentStep={currentStep} />
-
-        <div className="mt-10 max-w-3xl mx-auto">
-          {currentStep === 1 && (
-            <Card className="border-2 bg-card rounded-2xl">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold tracking-tight">Define your mission</CardTitle>
-                <CardDescription className="text-base">Tell us about your project and what you're trying to achieve</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="project-name" className="text-sm font-semibold">Project name</Label>
-                  <Input
-                    id="project-name"
-                    placeholder="e.g., Make Basel Greener"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="project-goal" className="text-sm font-semibold">Project goal</Label>
-                  <Textarea
-                    id="project-goal"
-                    placeholder="Describe your mission. What question are you trying to answer? What problem are you solving?"
-                    rows={6}
-                    value={projectGoal}
-                    onChange={(e) => setProjectGoal(e.target.value)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {currentStep === 2 && (
-            <Card className="border-2 bg-card rounded-2xl">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold tracking-tight">Connect data sources</CardTitle>
-                <CardDescription className="text-base">Where will your ideas come from? Select one or more sources</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DataSourceSelector selectedSources={selectedSources} onSourcesChange={setSelectedSources} />
-              </CardContent>
-            </Card>
-          )}
-
-          {currentStep === 3 && (
-            <Card className="border-2 bg-card rounded-2xl">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold tracking-tight">Design your campaign</CardTitle>
-                <CardDescription className="text-base">Let our AI help you create the perfect campaign</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CampaignDesigner 
-                  projectName={projectName} 
-                  projectGoal={projectGoal}
-                  selectedSources={selectedSources}
-                  aiSuggestions={aiSuggestions}
-                  onSuggestionsChange={setAiSuggestions}
-                />
-              </CardContent>
-            </Card>
-          )}
+      <main className="container mx-auto px-8 py-12 relative z-10">
+        {/* Enhanced Step Indicator */}
+        <div className="mb-12">
+          <StepIndicator steps={steps} currentStep={currentStep} />
         </div>
 
-        <div className="mt-12 flex justify-between max-w-3xl mx-auto">
+        {/* Step Content with Animation */}
+        <div className="mt-10 max-w-6xl">
+          <AnimatePresence mode="wait">
+            {currentStep === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
+                  {/* Gradient Header */}
+                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
+                  
+                  <CardHeader className="pb-6 pt-8 px-8">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}>
+                        <Target className="h-8 w-8 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-3xl font-bold tracking-tight">Define Your Mission</CardTitle>
+                        <CardDescription className="text-base mt-1">Tell us what you want to achieve and why it matters</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-8 px-8 pb-8">
+                    <div className="space-y-3">
+                      <Label htmlFor="project-name" className="text-sm font-semibold flex items-center gap-2">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">1</span>
+                        Project Name
+                      </Label>
+                      <Input
+                        id="project-name"
+                        placeholder="e.g., Make Basel Greener"
+                        value={projectName}
+                        onChange={(e) => setProjectName(e.target.value)}
+                        className="h-12 text-base border-2 focus:border-purple-400 transition-colors"
+                      />
+                      <p className="text-xs text-muted-foreground">Choose a clear, memorable name for your project</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <Label htmlFor="project-goal" className="text-sm font-semibold flex items-center gap-2">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">2</span>
+                        Project Goal
+                      </Label>
+                      <Textarea
+                        id="project-goal"
+                        placeholder="Describe your mission in detail. What question are you trying to answer? What problem are you solving? What impact do you want to make?"
+                        rows={8}
+                        value={projectGoal}
+                        onChange={(e) => setProjectGoal(e.target.value)}
+                        className="text-base border-2 focus:border-purple-400 transition-colors resize-none"
+                      />
+                      <p className="text-xs text-muted-foreground">Be specific about your objectives and desired outcomes</p>
+                    </div>
+
+                    {/* Visual Separator */}
+                    <div className="flex items-center gap-4 pt-4">
+                      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+                      <Sparkles className="h-4 w-4 text-muted-foreground" />
+                      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+                    </div>
+
+                    {/* Quick Tips */}
+                    <Card className="bg-muted/50 border-0">
+                      <CardContent className="pt-6">
+                        <div className="flex items-start gap-3">
+                          <div className="h-8 w-8 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                            <Sparkles className="h-4 w-4 text-purple-600" />
+                          </div>
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">💡 Quick Tips</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Be clear and specific about what you want to accomplish</li>
+                              <li>• Include the "why" behind your project</li>
+                              <li>• Think about who will benefit from this</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {currentStep === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
+                  {/* Gradient Header */}
+                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
+                  
+                  <CardHeader className="pb-6 pt-8 px-8">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}>
+                        <Zap className="h-8 w-8 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-3xl font-bold tracking-tight">Connect Data Sources</CardTitle>
+                        <CardDescription className="text-base mt-1">Choose where your community ideas will come from</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="px-8 pb-8">
+                    <DataSourceSelector selectedSources={selectedSources} onSourcesChange={setSelectedSources} />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {currentStep === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
+                  {/* Gradient Header */}
+                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
+                  
+                  <CardHeader className="pb-6 pt-8 px-8">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}>
+                        <Rocket className="h-8 w-8 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-3xl font-bold tracking-tight">Design Your Campaign</CardTitle>
+                        <CardDescription className="text-base mt-1">AI-powered messages crafted for your audience</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="px-8 pb-8">
+                    <CampaignDesigner 
+                      projectName={projectName} 
+                      projectGoal={projectGoal}
+                      selectedSources={selectedSources}
+                      aiSuggestions={aiSuggestions}
+                      onSuggestionsChange={setAiSuggestions}
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation Buttons */}
+        <motion.div 
+          className="mt-12 flex justify-between max-w-6xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
           <Button 
             variant="outline" 
             onClick={handleBack} 
             disabled={currentStep === 1 || isGenerating}
             size="lg"
+            className="h-12 px-8 font-semibold border-2"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 h-5 w-5" />
             Back
           </Button>
+          
           {currentStep < 3 ? (
             <Button 
               onClick={handleNext} 
               disabled={isGenerating}
               size="lg"
+              className={`h-12 px-8 font-semibold bg-gradient-to-r ${getStepGradient()} hover:opacity-90 transition-opacity shadow-lg`}
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Generating AI Suggestions...
                 </>
               ) : (
                 <>
-                  Next
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  Continue
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </>
               )}
             </Button>
@@ -224,11 +365,33 @@ export default function NewProject() {
             <Button 
               onClick={handleLaunch}
               size="lg"
+              className={`h-12 px-8 font-semibold bg-gradient-to-r ${getStepGradient()} hover:opacity-90 transition-opacity shadow-lg`}
             >
-              <Check className="mr-2 h-4 w-4" />
+              <Rocket className="mr-2 h-5 w-5" />
               Launch Campaign
             </Button>
           )}
+        </motion.div>
+
+        {/* Progress Indicator */}
+        <div className="mt-8 max-w-6xl">
+          <div className="flex items-center justify-center gap-2">
+            {[1, 2, 3].map((step) => (
+              <div
+                key={step}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  step === currentStep
+                    ? `w-12 bg-gradient-to-r ${getStepGradient()}`
+                    : step < currentStep
+                    ? "w-8 bg-primary/50"
+                    : "w-8 bg-muted"
+                }`}
+              />
+            ))}
+          </div>
+          <p className="text-center text-sm text-muted-foreground mt-3">
+            Step {currentStep} of 3
+          </p>
         </div>
       </main>
     </div>

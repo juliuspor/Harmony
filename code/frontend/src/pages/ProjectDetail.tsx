@@ -239,54 +239,35 @@ export default function ProjectDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b-2 border-border bg-card shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-8 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="mb-4 -ml-4 text-foreground hover:text-foreground/80 transition-colors font-semibold"
-            size="sm"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <div className="flex items-start justify-between gap-12 pb-2">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-4xl font-bold text-foreground mb-2 tracking-tight leading-tight">
-                {project.title}
-              </h1>
-              <p className="text-base text-muted-foreground max-w-3xl leading-relaxed font-medium mb-3">{project.goal}</p>
-              <div className="flex items-center gap-5 text-sm">
-                <span className="text-muted-foreground font-medium">
-                  <span className="text-foreground font-bold text-base">{submissionsCount}</span> ideas
-                </span>
-                <span className="text-muted-foreground font-bold">•</span>
-                <span className="text-muted-foreground font-medium">
-                  <span className="text-foreground font-bold text-base">{contributorsCount}</span> contributors
-                </span>
-                <span className="text-muted-foreground font-bold">•</span>
-                <span className="text-muted-foreground font-medium">
-                  <span className="text-foreground font-bold text-base">{clustersData?.num_clusters || 0}</span> clusters
-                </span>
-                {clustersData?.silhouette_score && (
-                  <>
-                    <span className="text-muted-foreground font-bold">•</span>
-                    <span className="text-muted-foreground font-medium">
-                      <span className="text-foreground font-bold text-base">{Math.round((clustersData.silhouette_score + 1) * 50)}%</span> consensus
-                    </span>
-                  </>
-                )}
+      <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/")}
+                className="text-foreground hover:text-foreground/80 transition-colors font-semibold"
+                size="sm"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
+              <div className="h-8 w-px bg-border" />
+              <div className="flex items-center gap-4">
+                <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                  {project.title}
+                </h1>
+                <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0 shadow-sm">
+                  <div className="h-2 w-2 rounded-full bg-white mr-2" />
+                  Active
+                </Badge>
               </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 pt-1">
-              <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
-              <span className="text-sm text-foreground font-bold">Active</span>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-8 py-12">
+      <main className="container mx-auto px-8 py-8">
         {/* Tabs Section */}
         <div className="mb-8">
           <Tabs 
@@ -295,12 +276,12 @@ export default function ProjectDetail() {
             value={activeTab}
             onValueChange={setActiveTab}
           >
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-12 p-1 bg-muted rounded-xl border-2">
-              <TabsTrigger value="clusters" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-muted p-1 border-2">
+              <TabsTrigger value="clusters" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
                 <Network className="mr-2 h-4 w-4" />
                 Cluster Info
               </TabsTrigger>
-              <TabsTrigger value="debate" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger value="debate" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
                 <Users className="mr-2 h-4 w-4" />
                 Agent Debate
                 {isAnalyzing && (

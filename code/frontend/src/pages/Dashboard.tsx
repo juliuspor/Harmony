@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Lightbulb, TrendingUp, ArrowUpDown, Filter, MessageSquare, User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Lightbulb, ArrowUpDown, Filter, MessageSquare, User, Sparkles, Activity, Target } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -161,34 +163,40 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b-2 border-border bg-card shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-8 py-5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-foreground tracking-tight">Harmony</h1>
+            <div className="flex items-center gap-4">
+              <motion.div
+                initial={{ rotate: -10, scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center shadow-lg"
+              >
                 <img src="/harmony_logo.png" alt="Harmony Logo" className="h-8 w-8" />
-              </div>
-              <div className="flex items-center gap-6">
+              </motion.div>
+              <div>
+                <div className="flex items-center gap-3 mb-1">
+                  <h1 className="text-3xl font-bold text-foreground tracking-tight">Harmony</h1>
+                  <Badge variant="secondary" className="text-xs font-semibold">AI-Powered</Badge>
+                </div>
                 <p className="text-sm text-muted-foreground font-medium">
                   Transforming community opinions into collective intelligence
                 </p>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="text-muted-foreground font-medium">
-                    <span className="text-foreground font-bold text-base">{projects.length}</span> active
-                  </span>
-                  <span className="text-muted-foreground font-bold">•</span>
-                  <span className="text-muted-foreground font-medium">
-                    <span className="text-foreground font-bold text-base">{totalInsights}</span> insights
-                  </span>
-                </div>
               </div>
             </div>
             <Button 
               onClick={() => navigate("/projects/new")} 
               size="lg"
-              className="font-semibold"
+              className="h-12 px-6 font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg transition-all hover:shadow-xl"
             >
               <Plus className="mr-2 h-5 w-5" />
               New Project
@@ -197,15 +205,20 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="container mx-auto px-8 py-12">
+      <main className="container mx-auto px-8 py-12 relative z-10">
         <div className="mb-12">
           <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-3xl font-semibold text-foreground tracking-tight">
-              Your projects
-            </h2>
+            <div>
+              <h2 className="text-3xl font-bold text-foreground tracking-tight mb-2">
+                Your Projects
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Manage and monitor your active campaigns
+              </p>
+            </div>
             <div className="flex gap-3">
               <Select value={filterBy} onValueChange={setFilterBy}>
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-[160px] border-2">
                   <Filter className="mr-2 h-4 w-4" />
                   <SelectValue placeholder="Filter" />
                 </SelectTrigger>
@@ -216,7 +229,7 @@ export default function Dashboard() {
                 </SelectContent>
               </Select>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-[160px] border-2">
                   <ArrowUpDown className="mr-2 h-4 w-4" />
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -228,121 +241,217 @@ export default function Dashboard() {
               </Select>
             </div>
           </div>
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          
+          <AnimatePresence mode="wait">
             {loading ? (
-              <div className="col-span-full text-center py-20 text-muted-foreground">
-                Loading campaigns...
-              </div>
-            ) : projects.length === 0 ? (
-              <div className="col-span-full text-center py-20 text-muted-foreground">
-                No campaigns yet. Create your first project to get started!
-              </div>
-            ) : (
-              projects.map((project) => (
-                <Card
-                  key={project.id}
-                  className="group cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden border-2 rounded-2xl bg-card hover:border-primary/50"
-                  onClick={() => navigate(`/projects/${project.id}`)}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="col-span-full text-center py-20"
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="inline-block mb-4"
                 >
-                  <div className="relative w-full h-48 overflow-hidden">
-                    <img 
-                      src={project.imageUrl} 
-                      alt={project.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-4 right-4">
-                      <div className="px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-foreground flex items-center gap-1.5 shadow-lg">
-                        <Lightbulb className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-                        {project.ideasCount}
-                      </div>
+                  <Sparkles className="h-12 w-12 text-primary" />
+                </motion.div>
+                <p className="text-muted-foreground font-medium">Loading campaigns...</p>
+              </motion.div>
+            ) : projects.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="border-2 border-dashed rounded-3xl bg-muted/20">
+                  <CardContent className="text-center py-20">
+                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 flex items-center justify-center mx-auto mb-6">
+                      <Target className="h-10 w-10 text-purple-600 dark:text-purple-400" />
                     </div>
-                  </div>
-                  <CardHeader className="pb-3 pt-5">
-                    <CardTitle className="text-xl font-bold tracking-tight">
-                      {project.title}
-                    </CardTitle>
-                    <CardDescription className="mt-2 line-clamp-2 text-sm leading-relaxed">
-                      {project.goal}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pb-5">
-                    <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-                      <span className="flex items-center gap-1.5">
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        Active
-                      </span>
-                      <span>
-                        {getRelativeTime(project.lastActivityDate)}
-                      </span>
-                    </div>
+                    <h3 className="text-2xl font-bold mb-2">No Projects Yet</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                      Get started by creating your first project to collect and analyze community ideas
+                    </p>
+                    <Button
+                      onClick={() => navigate("/projects/new")}
+                      size="lg"
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
+                    >
+                      <Plus className="mr-2 h-5 w-5" />
+                      Create Your First Project
+                    </Button>
                   </CardContent>
                 </Card>
-              ))
+              </motion.div>
+            ) : (
+              <motion.div 
+                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                {projects.map((project, index) => (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.3 }}
+                  >
+                    <Card
+                      className="group cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden border-2 rounded-3xl bg-card hover:border-primary/50 h-full"
+                      onClick={() => navigate(`/projects/${project.id}`)}
+                    >
+                      <div className="relative w-full h-52 overflow-hidden">
+                        <img 
+                          src={project.imageUrl} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                        
+                        {/* Floating Stats */}
+                        <motion.div 
+                          className="absolute bottom-4 right-4"
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          <div className="px-4 py-2 rounded-full bg-white/95 backdrop-blur-md text-sm font-bold text-foreground flex items-center gap-2 shadow-xl">
+                            <Lightbulb className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
+                            {project.ideasCount}
+                            <span className="text-xs font-normal text-muted-foreground">ideas</span>
+                          </div>
+                        </motion.div>
+
+                        {/* Status Badge */}
+                        <div className="absolute top-4 left-4">
+                          <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0 shadow-lg">
+                            <Activity className="h-3 w-3 mr-1" />
+                            Active
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      <CardHeader className="pb-3 pt-6">
+                        <CardTitle className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors">
+                          {project.title}
+                        </CardTitle>
+                        <CardDescription className="mt-2 line-clamp-2 text-sm leading-relaxed">
+                          {project.goal}
+                        </CardDescription>
+                      </CardHeader>
+                      
+                      <CardContent className="pb-6">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground font-medium">
+                            Updated {getRelativeTime(project.lastActivityDate)}
+                          </span>
+                          <motion.div
+                            className="text-primary font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
+                            whileHover={{ x: 5 }}
+                          >
+                            View →
+                          </motion.div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
+        {/* Live Activity Feed */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-3xl font-semibold text-foreground tracking-tight">
-            Live activity
-          </h2>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            Live
+          <div>
+            <h2 className="text-3xl font-bold text-foreground tracking-tight mb-2">
+              Live Activity Feed
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Real-time community contributions across all projects
+            </p>
           </div>
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="flex items-center gap-2"
+          >
+            <Badge className="bg-green-500 text-white border-0 shadow-lg">
+              <div className="h-2 w-2 rounded-full bg-white animate-pulse mr-2" />
+              Live
+            </Badge>
+          </motion.div>
         </div>
-        <Card className="border-2 rounded-2xl overflow-hidden bg-card">
+        
+        <Card className="border-2 rounded-3xl overflow-hidden bg-card/95 backdrop-blur-sm shadow-xl">
           <CardContent className="p-0">
             {liveMessages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
-                <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
-                <p className="font-medium">No messages yet. Ideas will appear here as they arrive.</p>
+                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 flex items-center justify-center mb-6">
+                  <MessageSquare className="h-10 w-10 text-purple-600 dark:text-purple-400" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">No Activity Yet</h3>
+                <p className="font-medium text-sm">Community ideas will appear here in real-time</p>
               </div>
             ) : (
-              <div className="max-h-[500px] overflow-y-auto">
-                {liveMessages.map((msg, index) => {
-                  const isNew = index === 0 && !previousMessageIds.has(msg.id);
-                  return (
-                    <div
-                      key={msg.id}
-                      className={`flex gap-4 px-6 py-5 border-b last:border-b-0 transition-all ${
-                        isNew 
-                          ? 'bg-primary/5 hover:bg-primary/10 border-l-4 border-l-primary' 
-                          : 'hover:bg-muted/50 border-l-4 border-l-transparent'
-                      }`}
-                    >
-                      <div className="flex-shrink-0 pt-0.5">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          isNew ? 'bg-primary/10' : 'bg-muted'
-                        }`}>
-                          <User className={`h-4 w-4 ${isNew ? 'text-primary' : 'text-muted-foreground'}`} strokeWidth={2} />
+              <div className="max-h-[600px] overflow-y-auto">
+                <AnimatePresence initial={false}>
+                  {liveMessages.map((msg, index) => {
+                    const isNew = index === 0 && !previousMessageIds.has(msg.id);
+                    return (
+                      <motion.div
+                        key={msg.id}
+                        initial={isNew ? { opacity: 0, x: -20, backgroundColor: "rgba(var(--primary), 0.1)" } : false}
+                        animate={{ opacity: 1, x: 0, backgroundColor: "transparent" }}
+                        transition={{ duration: 0.5 }}
+                        className={`flex gap-4 px-6 py-5 border-b last:border-b-0 transition-all ${
+                          isNew 
+                            ? 'bg-primary/5 hover:bg-primary/10 border-l-4 border-l-primary' 
+                            : 'hover:bg-muted/30 border-l-4 border-l-transparent'
+                        }`}
+                      >
+                        <div className="flex-shrink-0 pt-0.5">
+                          <motion.div 
+                            className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+                              isNew 
+                                ? 'bg-gradient-to-br from-primary/20 to-primary/10' 
+                                : 'bg-muted'
+                            }`}
+                            whileHover={{ scale: 1.05, rotate: 5 }}
+                          >
+                            <User className={`h-5 w-5 ${isNew ? 'text-primary' : 'text-muted-foreground'}`} strokeWidth={2.5} />
+                          </motion.div>
                         </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-bold text-sm text-foreground">
-                            Anonymous
-                          </span>
-                          {isNew && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">
-                              NEW
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
+                            <span className="font-bold text-sm text-foreground">
+                              Anonymous
                             </span>
-                          )}
-                          <span className="text-xs text-muted-foreground">•</span>
-                          <span className="text-xs text-muted-foreground font-medium">
-                            {msg.timestamp ? getRelativeTime(msg.timestamp) : "just now"}
-                          </span>
-                          <span className="text-xs text-muted-foreground ml-auto truncate max-w-[200px] font-medium">
-                            {msg.project_name}
-                          </span>
+                            {isNew && (
+                              <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold shadow-sm"
+                              >
+                                NEW
+                              </motion.span>
+                            )}
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground font-medium">
+                              {msg.timestamp ? getRelativeTime(msg.timestamp) : "just now"}
+                            </span>
+                            <Badge variant="outline" className="ml-auto text-xs">
+                              {msg.project_name}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-foreground leading-relaxed">
+                            {msg.message}
+                          </p>
                         </div>
-                        <p className="text-sm text-foreground leading-relaxed">
-                          {msg.message}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
               </div>
             )}
           </CardContent>
