@@ -85,7 +85,7 @@ export function CampaignDesigner({ projectName, projectGoal, selectedSources, ai
               <Textarea
                 value={suggestion.content}
                 readOnly
-                rows={8}
+                rows={4}
                 className="text-sm whitespace-pre-wrap"
               />
             </CardContent>
