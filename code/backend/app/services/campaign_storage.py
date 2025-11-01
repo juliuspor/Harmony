@@ -1,49 +1,50 @@
-"""Campaign storage service using MongoDB for persistence"""
+"""Campaign storage service using MongoDB for persistence."""
+
+from datetime import datetime
+from typing import List, Optional, Dict, Any
 
 from pymongo import MongoClient, ASCENDING, DESCENDING
-from typing import List, Optional, Dict, Any
-import uuid
-from datetime import datetime
+
 from app.core import config
 
-_client = None
-_db = None
+# Global singletons
+_mongo_client = None
+_mongo_database = None
 
 
 def get_mongo_client() -> MongoClient:
     """
-    Get or create MongoDB client singleton
+    Get or create the MongoDB client singleton.
     
     Returns:
         MongoClient instance
     """
-    global _client
-    if _client is None:
-        _client = MongoClient(config.MONGODB_URL)
-    return _client
+    global _mongo_client
+    if _mongo_client is None:
+        _mongo_client = MongoClient(config.MONGODB_URL)
+    return _mongo_client
 
 
 def get_database():
     """
-    Get or create the database instance
+    Get or create the database instance with indexes.
     
     Returns:
-        Database instance with indexes created
+        MongoDB database instance
     """
-    global _db
-    if _db is None:
+    global _mongo_database
+    if _mongo_database is None:
         client = get_mongo_client()
-        _db = client[config.MONGODB_DB_NAME]
+        _mongo_database = client[config.MONGODB_DB_NAME]
         _create_indexes()
-    return _db
+    return _mongo_database
 
 
 def _create_indexes():
-    """Create indexes for better query performance"""
+    """Create database indexes for query performance."""
     db = get_database()
     campaigns = db.campaigns
     
-    # Create indexes
     campaigns.create_index([("id", ASCENDING)], unique=True)
     campaigns.create_index([("created_at", DESCENDING)])
     campaigns.create_index([("project_name", ASCENDING)])
@@ -60,18 +61,18 @@ def create_campaign(
     monitored_channels: Dict[str, str]
 ) -> Dict[str, Any]:
     """
-    Create a new campaign in MongoDB
+    Create a new campaign in MongoDB.
     
     Args:
         campaign_id: Unique campaign identifier
-        project_name: Name of the project
-        project_goal: Goal/description of the project
-        messages: Dictionary of platform -> message content
-        posting_results: Dictionary of platform -> posting status
-        monitored_channels: Dictionary of platform -> channel_id
+        project_name: Project name
+        project_goal: Project goal/description
+        messages: Platform to message content mapping
+        posting_results: Platform to posting status mapping
+        monitored_channels: Platform to channel ID mapping
     
     Returns:
-        The created campaign document
+        Created campaign document
     """
     db = get_database()
     campaigns = db.campaigns
@@ -91,14 +92,13 @@ def create_campaign(
     campaigns.insert_one(campaign_doc)
     print(f"✅ Campaign created: {campaign_id} - {project_name}")
     
-    # Return without MongoDB's _id field
     campaign_doc.pop("_id", None)
     return campaign_doc
 
 
 def get_campaign(campaign_id: str) -> Optional[Dict[str, Any]]:
     """
-    Get a campaign by ID
+    Retrieve a campaign by ID.
     
     Args:
         campaign_id: Campaign identifier

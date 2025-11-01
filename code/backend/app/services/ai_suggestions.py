@@ -1,9 +1,11 @@
-"""AI-powered campaign suggestion service using OpenAI"""
+"""AI-powered campaign suggestion service using OpenAI."""
+
+import json
+from typing import Dict, List
 
 from openai import OpenAI
-from typing import Dict, List
+
 from app.core import config
-import json
 
 
 def generate_campaign_suggestions(
@@ -12,18 +14,18 @@ def generate_campaign_suggestions(
     connected_sources: List[str]
 ) -> Dict[str, str]:
     """
-    Generate campaign message suggestions for connected data sources using OpenAI.
+    Generate platform-specific campaign messages using OpenAI.
     
     Args:
-        project_name: Name of the project
-        project_goal: Description of what the project aims to achieve
-        connected_sources: List of data sources (e.g., 'slack', 'discord', 'email', 'teams')
+        project_name: Project name
+        project_goal: Project goal description
+        connected_sources: List of platforms (e.g., 'slack', 'discord', 'email')
     
     Returns:
-        Dictionary mapping source names to suggested campaign messages
+        Dictionary mapping platform names to suggested messages
     
     Raises:
-        ValueError: If OpenAI API key is not set or if generation fails
+        ValueError: If OpenAI API key not set or generation fails
     """
     if not config.OPENAI_API_KEY:
         raise ValueError("OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.")

@@ -1,28 +1,14 @@
-"""FastAPI application initialization"""
+"""FastAPI application initialization."""
 
 import logging
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import router
-from app.api.oauth_routes import router as oauth_router
-from app import __version__
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Lifespan context manager for startup and shutdown events"""
-    # Startup: Start Slack and Discord listeners
-    from app.services import slack_listener, discord_listener
-    slack_listener.start_slack_listener()
-    discord_listener.start_discord_listener()
-    
-    yield
-    
-    # Shutdown: Stop Slack and Discord listeners
-    slack_listener.stop_slack_listener()
-    discord_listener.stop_discord_listener()
-
+from app import __version__
+from app.api.routes import router
+from app.api.oauth_routes import router as oauth_router
 
 # Configure logging
 logging.basicConfig(
@@ -30,6 +16,26 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Manage application lifespan events.
+    
+    Handles startup (starting listeners) and shutdown (stopping listeners).
+    """
+    from app.services import slack_listener, discord_listener
+    
+    # Startup
+    slack_listener.start_slack_listener()
+    discord_listener.start_discord_listener()
+    
+    yield
+    
+    # Shutdown
+    slack_listener.stop_slack_listener()
+    discord_listener.stop_discord_listener()
 
 app = FastAPI(
     title="Opinion Clustering API",
@@ -54,7 +60,7 @@ app.include_router(oauth_router)
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
+    """Get API status and version information."""
     return {
         "name": "Opinion Clustering API",
         "version": __version__,

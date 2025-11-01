@@ -1,5 +1,5 @@
 /**
- * API service utilities for backend communication
+ * API service for backend communication.
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -72,29 +72,32 @@ export interface ConsensusResponse {
 }
 
 /**
- * Estimate debate duration in seconds based on parameters
+ * Estimate debate duration based on parameters.
+ * 
+ * @param maxRounds - Maximum debate rounds
+ * @param maxMessages - Maximum messages
+ * @returns Estimated duration in seconds
  */
 export function estimateDebateDuration(maxRounds?: number, maxMessages?: number): number {
-  // Default values from backend config
-  const rounds = maxRounds || 3; // DEFAULT_MAX_ROUNDS
-  const messages = maxMessages || 15; // DEFAULT_MAX_MESSAGES
-  
-  // Estimate based on OpenAI API call time
-  // ~3-4 seconds per message (agent response + processing)
+  const rounds = maxRounds || 3;
+  const messages = maxMessages || 15;
   const secondsPerMessage = 3.5;
   
-  // Estimate number of messages: min of maxMessages or rounds-based estimate
-  // Typically ~5 clusters = 5 agents, so ~5 messages per round
+  // Estimate: ~5 agents, so ~5 messages per round
   const estimatedMessages = Math.min(messages, rounds * 5);
-  
   const estimatedSeconds = estimatedMessages * secondsPerMessage;
   
-  // Add buffer for persona generation, consensus analysis, etc (~30 seconds)
+  // Add buffer for setup and analysis
   return Math.ceil(estimatedSeconds + 30);
 }
 
 /**
- * Create a debate from clusters for a project
+ * Create a debate from project clusters.
+ * 
+ * @param projectId - Project identifier
+ * @param maxRounds - Maximum debate rounds
+ * @param maxMessages - Maximum messages
+ * @returns Debate creation response
  */
 export async function createDebate(
   projectId: string,
@@ -122,7 +125,10 @@ export async function createDebate(
 }
 
 /**
- * Get debate status and details
+ * Get debate status and details.
+ * 
+ * @param debateId - Debate identifier
+ * @returns Debate response data
  */
 export async function getDebateStatus(debateId: string): Promise<DebateResponse> {
   const response = await fetch(`${API_BASE_URL}/debates/${debateId}`);
@@ -136,7 +142,10 @@ export async function getDebateStatus(debateId: string): Promise<DebateResponse>
 }
 
 /**
- * Get consensus results for a completed debate
+ * Get consensus analysis for a completed debate.
+ * 
+ * @param debateId - Debate identifier
+ * @returns Consensus analysis results
  */
 export async function getConsensusResults(debateId: string): Promise<ConsensusResponse> {
   const response = await fetch(`${API_BASE_URL}/debates/${debateId}/consensus`);

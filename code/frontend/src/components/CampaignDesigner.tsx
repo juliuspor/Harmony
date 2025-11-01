@@ -12,7 +12,7 @@ interface CampaignDesignerProps {
   onSuggestionsChange?: (suggestions: Record<string, string>) => void;
 }
 
-// Mapping of source IDs to display information
+/** Mapping of platform IDs to display information */
 const sourceDisplayInfo: Record<string, { name: string; icon: React.ReactNode }> = {
   slack: {
     name: "Slack",
@@ -33,7 +33,7 @@ const sourceDisplayInfo: Record<string, { name: string; icon: React.ReactNode }>
 };
 
 export function CampaignDesigner({ projectName, projectGoal, selectedSources, aiSuggestions, onSuggestionsChange }: CampaignDesignerProps) {
-  // Create suggestions array based on selected sources and AI suggestions
+  // Map selected sources to suggestion objects
   const suggestions = selectedSources
     .filter((source) => sourceDisplayInfo[source])
     .map((source) => ({

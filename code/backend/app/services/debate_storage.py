@@ -1,45 +1,48 @@
-"""Debate storage service using MongoDB for persistence"""
+"""Debate storage service using MongoDB for persistence."""
 
-from pymongo import MongoClient, ASCENDING, DESCENDING
-from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
+from typing import List, Optional, Dict, Any
+
+from pymongo import MongoClient, ASCENDING, DESCENDING
+
 from app.core import config
 
-_client = None
-_db = None
+# Global singletons
+_mongo_client = None
+_mongo_database = None
 
 
 def get_mongo_client() -> MongoClient:
     """
-    Get or create MongoDB client singleton
+    Get or create the MongoDB client singleton.
     
     Returns:
         MongoClient instance
     """
-    global _client
-    if _client is None:
-        _client = MongoClient(config.MONGODB_URL)
-    return _client
+    global _mongo_client
+    if _mongo_client is None:
+        _mongo_client = MongoClient(config.MONGODB_URL)
+    return _mongo_client
 
 
 def get_database():
     """
-    Get or create the database instance
+    Get or create the database instance with indexes.
     
     Returns:
-        Database instance with indexes created
+        MongoDB database instance
     """
-    global _db
-    if _db is None:
+    global _mongo_database
+    if _mongo_database is None:
         client = get_mongo_client()
-        _db = client[config.MONGODB_DB_NAME]
+        _mongo_database = client[config.MONGODB_DB_NAME]
         _create_indexes()
-    return _db
+    return _mongo_database
 
 
 def _create_indexes():
-    """Create indexes for better query performance"""
+    """Create database indexes for query performance."""
     db = get_database()
     
     # Debates collection indexes
@@ -64,14 +67,14 @@ def _create_indexes():
 
 def create_debate(project_id: str, status: str = "pending") -> str:
     """
-    Create a new debate session
+    Create a new debate session.
     
     Args:
         project_id: Project identifier
-        status: Initial status (pending, running, completed, cancelled)
+        status: Initial status (pending/running/completed/cancelled)
     
     Returns:
-        Debate ID
+        Generated debate ID
     """
     debate_id = str(uuid.uuid4())
     db = get_database()
@@ -91,13 +94,13 @@ def create_debate(project_id: str, status: str = "pending") -> str:
 
 def get_debate(debate_id: str) -> Optional[Dict[str, Any]]:
     """
-    Get debate by ID
+    Retrieve debate by ID.
     
     Args:
         debate_id: Debate identifier
         
     Returns:
-        Dictionary with debate data or None if not found
+        Debate data dictionary or None if not found
     """
     db = get_database()
     debate = db.debates.find_one({"_id": debate_id})
