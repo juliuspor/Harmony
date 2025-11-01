@@ -1,22 +1,10 @@
 [
   {
-    "id": "25fdb4c8-215c-4b48-84fa-04e099392c9f",
-    "project_name": "asdf",
-    "project_goal": "sadfdsf",
+    "id": "b6498700-d13e-42d3-a9da-f24eed792f5d",
+    "project_name": "asdfas",
+    "project_goal": "sadfasdf",
     "messages": {
-      "slack": "Hey team! \ud83c\udf1f We're on the lookout for your brilliant ideas to help us achieve our project goals. Drop your thoughts and let's brainstorm together!"
-    },
-    "posting_results": {
-      "slack": "success"
-    },
-    "created_at": "2025-11-01T11:39:18.294526"
-  },
-  {
-    "id": "1ff58506-164c-4610-a846-cf1333c77bca",
-    "project_name": "asfdas",
-    "project_goal": "asdfasf",
-    "messages": {
-      "slack": "Hey team! \ud83c\udf89 We're diving into our new project, and we want your awesome ideas to make it shine! Drop your thoughts in the channel and let's brainstorm together!"
+      "slack": "Hey team! \ud83c\udf89 We\u2019re on the lookout for your brilliant ideas for our asdfas project! Drop your thoughts in this channel and let\u2019s make something amazing together!"
     },
     "posting_results": {
       "slack": "success"
@@ -24,14 +12,14 @@
     "monitored_channels": {
       "slack": "C09QZ299A0Y"
     },
-    "created_at": "2025-11-01T11:53:15.480215"
+    "created_at": "2025-11-01T12:09:36.925793"
   },
   {
-    "id": "f6db9e60-2857-49a5-b34d-4b5dae1b6a96",
-    "project_name": "make basel greener",
-    "project_goal": "make basel greener\n",
+    "id": "88690ec6-87f3-4969-8c7c-71913d16abaa",
+    "project_name": "Basel Hackahton ",
+    "project_goal": "basel organize hackahton ",
     "messages": {
-      "slack": "Hey team! \ud83c\udf31 We're on a mission to make Basel greener, and we want to hear your awesome ideas! Drop your thoughts in this channel and let's brainstorm together!"
+      "slack": "Hey team! We're gearing up for the Basel Hackathon and want your bright ideas to make it awesome. Share your thoughts on themes, challenges, or anything else that sparks your creativity!"
     },
     "posting_results": {
       "slack": "success"
@@ -39,6 +27,6 @@
     "monitored_channels": {
       "slack": "C09QZ299A0Y"
     },
-    "created_at": "2025-11-01T11:54:04.308260"
+    "created_at": "2025-11-01T12:21:55.680253"
   }
 ]

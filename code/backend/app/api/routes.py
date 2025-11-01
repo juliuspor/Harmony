@@ -219,6 +219,38 @@ async def launch_campaign(request: LaunchCampaignRequest):
         raise HTTPException(status_code=500, detail=f"Failed to launch campaign: {str(e)}")
 
 
+@router.get("/campaigns")
+async def get_campaigns():
+    """
+    Get all campaigns from campaigns.json file.
+    Returns list of all created campaigns.
+    """
+    try:
+        data_dir = Path("/data")
+        file_path = data_dir / "campaigns.json"
+        
+        if not file_path.exists():
+            return {
+                "campaigns": [],
+                "count": 0
+            }
+        
+        try:
+            with open(file_path, 'r') as f:
+                campaigns_list = json.load(f)
+        except json.JSONDecodeError:
+            campaigns_list = []
+        
+        return {
+            "campaigns": campaigns_list,
+            "count": len(campaigns_list)
+        }
+        
+    except Exception as e:
+        print(f"Exception in get_campaigns: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get campaigns: {str(e)}")
+
+
 @router.get("/submissions")
 async def get_submissions_endpoint(project_id: str = None):
     """

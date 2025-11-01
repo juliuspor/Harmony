@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +34,7 @@ interface Project {
   status: "designing" | "collecting" | "synthesizing" | "complete";
   ideasCount: number;
   lastActivity: string;
+  imageUrl: string;
 }
 
 const trendData = [
@@ -44,32 +45,38 @@ const trendData = [
   { month: "Oct", project1: 31, project2: 45 },
 ];
 
-const mockProjects: Project[] = [
-  {
-    id: "1",
-    title: "Green City Basel",
-    goal: "Collecting the best ideas for making Basel more sustainable",
-    status: "collecting",
-    ideasCount: 23,
-    lastActivity: "2 hours ago",
-  },
-  {
-    id: "2",
-    title: "Team-Building Adventure",
-    goal: "Ideation on the best team-building activities for the next quarter.",
-    status: "synthesizing",
-    ideasCount: 45,
-    lastActivity: "1 day ago",
-  },
-  {
-    id: "3",
-    title: "From Chemical Plants to Food Production",
-    goal: "Ideating on how to bring together industry professionals from diverse backgrounds?",
-    status: "synthesizing",
-    ideasCount: 23,
-    lastActivity: "3 days ago",
-  },
+// Available project images
+const PROJECT_IMAGES = [
+  "/images/projects/Basel.jpeg",
+  "/images/projects/industry.jpeg",
+  "/images/projects/teambuilding.jpg",
+  "/images/projects/teambuilding.webp",
 ];
+
+// Function to get a random image
+const getRandomImage = (seed: string): string => {
+  // Use the campaign ID as a seed for consistent random selection
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % PROJECT_IMAGES.length;
+  return PROJECT_IMAGES[index];
+};
+
+// Function to calculate relative time
+const getRelativeTime = (isoDate: string): string => {
+  const now = new Date();
+  const date = new Date(isoDate);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 60) return `${diffMins} minutes ago`;
+  if (diffHours < 24) return `${diffHours} hours ago`;
+  return `${diffDays} days ago`;
+};
 
 const CustomLegend = ({ payload }: any) => {
   return (
@@ -89,9 +96,58 @@ const CustomLegend = ({ payload }: any) => {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [projects] = useState<Project[]>(mockProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<string>("recent");
   const [filterBy, setFilterBy] = useState<string>("all");
+
+  // Fetch campaigns from backend
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/campaigns");
+        const data = await response.json();
+        
+        // Transform backend campaigns to frontend projects
+        const transformedProjects: Project[] = data.campaigns.map((campaign: any) => ({
+          id: campaign.id,
+          title: campaign.project_name,
+          goal: campaign.project_goal,
+          status: "collecting" as const, // Default status, can be enhanced later
+          ideasCount: 0, // Will be fetched from submissions endpoint
+          lastActivity: campaign.created_at ? getRelativeTime(campaign.created_at) : "Recently",
+          imageUrl: getRandomImage(campaign.id),
+        }));
+        
+        // Fetch submission counts for each project
+        const projectsWithCounts = await Promise.all(
+          transformedProjects.map(async (project) => {
+            try {
+              const submissionsResponse = await fetch(
+                `http://localhost:8000/submissions?project_id=${project.id}`
+              );
+              const submissionsData = await submissionsResponse.json();
+              return {
+                ...project,
+                ideasCount: submissionsData.count || 0,
+              };
+            } catch (error) {
+              console.error(`Failed to fetch submissions for project ${project.id}:`, error);
+              return project;
+            }
+          })
+        );
+        
+        setProjects(projectsWithCounts);
+      } catch (error) {
+        console.error("Failed to fetch campaigns:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampaigns();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -179,60 +235,50 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project) => (
-              <Card
-                key={project.id}
-                className="cursor-pointer transition-all hover:shadow-lg overflow-hidden"
-                onClick={() => navigate(`/projects/${project.id}`)}
-              >
-                {project.id === "1" && (
+            {loading ? (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                Loading campaigns...
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                No campaigns yet. Create your first project to get started!
+              </div>
+            ) : (
+              projects.map((project) => (
+                <Card
+                  key={project.id}
+                  className="cursor-pointer transition-all hover:shadow-lg overflow-hidden"
+                  onClick={() => navigate(`/projects/${project.id}`)}
+                >
                   <div className="w-full h-48 overflow-hidden">
                     <img 
-                      src="/images/projects/Basel.jpeg" 
-                      alt="Basel" 
+                      src={project.imageUrl} 
+                      alt={project.title} 
                       className="w-full h-full object-cover"
                     />
                   </div>
-                )}
-                {project.id === "2" && (
-                  <div className="w-full h-48 overflow-hidden">
-                    <img 
-                      src="/images/projects/teambuilding.jpg" 
-                      alt="Team Building" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                {project.id === "3" && (
-                  <div className="w-full h-48 overflow-hidden">
-                    <img 
-                      src="/images/projects/industry.jpeg" 
-                      alt="Industry" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="text-xl">{project.title}</CardTitle>
-                  <CardDescription className="mt-2 h-10 line-clamp-2">
-                    {project.goal}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-foreground">
-                        {project.ideasCount}
+                  <CardHeader>
+                    <CardTitle className="text-xl">{project.title}</CardTitle>
+                    <CardDescription className="mt-2 h-10 line-clamp-2">
+                      {project.goal}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-1">
+                        <span className="font-semibold text-foreground">
+                          {project.ideasCount}
+                        </span>
+                        <span className="text-muted-foreground">new ideas</span>
+                      </div>
+                      <span className="text-muted-foreground">
+                        {project.lastActivity}
                       </span>
-                      <span className="text-muted-foreground">new ideas</span>
                     </div>
-                    <span className="text-muted-foreground">
-                      {project.lastActivity}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </div>
         <div className="mb-6">
