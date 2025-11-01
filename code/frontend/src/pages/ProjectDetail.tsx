@@ -76,9 +76,9 @@ export default function ProjectDetail() {
   const loadingSectionRef = useRef<HTMLDivElement>(null);
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
   const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [submissionsCount, setSubmissionsCount] = useState(0);
   const [clustersData, setClustersData] = useState<any>(null);
+  const [clustersLoading, setClustersLoading] = useState(true);
   const [contributorsCount, setContributorsCount] = useState(0);
 
   // Fetch project data from backend
@@ -93,6 +93,7 @@ export default function ProjectDetail() {
         const campaign = campaignsData.campaigns.find((c: any) => c.id === id);
         
         if (campaign) {
+          // Set project immediately to show page structure
           setProject({
             id: campaign.id,
             title: campaign.project_name,
@@ -100,47 +101,36 @@ export default function ProjectDetail() {
             status: "collecting",
           });
           
-          // Fetch submissions count
-          try {
-            const submissionsResponse = await fetch(
-              `http://localhost:8000/submissions?project_id=${id}`
-            );
-            const submissionsData = await submissionsResponse.json();
-            setSubmissionsCount(submissionsData.count || 0);
-          } catch (error) {
-            console.error("Failed to fetch submissions:", error);
-          }
+          // Fetch submissions count (non-blocking)
+          fetch(`http://localhost:8000/submissions?project_id=${id}`)
+            .then(res => res.json())
+            .then(data => setSubmissionsCount(data.count || 0))
+            .catch(error => console.error("Failed to fetch submissions:", error));
           
-          // Fetch clusters if available
-          try {
-            const clustersResponse = await fetch(
-              `http://localhost:8000/projects/${id}/clusters`
-            );
-            if (clustersResponse.ok) {
-              const clustersResult = await clustersResponse.json();
+          // Fetch clusters if available (non-blocking)
+          fetch(`http://localhost:8000/projects/${id}/clusters`)
+            .then(res => {
+              if (res.ok) return res.json();
+              throw new Error("No clusters yet");
+            })
+            .then(clustersResult => {
               setClustersData(clustersResult);
-              
               // Update campaign with cluster count (fire and forget)
               fetch(`http://localhost:8000/campaigns/${id}/clusters?num_clusters=${clustersResult.num_clusters}`, {
                 method: 'PATCH',
               }).catch(err => console.log("Failed to update campaign cluster count:", err));
-            }
-          } catch (error) {
-            console.log("No clusters available yet:", error);
-          }
+            })
+            .catch(error => console.log("No clusters available yet:", error))
+            .finally(() => setClustersLoading(false));
           
-          // Fetch contributors count
-          try {
-            const contributorsResponse = await fetch(
-              `http://localhost:8000/projects/${id}/contributors`
-            );
-            if (contributorsResponse.ok) {
-              const contributorsResult = await contributorsResponse.json();
-              setContributorsCount(contributorsResult.contributors || 0);
-            }
-          } catch (error) {
-            console.log("Failed to fetch contributors:", error);
-          }
+          // Fetch contributors count (non-blocking)
+          fetch(`http://localhost:8000/projects/${id}/contributors`)
+            .then(res => {
+              if (res.ok) return res.json();
+              throw new Error("Failed to fetch contributors");
+            })
+            .then(contributorsResult => setContributorsCount(contributorsResult.contributors || 0))
+            .catch(error => console.log("Failed to fetch contributors:", error));
         } else {
           console.error("Campaign not found");
           // Navigate back to dashboard if project not found
@@ -149,8 +139,6 @@ export default function ProjectDetail() {
       } catch (error) {
         console.error("Failed to fetch project data:", error);
         navigate("/");
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -223,16 +211,6 @@ export default function ProjectDetail() {
     }, 100);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground">Loading project...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (!project) {
     return null;
   }
@@ -276,26 +254,108 @@ export default function ProjectDetail() {
             value={activeTab}
             onValueChange={setActiveTab}
           >
-            <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-muted p-1 border-2">
-              <TabsTrigger value="clusters" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
-                <Network className="mr-2 h-4 w-4" />
-                Cluster Info
-              </TabsTrigger>
-              <TabsTrigger value="debate" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
-                <Users className="mr-2 h-4 w-4" />
-                Agent Debate
-                {isAnalyzing && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="ml-2 h-2 w-2 rounded-full bg-primary"
-                  />
-                )}
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex justify-center mb-8">
+              <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-muted p-1 border-2">
+                <TabsTrigger value="clusters" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
+                  <Network className="mr-2 h-4 w-4" />
+                  Cluster Info
+                </TabsTrigger>
+                <TabsTrigger value="debate" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
+                  <Users className="mr-2 h-4 w-4" />
+                  Agent Debate
+                  {isAnalyzing && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="ml-2 h-2 w-2 rounded-full bg-primary"
+                    />
+                  )}
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="clusters" className="space-y-8">
-              {clusterData.length === 0 ? (
+              {clustersLoading ? (
+                <Card className="border-2 overflow-hidden">
+                  <CardContent className="pt-12">
+                    <div className="flex flex-col items-center justify-center min-h-[400px] space-y-6">
+                      {/* Animated Network Icon */}
+                      <div className="relative">
+                        {/* Pulsing background circles */}
+                        <motion.div
+                          className="absolute inset-0 -m-8"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.1, 0.2, 0.1],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        >
+                          <div className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-xl" />
+                        </motion.div>
+                        
+                        {/* Icon container */}
+                        <motion.div
+                          animate={{
+                            rotate: [0, 360],
+                          }}
+                          transition={{
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        >
+                          <motion.div
+                            animate={{
+                              scale: [1, 1.05, 1],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                          >
+                            <div className="relative p-6 rounded-3xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-2 border-purple-200/50 dark:border-purple-800/30">
+                              <motion.div
+                                animate={{
+                                  rotate: [0, -360],
+                                }}
+                                transition={{
+                                  duration: 8,
+                                  repeat: Infinity,
+                                  ease: "linear",
+                                }}
+                              >
+                                <Network className="h-16 w-16 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
+                              </motion.div>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      </div>
+
+                      {/* Static loading text */}
+                      <motion.p
+                        className="text-lg text-foreground/80 text-center tracking-tight font-light"
+                        style={{ 
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif',
+                          letterSpacing: '-0.01em'
+                        }}
+                        animate={{ opacity: [0.6, 1, 0.6] }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        Analyzing community insights...
+                      </motion.p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : clusterData.length === 0 ? (
                 <Card className="border-2">
                   <CardContent className="pt-6 text-center py-12">
                     <Network className="mx-auto h-16 w-16 text-muted-foreground mb-4" strokeWidth={1.5} />
