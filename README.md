@@ -6,6 +6,7 @@ An intelligent platform that transforms community opinions into **intelligence**
 
 ### Ideation Intelligence Platform 
 - **Campaign Management**: Create and launch ideation campaigns to collect community input from different sources. 
+- **OAuth Authentication**: Secure Sources ingestion integration with automatic token management
 - **Real-time Monitoring**: Live ingestion showing submissions as they arrive from connected platforms.
 
 ### Semantic Intelligence
@@ -137,7 +138,7 @@ That's it! Docker Compose will orchestrate all services:
 1. **Create a Campaign** - Define your mission, connect data sources, kickstart your campaign with AI-generated messages
 2. **Collect Submissions** - Posts campaign messages to platforms, monitors channels, stores submissions with embeddings
 3. **Analyze Opinions** - Cluster the community inputs using embeddings, view AI-generated summaries 
-4. **Run AI Debates** - Dynamically spawn AI agents representing the k-clusters, calculate consensus metrics and alignment scores during the live debate. 
+4. **Run AI Debates** - Dynamically spawn AI agents representing the k-clusters, calculate consensus metrics and alignment scores during the live debate.
 
 ## API Endpoints
 
