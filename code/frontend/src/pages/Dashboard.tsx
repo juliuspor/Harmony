@@ -33,7 +33,7 @@ interface Project {
   goal: string;
   status: "designing" | "collecting" | "synthesizing" | "complete";
   ideasCount: number;
-  lastActivity: string;
+  lastActivityDate: string; // ISO date string
   imageUrl: string;
 }
 
@@ -67,14 +67,18 @@ const getRandomImage = (seed: string): string => {
 // Function to calculate relative time
 const getRelativeTime = (isoDate: string): string => {
   const now = new Date();
-  const date = new Date(isoDate);
+  // Ensure the ISO date is treated as UTC by appending 'Z' if not present
+  const dateString = isoDate.endsWith('Z') ? isoDate : `${isoDate}Z`;
+  const date = new Date(dateString);
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
   
-  if (diffMins < 60) return `${diffMins} minutes ago`;
-  if (diffHours < 24) return `${diffHours} hours ago`;
+  if (diffMins === 0) return "just now";
+  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+  if (diffDays === 1) return "1 day ago";
   return `${diffDays} days ago`;
 };
 
@@ -101,6 +105,7 @@ export default function Dashboard() {
   const [sortBy, setSortBy] = useState<string>("recent");
   const [filterBy, setFilterBy] = useState<string>("all");
   const [totalInsights, setTotalInsights] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Fetch campaigns from backend
   useEffect(() => {
@@ -116,7 +121,7 @@ export default function Dashboard() {
           goal: campaign.project_goal,
           status: "collecting" as const, // Default status, can be enhanced later
           ideasCount: 0, // Will be fetched from submissions endpoint
-          lastActivity: campaign.created_at ? getRelativeTime(campaign.created_at) : "Recently",
+          lastActivityDate: campaign.created_at || new Date().toISOString(),
           imageUrl: getRandomImage(campaign.id),
         }));
         
@@ -154,6 +159,15 @@ export default function Dashboard() {
     };
 
     fetchCampaigns();
+  }, []);
+
+  // Update current time every minute to keep relative times fresh
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -281,7 +295,7 @@ export default function Dashboard() {
                         <span className="text-muted-foreground">new ideas</span>
                       </div>
                       <span className="text-muted-foreground">
-                        {project.lastActivity}
+                        {getRelativeTime(project.lastActivityDate)}
                       </span>
                     </div>
                   </CardContent>
