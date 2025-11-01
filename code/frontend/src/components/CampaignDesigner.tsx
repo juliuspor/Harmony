@@ -1,29 +1,46 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Copy } from "lucide-react";
+import { Sparkles, Copy, MessageSquare, Mail, Users, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 interface CampaignDesignerProps {
   projectName: string;
   projectGoal: string;
+  selectedSources: string[];
+  aiSuggestions: Record<string, string>;
 }
 
-export function CampaignDesigner({ projectName, projectGoal }: CampaignDesignerProps) {
-  const suggestions = [
-    {
-      title: "Slack Announcement",
-      content: `🌱 Help us ${projectName}!\n\nWe're looking for your ideas: ${projectGoal}\n\nShare your thoughts in this thread 👇`,
-    },
-    {
-      title: "Email Template",
-      content: `Subject: Your Ideas Needed - ${projectName}\n\nDear Team,\n\nWe're launching an initiative to ${projectGoal.toLowerCase()}. Your insights are valuable to us!\n\nPlease reply to this email with your ideas and suggestions.\n\nThank you for contributing!`,
-    },
-    {
-      title: "Meeting Questions",
-      content: `Discussion guide for: ${projectName}\n\n1. What are your initial thoughts on this initiative?\n2. What challenges do you foresee?\n3. What opportunities excite you most?\n4. What specific actions would you recommend?`,
-    },
-  ];
+// Mapping of source IDs to display information
+const sourceDisplayInfo: Record<string, { name: string; icon: React.ReactNode }> = {
+  slack: {
+    name: "Slack",
+    icon: <MessageSquare className="h-5 w-5" />,
+  },
+  teams: {
+    name: "Microsoft Teams",
+    icon: <Users className="h-5 w-5" />,
+  },
+  outlook: {
+    name: "Outlook Email",
+    icon: <Mail className="h-5 w-5" />,
+  },
+  discord: {
+    name: "Discord",
+    icon: <MessageCircle className="h-5 w-5" />,
+  },
+};
+
+export function CampaignDesigner({ projectName, projectGoal, selectedSources, aiSuggestions }: CampaignDesignerProps) {
+  // Create suggestions array based on selected sources and AI suggestions
+  const suggestions = selectedSources
+    .filter((source) => sourceDisplayInfo[source])
+    .map((source) => ({
+      id: source,
+      title: sourceDisplayInfo[source].name,
+      icon: sourceDisplayInfo[source].icon,
+      content: aiSuggestions[source] || `Loading suggestions for ${sourceDisplayInfo[source].name}...`,
+    }));
 
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
@@ -47,11 +64,14 @@ export function CampaignDesigner({ projectName, projectGoal }: CampaignDesignerP
       </Card>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {suggestions.map((suggestion, index) => (
-          <Card key={index}>
+        {suggestions.map((suggestion) => (
+          <Card key={suggestion.id}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between text-base">
-                {suggestion.title}
+                <div className="flex items-center space-x-2">
+                  <span className="text-primary">{suggestion.icon}</span>
+                  <span>{suggestion.title}</span>
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
@@ -65,8 +85,8 @@ export function CampaignDesigner({ projectName, projectGoal }: CampaignDesignerP
               <Textarea
                 value={suggestion.content}
                 readOnly
-                rows={6}
-                className="font-mono text-sm"
+                rows={8}
+                className="text-sm whitespace-pre-wrap"
               />
             </CardContent>
           </Card>

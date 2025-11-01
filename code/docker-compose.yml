@@ -7,6 +7,8 @@ services:
       - "8000:8000"
     volumes:
       - chroma_data:/app/chroma_db
+    environment:
+      - OPENAIAPIKEY_HACK=${OPENAIAPIKEY_HACK}
     restart: unless-stopped
 
 volumes:

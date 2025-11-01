@@ -1,9 +1,16 @@
 """API routes for submission clustering"""
 
 from fastapi import APIRouter, HTTPException
-from app.schemas import StoreSubmissionsRequest, StoreSubmissionsResponse, ClusterResponse
+from app.schemas import (
+    StoreSubmissionsRequest,
+    StoreSubmissionsResponse,
+    ClusterResponse,
+    SuggestCampaignRequest,
+    SuggestCampaignResponse
+)
 from app.services.clustering import cluster_submissions
 from app.services.database import add_submissions, get_submissions
+from app.services.ai_suggestions import generate_campaign_suggestions
 from app.core import config
 import numpy as np
 
@@ -69,3 +76,32 @@ async def get_clusters(project_id: str):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Clustering failed: {str(e)}")
+
+
+@router.post("/suggest", response_model=SuggestCampaignResponse)
+async def suggest_campaign(request: SuggestCampaignRequest):
+    """
+    Generate AI-powered campaign message suggestions for connected data sources.
+    Uses OpenAI to create platform-specific messages based on project details.
+    """
+    try:
+        print(f"Received request: project_name={request.project_name}, project_goal={request.project_goal}, sources={request.connected_sources}")
+        
+        suggestions = generate_campaign_suggestions(
+            project_name=request.project_name,
+            project_goal=request.project_goal,
+            connected_sources=request.connected_sources
+        )
+        
+        print(f"Generated suggestions: {suggestions}")
+        
+        return SuggestCampaignResponse(suggestions=suggestions)
+        
+    except ValueError as e:
+        print(f"ValueError in suggest_campaign: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"Exception in suggest_campaign: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to generate suggestions: {str(e)}")

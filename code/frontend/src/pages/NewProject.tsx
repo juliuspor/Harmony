@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { StepIndicator } from "@/components/StepIndicator";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -19,8 +19,10 @@ export default function NewProject() {
   const [projectName, setProjectName] = useState("");
   const [projectGoal, setProjectGoal] = useState("");
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
+  const [aiSuggestions, setAiSuggestions] = useState<Record<string, string>>({});
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1 && (!projectName || !projectGoal)) {
       toast.error("Please fill in all fields");
       return;
@@ -29,6 +31,40 @@ export default function NewProject() {
       toast.error("Please select at least one data source");
       return;
     }
+    
+    // When moving from step 2 to step 3, generate AI suggestions
+    if (currentStep === 2) {
+      setIsGenerating(true);
+      try {
+        const response = await fetch("http://localhost:8000/suggest", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            project_name: projectName,
+            project_goal: projectGoal,
+            connected_sources: selectedSources,
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to generate campaign suggestions");
+        }
+        
+        const data = await response.json();
+        setAiSuggestions(data.suggestions);
+        toast.success("Campaign suggestions generated!");
+      } catch (error) {
+        console.error("Error generating suggestions:", error);
+        toast.error("Failed to generate campaign suggestions. Please try again.");
+        setIsGenerating(false);
+        return;
+      } finally {
+        setIsGenerating(false);
+      }
+    }
+    
     if (currentStep < 3) {
       setCurrentStep((currentStep + 1) as Step);
     }
@@ -117,21 +153,35 @@ export default function NewProject() {
                 <CardDescription>Let our AI help you create the perfect campaign</CardDescription>
               </CardHeader>
               <CardContent>
-                <CampaignDesigner projectName={projectName} projectGoal={projectGoal} />
+                <CampaignDesigner 
+                  projectName={projectName} 
+                  projectGoal={projectGoal}
+                  selectedSources={selectedSources}
+                  aiSuggestions={aiSuggestions}
+                />
               </CardContent>
             </Card>
           )}
         </div>
 
         <div className="mt-8 flex justify-between">
-          <Button variant="outline" onClick={handleBack} disabled={currentStep === 1}>
+          <Button variant="outline" onClick={handleBack} disabled={currentStep === 1 || isGenerating}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
           {currentStep < 3 ? (
-            <Button onClick={handleNext}>
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button onClick={handleNext} disabled={isGenerating}>
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           ) : (
             <Button onClick={handleLaunch}>
