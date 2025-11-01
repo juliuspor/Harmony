@@ -38,6 +38,8 @@ Please provide a concise summary (2 concise sentences) that captures:
 2. Key patterns or common elements
 3. The overall sentiment or perspective
 
+IMPORTANT: Write the summary using the a neutral tone and style without being too colloquial or too formal.
+
 Summary:"""
 
     try:
@@ -50,7 +52,7 @@ Summary:"""
         payload = {
             "model": config.OPENAI_MODEL,
             "messages": [
-                {"role": "system", "content": "You are a helpful assistant that summarizes groups of text submissions, identifying common themes and patterns."},
+                {"role": "system", "content": "You are a helpful assistant that summarizes groups of text submissions. You always match the language style, tone, and vocabulary of the original submissions to create authentic-sounding summaries that don't sound AI-generated."},
                 {"role": "user", "content": prompt}
             ],
             "max_tokens": config.SUMMARIZATION_MAX_TOKENS,
