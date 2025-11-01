@@ -86,7 +86,7 @@ export default function NewProject() {
         body: JSON.stringify({
           project_name: projectName,
           project_goal: projectGoal,
-          campaigns: aiSuggestions,
+          messages: aiSuggestions,
         }),
       });
 

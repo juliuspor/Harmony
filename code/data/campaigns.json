@@ -1,12 +1,11 @@
 [
   {
-    "id": "3dcd1461-7c0b-4a48-a9be-98bf323646cb",
-    "project_name": "asdfasd",
-    "project_goal": "sadfasdfas",
-    "campaigns": {
-      "slack": "Hey team!\nWe're brewing something exciting with asdfasd and we need your spark! Share your wildest ideas to help us hit our goal of sadfasdfas.",
-      "discord": "Yo everyone!\nWe're cooking up something epic with asdfasd and your awesome ideas could make it legendary! Let's brainstorm and smash our sadfasdfas goal together!"
+    "id": "46538318-0de5-4c1a-b26f-78fe6d8946bd",
+    "project_name": "asdfa",
+    "project_goal": "sasdfa",
+    "messages": {
+      "discord": "Hey everyone!\nWe're looking for your brilliant ideas to help shape the future of our project, asdfa. Got something exciting to share? Drop your thoughts and let's make sasdfa a success together!"
     },
-    "created_at": "2025-11-01T10:24:20.443422"
+    "created_at": "2025-11-01T10:29:29.371224"
   }
 ]

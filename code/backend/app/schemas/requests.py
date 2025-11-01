@@ -20,5 +20,5 @@ class LaunchCampaignRequest(BaseModel):
     """Request schema for launching a campaign"""
     project_name: str = Field(..., description="Name of the project")
     project_goal: str = Field(..., description="Goal/description of the project")
-    campaigns: dict = Field(..., description="Dictionary of campaign messages by source")
+    messages: dict = Field(..., description="Dictionary of campaign messages by source")
 

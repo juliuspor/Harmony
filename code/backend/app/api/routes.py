@@ -139,7 +139,7 @@ async def launch_campaign(request: LaunchCampaignRequest):
             "id": campaign_id,
             "project_name": request.project_name,
             "project_goal": request.project_goal,
-            "campaigns": request.campaigns,
+            "messages": request.messages,
             "created_at": datetime.utcnow().isoformat()
         }
         
