@@ -35,23 +35,9 @@ const trendData = [
   { month: "Oct", project1: 31, project2: 45 },
 ];
 
-// Available project images
-const PROJECT_IMAGES = [
-  "/images/projects/Basel.jpeg",
-  "/images/projects/industry.jpeg",
-  "/images/projects/teambuilding.jpg",
-  "/images/projects/teambuilding.webp",
-];
-
-// Function to get a random image
-const getRandomImage = (seed: string): string => {
-  // Use the campaign ID as a seed for consistent random selection
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % PROJECT_IMAGES.length;
-  return PROJECT_IMAGES[index];
+// Use Basel image for all projects
+const getProjectImage = (): string => {
+  return "/images/projects/Basel.jpeg";
 };
 
 // Function to calculate relative time
@@ -99,7 +85,7 @@ export default function Dashboard() {
           status: "collecting" as const, // Default status, can be enhanced later
           ideasCount: 0, // Will be fetched from submissions endpoint
           lastActivityDate: campaign.created_at || new Date().toISOString(),
-          imageUrl: getRandomImage(campaign.id),
+          imageUrl: getProjectImage(),
         }));
         
         // Fetch submission counts for each project
@@ -277,7 +263,7 @@ export default function Dashboard() {
                   className="cursor-pointer transition-all hover:shadow-lg overflow-hidden"
                   onClick={() => navigate(`/projects/${project.id}`)}
                 >
-                  <div className="w-full h-48 overflow-hidden">
+                  <div className="w-full h-32 overflow-hidden">
                     <img 
                       src={project.imageUrl} 
                       alt={project.title} 

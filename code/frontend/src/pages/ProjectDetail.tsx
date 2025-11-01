@@ -44,12 +44,14 @@ function extractTheme(ideas: string[]): string {
 }
 
 function transformClustersToVisualization(
-  clusters: string[][]
+  clusters: string[][],
+  titles?: string[]
 ): ClusterVisualizationData[] {
   return clusters.map((ideas, index) => ({
     id: index + 1,
-    theme: extractTheme(ideas),
+    theme: titles && titles[index] ? titles[index] : extractTheme(ideas),
     color: CLUSTER_COLORS[index % CLUSTER_COLORS.length],
+    similarity: Math.round((0.75 + Math.random() * 0.2) * 100), // Mock similarity for now
     ideas: ideas.map((text) => ({ text })),
   }));
 }
@@ -152,7 +154,8 @@ export default function ProjectDetail() {
   const clusterData = useMemo(() => {
     if (clustersData && clustersData.clusters) {
       return transformClustersToVisualization(
-        clustersData.clusters
+        clustersData.clusters,
+        clustersData.titles
       );
     }
     return [];
@@ -350,10 +353,7 @@ export default function ProjectDetail() {
                                   }
                                 >
                                   <div className="text-center text-white p-4">
-                                    <div className="text-4xl font-bold mb-2">
-                                      {cluster.ideas.length}
-                                    </div>
-                                    <div className="text-sm font-semibold px-2 line-clamp-2">
+                                    <div className="text-base font-bold px-2 line-clamp-3 leading-tight">
                                       {cluster.theme}
                                     </div>
                                   </div>

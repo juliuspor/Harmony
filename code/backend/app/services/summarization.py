@@ -138,15 +138,24 @@ def _generate_title_sync(texts: List[str], cluster_index: int) -> str:
     
     combined_text = "\n\n---\n\n".join(texts[:10])  # cap a few examples to keep prompt short
     
-    prompt = f"""You are assigning a concise, punchy title to Cluster {cluster_index + 1} of user submissions.
+    prompt = f"""You are creating a two-word title for a cluster of user ideas.
 
-Below are representative submissions from this cluster:
-
+Ideas in this cluster:
 {combined_text}
 
-Provide EXACTLY 2 words that capture the core theme. Use lowercase. No punctuation, no quotes, no leading labels. Examples: "more cheese", "more trees", "better coffee".
+Create EXACTLY TWO WORDS (not one, not three - exactly two) that capture the main theme.
 
-Title:"""
+Rules:
+- Must be exactly 2 words
+- Use title case (capitalize first letter of each word)
+- No punctuation
+- No articles (a, an, the)
+- Be descriptive and specific
+
+Good examples: "Green Spaces", "Public Transport", "Local Food", "Renewable Energy"
+Bad examples: "trees" (only 1 word), "more green spaces" (3 words)
+
+Two-word title:"""
     
     try:
         headers = {
@@ -156,11 +165,11 @@ Title:"""
         payload = {
             "model": config.OPENAI_MODEL,
             "messages": [
-                {"role": "system", "content": "You generate extremely concise, descriptive titles for clusters of short texts."},
+                {"role": "system", "content": "You are a title generator. You ALWAYS output exactly two words in title case, no more, no less. You never use articles."},
                 {"role": "user", "content": prompt}
             ],
-            "max_tokens": getattr(config, "TITLE_MAX_TOKENS", 16),
-            "temperature": getattr(config, "TITLE_TEMPERATURE", 0.2)
+            "max_tokens": getattr(config, "TITLE_MAX_TOKENS", 10),
+            "temperature": getattr(config, "TITLE_TEMPERATURE", 0.3)
         }
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
@@ -172,18 +181,29 @@ Title:"""
         result = response.json()
         message_content = result["choices"][0]["message"]["content"]
         title = (message_content or "untitled").strip()
+        
         # Post-process: keep first line only
         title = title.splitlines()[0].strip()
-        # Enforce maximum 2 words (allow 1 or 2 words)
+        
+        # Remove any quotes, colons, or extra punctuation
+        title = title.strip('"\'.:;!?')
+        
+        # Enforce EXACTLY 2 words
         words = title.split()
-        if len(words) >= 2:
-            title = " ".join(words[:2])
+        
+        if len(words) == 0:
+            return "Cluster Ideas"
         elif len(words) == 1:
-            # Keep the single word as is
-            title = words[0]
-        else:
-            title = "untitled"
-        return title.lower()
+            # If only one word, add a generic second word
+            return f"{words[0].capitalize()} Ideas"
+        elif len(words) >= 2:
+            # Take exactly the first 2 words
+            title = " ".join(words[:2])
+        
+        # Ensure title case (capitalize first letter of each word)
+        title = " ".join(word.capitalize() for word in title.split())
+        
+        return title
     except Exception as e:
         print(f"Title generation error for cluster {cluster_index + 1}: {str(e)}")
         return "Untitled"
