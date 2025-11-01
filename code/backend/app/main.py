@@ -5,11 +5,27 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
 from app.api.oauth_routes import router as oauth_router
 from app import __version__
+from contextlib import asynccontextmanager
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup and shutdown events"""
+    # Startup: Start Slack listener
+    from app.services import slack_listener
+    slack_listener.start_slack_listener()
+    
+    yield
+    
+    # Shutdown: Stop Slack listener
+    slack_listener.stop_slack_listener()
+
 
 app = FastAPI(
     title="Opinion Clustering API",
     version=__version__,
-    description="API for storing and clustering political opinions using semantic similarity"
+    description="API for storing and clustering political opinions using semantic similarity",
+    lifespan=lifespan
 )
 
 # CORS middleware configuration
