@@ -124,3 +124,78 @@ async def summarize_clusters(clusters: List[List[str]]) -> List[str]:
     
     return list(summaries)
 
+
+def _generate_title_sync(texts: List[str], cluster_index: int) -> str:
+    """
+    Synchronous function to generate a very short title for a cluster using OpenAI.
+    Uses requests library, runs in a thread to avoid blocking.
+    """
+    if not texts:
+        return "Untitled"
+    
+    if not config.OPENAI_API_KEY:
+        raise ValueError("OPENAI_API_KEY_HACK environment variable is not set")
+    
+    combined_text = "\n\n---\n\n".join(texts[:10])  # cap a few examples to keep prompt short
+    
+    prompt = f"""You are assigning a concise, punchy title to Cluster {cluster_index + 1} of user submissions.
+
+Below are representative submissions from this cluster:
+
+{combined_text}
+
+Provide a very short, human-friendly title of 2-5 words that best captures the core theme. No punctuation, no quotes, Title Case, no leading labels.
+
+Title:"""
+    
+    try:
+        headers = {
+            "Authorization": f"Bearer {config.OPENAI_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": config.OPENAI_MODEL,
+            "messages": [
+                {"role": "system", "content": "You generate extremely concise, descriptive titles for clusters of short texts."},
+                {"role": "user", "content": prompt}
+            ],
+            "max_tokens": getattr(config, "TITLE_MAX_TOKENS", 16),
+            "temperature": getattr(config, "TITLE_TEMPERATURE", 0.2)
+        }
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=20
+        )
+        response.raise_for_status()
+        result = response.json()
+        message_content = result["choices"][0]["message"]["content"]
+        title = (message_content or "Untitled").strip()
+        # Post-process: ensure very short; keep first line only
+        title = title.splitlines()[0].strip()
+        # Trim to a handful of words
+        words = title.split()
+        if len(words) > 6:
+            title = " ".join(words[:6])
+        return title
+    except Exception as e:
+        print(f"Title generation error for cluster {cluster_index + 1}: {str(e)}")
+        return "Untitled"
+
+
+async def generate_title(texts: List[str], cluster_index: int) -> str:
+    """Async wrapper to generate a title for a single cluster."""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(_executor, _generate_title_sync, texts, cluster_index)
+
+
+async def generate_cluster_titles(clusters: List[List[str]]) -> List[str]:
+    """Generate very short titles for all clusters in parallel."""
+    tasks = [
+        generate_title(cluster, idx)
+        for idx, cluster in enumerate(clusters)
+    ]
+    titles = await asyncio.gather(*tasks)
+    return list(titles)
+

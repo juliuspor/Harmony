@@ -12,7 +12,8 @@ from app.schemas import (
 )
 from app.services.clustering import cluster_submissions
 from app.services.database import add_submissions, get_submissions
-from app.services.summarization import summarize_clusters
+from app.services.summarization import summarize_clusters, generate_cluster_titles
+import asyncio
 from app.services.ai_suggestions import generate_campaign_suggestions
 from app.core import config
 import numpy as np
@@ -72,14 +73,17 @@ async def get_clusters(project_id: str):
         # Cluster using stored embeddings
         clusters, num_clusters, silhouette = cluster_submissions(submissions, embeddings)
         
-        # Generate summaries for each cluster using OpenAI
-        summaries = await summarize_clusters(clusters)
+        # Generate summaries and short titles for each cluster using OpenAI
+        summaries_task = asyncio.create_task(summarize_clusters(clusters))
+        titles_task = asyncio.create_task(generate_cluster_titles(clusters))
+        summaries, titles = await asyncio.gather(summaries_task, titles_task)
         
         return ClusterResponse(
             clusters=clusters,
             num_clusters=num_clusters,
             silhouette_score=silhouette,
-            summaries=summaries
+            summaries=summaries,
+            titles=titles
         )
             
     except HTTPException:
