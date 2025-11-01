@@ -196,7 +196,7 @@ export default function Dashboard() {
             <Button 
               onClick={() => navigate("/projects/new")} 
               size="lg"
-              className="h-12 px-6 font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg transition-all hover:shadow-xl"
+              className="h-12 px-6 font-semibold"
             >
               <Plus className="mr-2 h-5 w-5" />
               New Project
@@ -277,7 +277,6 @@ export default function Dashboard() {
                     <Button
                       onClick={() => navigate("/projects/new")}
                       size="lg"
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
                     >
                       <Plus className="mr-2 h-5 w-5" />
                       Create Your First Project
