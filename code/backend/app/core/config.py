@@ -51,7 +51,7 @@ DEFAULT_MAX_MESSAGES = 20
 
 # Orchestrator Intervention Settings
 INTERVENTION_REPETITION_THRESHOLD = 2  # Number of similar messages before intervention
-INTERVENTION_OFF_TOPIC_THRESHOLD = 0.4  # Semantic similarity threshold for off-topic detection
+INTERVENTION_OFF_TOPIC_THRESHOLD = 0.5  # Semantic similarity threshold for off-topic detection
 INTERVENTION_STALEMATE_THRESHOLD = 2  # Number of rounds without progress
 DETECT_ETHICAL_VIOLATIONS = True  # Enable insult/profanity detection
 
