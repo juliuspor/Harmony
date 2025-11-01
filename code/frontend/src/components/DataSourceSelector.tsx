@@ -28,6 +28,20 @@ const dataSources: DataSource[] = [
     logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 127.14 96.36'%3E%3Cpath fill='%235865f2' d='M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15zM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69z'/%3E%3C/svg%3E",
     requiresOAuth: true,
   },
+  {
+    id: "whatsapp",
+    name: "WhatsApp",
+    description: "Monitor groups for new community input",
+    logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%2325D366' d='M16 0C7.164 0 0 7.163 0 16c0 2.777.712 5.389 1.959 7.663L.049 31.32l7.896-2.05A15.926 15.926 0 0016 32c8.836 0 16-7.163 16-16S24.836 0 16 0z'/%3E%3Cpath fill='%23FFF' d='M25.367 22.473c-.358.977-1.772 1.789-2.898 2.04-.752.167-1.732.3-5.039-1.08-4.235-1.766-6.969-6.053-7.18-6.33-.208-.278-1.696-2.26-1.696-4.31s1.073-3.058 1.454-3.475c.38-.417.831-.522 1.108-.522.277 0 .554.003.797.015.256.013.598-.097.936.713.347.826 1.178 2.877 1.281 3.086.104.208.174.451.035.729-.139.278-.208.451-.416.695-.208.243-.437.543-.624.729-.208.208-.424.434-.182.85.243.416 1.078 1.778 2.314 2.88 1.59 1.418 2.929 1.858 3.345 2.066.416.208.66.174.903-.104.243-.278 1.04-1.214 1.318-1.631.278-.416.556-.347.937-.208.382.139 2.424 1.144 2.84 1.352.416.208.694.313.797.486.104.174.104 1.005-.254 1.981z'/%3E%3C/svg%3E",
+    requiresOAuth: true,
+  },
+  {
+    id: "outlook",
+    name: "Outlook",
+    description: "Monitor email conversations and team discussions",
+    logo: "/images/Microsoft_Office_Outlook_Logo_512px.png",
+    requiresOAuth: true,
+  },
 ];
 
 interface DataSourceSelectorProps {
@@ -139,7 +153,7 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
           }`}
         >
           <CardContent className="flex items-center justify-between p-6">
-            <div className="flex items-start space-x-4 flex-1">
+            <div className="flex items-center space-x-4 flex-1">
               <div className="flex-shrink-0">
                 <img src={source.logo} alt={source.name} className="h-8 w-8" />
               </div>
