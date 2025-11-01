@@ -148,8 +148,8 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
           key={source.id}
           className={`transition-all border-2 ${
             selectedSources.includes(source.id)
-              ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20"
-              : "hover:border-purple-300"
+              ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+              : "hover:border-blue-300"
           }`}
         >
           <CardContent className="flex items-center justify-between p-6">
@@ -169,8 +169,8 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
               variant={selectedSources.includes(source.id) ? "default" : "outline"}
               className={`ml-4 transition-all ${
                 selectedSources.includes(source.id) 
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0' 
-                  : 'border-2 border-purple-300 text-purple-600 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white hover:border-0'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0' 
+                  : 'border-2 border-blue-300 text-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-600 hover:text-white hover:border-0'
               }`}
             >
               {selectedSources.includes(source.id) ? (

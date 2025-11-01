@@ -41,18 +41,18 @@ interface Message {
 const getAgentColor = (agentId: string): string => {
   const colors = [
     {
-      bg: "bg-purple-100",
-      text: "text-purple-700",
-      border: "border-purple-200",
+      bg: "bg-blue-100",
+      text: "text-blue-700",
+      border: "border-blue-200",
     },
-    { bg: "bg-blue-100", text: "text-blue-700", border: "border-blue-200" },
+    { bg: "bg-sky-100", text: "text-sky-700", border: "border-sky-200" },
     { bg: "bg-green-100", text: "text-green-700", border: "border-green-200" },
     {
       bg: "bg-orange-100",
       text: "text-orange-700",
       border: "border-orange-200",
     },
-    { bg: "bg-pink-100", text: "text-pink-700", border: "border-pink-200" },
+    { bg: "bg-cyan-100", text: "text-cyan-700", border: "border-cyan-200" },
     { bg: "bg-teal-100", text: "text-teal-700", border: "border-teal-200" },
   ];
 
@@ -210,10 +210,10 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
     <div className="space-y-6">
       {/* Header Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-2">
+        <Card className="border-2 border-blue-200 dark:border-blue-800">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Users className="h-8 w-8 text-primary" />
+              <Users className="h-8 w-8 text-blue-500" />
               <div>
                 <p className="text-2xl font-bold">
                   {debate?.agents?.length || 0}
@@ -224,10 +224,10 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-2">
+        <Card className="border-2 border-cyan-200 dark:border-cyan-800">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <MessageSquare className="h-8 w-8 text-primary" />
+              <MessageSquare className="h-8 w-8 text-cyan-500" />
               <div>
                 <p className="text-2xl font-bold">{messages.length}</p>
                 <p className="text-xs text-muted-foreground">Messages</p>
@@ -236,10 +236,10 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-2">
+        <Card className="border-2 border-sky-200 dark:border-sky-800">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Clock className="h-8 w-8 text-primary" />
+              <Clock className="h-8 w-8 text-sky-500" />
               <div>
                 <p className="text-2xl font-bold">{currentRound}</p>
                 <p className="text-xs text-muted-foreground">Round</p>
@@ -320,10 +320,10 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
       </Card>
 
       {/* Main Debate Area */}
-      <Card className="border-2">
+      <Card className="border-2 border-blue-200 dark:border-blue-800">
         <CardHeader className="border-b bg-muted/30">
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
+            <MessageSquare className="h-5 w-5 text-blue-500" />
             Live Debate
             {!isComplete && !isCancelled && (
               <motion.div
@@ -332,7 +332,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                 className="ml-auto"
               >
                 <Badge variant="default" className="bg-green-500">
-                  <span className="mr-1.5 h-2 w-2 rounded-full bg-white animate-pulse" />
+                  <div className="h-2 w-2 rounded-full bg-white animate-pulse mr-2" />
                   Live
                 </Badge>
               </motion.div>
@@ -362,7 +362,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
-                      className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-pink-500/20 blur-2xl"
+                      className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 via-sky-500/20 to-cyan-500/20 blur-2xl"
                     />
 
                     {/* Main icon container */}
@@ -376,7 +376,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                           repeat: Infinity,
                           ease: "linear",
                         }}
-                        className="h-24 w-24 rounded-2xl bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10 backdrop-blur-sm border border-border/50 flex items-center justify-center shadow-lg"
+                        className="h-24 w-24 rounded-2xl bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-cyan-500/10 backdrop-blur-sm border border-border/50 flex items-center justify-center shadow-lg"
                       >
                         <motion.div
                           animate={{
