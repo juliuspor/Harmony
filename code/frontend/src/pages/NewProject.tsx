@@ -156,6 +156,15 @@ export default function NewProject() {
 
       <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-8 py-5">
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/")}
+            className="mb-4 -ml-4 text-foreground hover:text-foreground/80 transition-colors font-semibold"
+            size="sm"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+          </Button>
           <div className="flex items-center gap-4">
             <motion.div
               initial={{ scale: 0 }}
