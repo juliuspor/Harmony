@@ -56,10 +56,22 @@ INTERVENTION_STALEMATE_THRESHOLD = 2  # Number of rounds without progress
 DETECT_ETHICAL_VIOLATIONS = True  # Enable insult/profanity detection
 
 # Consensus Analysis Settings
-CONSENSUS_SEMANTIC_WEIGHT = 0.4
-CONSENSUS_AGREEMENT_WEIGHT = 0.25
-CONSENSUS_CONVERGENCE_WEIGHT = 0.20
-CONSENSUS_RESOLUTION_WEIGHT = 0.15
+# Measures how similar agents' final positions are 
+# using AI embeddings to compare meaning. This is the most 
+# important metric as it captures true alignment of views.
+CONSENSUS_SEMANTIC_WEIGHT = 0.70
+
+# Ratio of explicit agreement vs disagreement keywords
+# in messages (e.g., "I agree" vs "I disagree")
+CONSENSUS_AGREEMENT_WEIGHT = 0.10
+
+# Measures if agents' positions became more similar
+# over time by comparing early vs late round positions
+CONSENSUS_CONVERGENCE_WEIGHT = 0.10
+
+# Tracks how many counter-arguments were addressed
+# or resolved during the debate
+CONSENSUS_RESOLUTION_WEIGHT = 0.10
 
 # Debate Generation Settings
 PERSONA_GENERATION_TEMPERATURE = 0.7
