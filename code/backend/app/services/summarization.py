@@ -144,7 +144,7 @@ Below are representative submissions from this cluster:
 
 {combined_text}
 
-Provide a very short, human-friendly title of 2-5 words that best captures the core theme. No punctuation, no quotes, Title Case, no leading labels.
+Provide EXACTLY 2 words that best capture the core theme. Use lowercase. No punctuation, no quotes, no leading labels. Examples: "more cheese", "more trees", "better coffee".
 
 Title:"""
     
@@ -171,14 +171,19 @@ Title:"""
         response.raise_for_status()
         result = response.json()
         message_content = result["choices"][0]["message"]["content"]
-        title = (message_content or "Untitled").strip()
-        # Post-process: ensure very short; keep first line only
+        title = (message_content or "untitled").strip()
+        # Post-process: keep first line only
         title = title.splitlines()[0].strip()
-        # Trim to a handful of words
+        # Enforce maximum 2 words (allow 1 or 2 words)
         words = title.split()
-        if len(words) > 6:
-            title = " ".join(words[:6])
-        return title
+        if len(words) >= 2:
+            title = " ".join(words[:2])
+        elif len(words) == 1:
+            # Keep the single word as is
+            title = words[0]
+        else:
+            title = "untitled"
+        return title.lower()
     except Exception as e:
         print(f"Title generation error for cluster {cluster_index + 1}: {str(e)}")
         return "Untitled"

@@ -58,9 +58,21 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
             # Log ALL incoming messages for debugging
             print(f"📬 Incoming message: channel={channel_id}, user={user_id}, subtype={subtype}, bot_id={bot_id}, text='{text[:50]}...'")
             
-            # Ignore bot messages and message changes
-            if subtype in ["bot_message", "message_changed", "message_deleted"]:
-                print(f"⏭️ Skipping subtype '{subtype}'")
+            # Ignore bot messages, message changes, and system messages (joins, leaves, etc.)
+            system_subtypes = [
+                "bot_message",
+                "message_changed", 
+                "message_deleted",
+                "channel_join",      # User joined channel
+                "channel_leave",     # User left channel
+                "channel_topic",     # Topic changed
+                "channel_purpose",   # Purpose changed
+                "channel_name",      # Channel renamed
+                "pinned_item",       # Item pinned
+                "unpinned_item"      # Item unpinned
+            ]
+            if subtype in system_subtypes:
+                print(f"⏭️ Skipping system message subtype '{subtype}'")
                 return
             
             # Ignore messages from bots (check bot_id field)
