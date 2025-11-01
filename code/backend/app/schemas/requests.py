@@ -15,3 +15,10 @@ class SuggestCampaignRequest(BaseModel):
     project_goal: str = Field(..., description="Goal/description of the project")
     connected_sources: List[str] = Field(..., min_length=1, description="List of connected data sources (e.g., slack, discord, email)")
 
+
+class LaunchCampaignRequest(BaseModel):
+    """Request schema for launching a campaign"""
+    project_name: str = Field(..., description="Name of the project")
+    project_goal: str = Field(..., description="Goal/description of the project")
+    campaigns: dict = Field(..., description="Dictionary of campaign messages by source")
+

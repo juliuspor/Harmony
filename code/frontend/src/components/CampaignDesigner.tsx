@@ -9,6 +9,7 @@ interface CampaignDesignerProps {
   projectGoal: string;
   selectedSources: string[];
   aiSuggestions: Record<string, string>;
+  onSuggestionsChange?: (suggestions: Record<string, string>) => void;
 }
 
 // Mapping of source IDs to display information
@@ -31,7 +32,7 @@ const sourceDisplayInfo: Record<string, { name: string; icon: React.ReactNode }>
   },
 };
 
-export function CampaignDesigner({ projectName, projectGoal, selectedSources, aiSuggestions }: CampaignDesignerProps) {
+export function CampaignDesigner({ projectName, projectGoal, selectedSources, aiSuggestions, onSuggestionsChange }: CampaignDesignerProps) {
   // Create suggestions array based on selected sources and AI suggestions
   const suggestions = selectedSources
     .filter((source) => sourceDisplayInfo[source])
@@ -45,6 +46,15 @@ export function CampaignDesigner({ projectName, projectGoal, selectedSources, ai
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
     toast.success("Copied to clipboard!");
+  };
+
+  const handleContentChange = (sourceId: string, newContent: string) => {
+    if (onSuggestionsChange) {
+      onSuggestionsChange({
+        ...aiSuggestions,
+        [sourceId]: newContent,
+      });
+    }
   };
 
   return (
@@ -84,7 +94,7 @@ export function CampaignDesigner({ projectName, projectGoal, selectedSources, ai
             <CardContent>
               <Textarea
                 value={suggestion.content}
-                readOnly
+                onChange={(e) => handleContentChange(suggestion.id, e.target.value)}
                 rows={4}
                 className="text-sm whitespace-pre-wrap"
               />
@@ -93,18 +103,6 @@ export function CampaignDesigner({ projectName, projectGoal, selectedSources, ai
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Or Create Your Own</CardTitle>
-          <CardDescription>Write a custom campaign message</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            placeholder="Write your custom campaign message here..."
-            rows={6}
-          />
-        </CardContent>
-      </Card>
     </div>
   );
 }

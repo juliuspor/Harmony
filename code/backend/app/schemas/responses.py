@@ -23,3 +23,9 @@ class SuggestCampaignResponse(BaseModel):
     """Response schema for campaign suggestions"""
     suggestions: Dict[str, str]
 
+
+class LaunchCampaignResponse(BaseModel):
+    """Response schema for launching a campaign"""
+    id: str
+    message: str
+

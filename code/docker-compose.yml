@@ -8,6 +8,7 @@ services:
     volumes:
       - ./backend:/app
       - chroma_data:/app/chroma_db
+      - ./data:/data
     environment:
       - OPENAI_API_KEY_HACK=${OPENAI_API_KEY_HACK}
       - RELOAD=true

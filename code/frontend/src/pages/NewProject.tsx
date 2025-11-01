@@ -76,9 +76,30 @@ export default function NewProject() {
     }
   };
 
-  const handleLaunch = () => {
-    toast.success("Project launched successfully!");
-    navigate("/");
+  const handleLaunch = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/campaign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          project_name: projectName,
+          project_goal: projectGoal,
+          campaigns: aiSuggestions,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to launch campaign");
+      }
+
+      toast.success("Project launched successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Error launching campaign:", error);
+      toast.error("Failed to launch campaign. Please try again.");
+    }
   };
 
   const steps = [
@@ -158,6 +179,7 @@ export default function NewProject() {
                   projectGoal={projectGoal}
                   selectedSources={selectedSources}
                   aiSuggestions={aiSuggestions}
+                  onSuggestionsChange={setAiSuggestions}
                 />
               </CardContent>
             </Card>
