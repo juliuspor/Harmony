@@ -1,7 +1,7 @@
 """Request schemas for API endpoints"""
 
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 
 class StoreSubmissionsRequest(BaseModel):
@@ -21,4 +21,10 @@ class LaunchCampaignRequest(BaseModel):
     project_name: str = Field(..., description="Name of the project")
     project_goal: str = Field(..., description="Goal/description of the project")
     messages: dict = Field(..., description="Dictionary of campaign messages by source")
+
+
+class CreateDebateRequest(BaseModel):
+    """Request schema for creating a debate"""
+    max_rounds: Optional[int] = Field(None, ge=1, le=50, description="Maximum number of debate rounds")
+    max_messages: Optional[int] = Field(None, ge=1, le=200, description="Maximum number of messages")
 
