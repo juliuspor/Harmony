@@ -124,8 +124,12 @@ async def launch_campaign(request: LaunchCampaignRequest):
     """
     Launch a campaign and store it in campaigns.json file.
     Appends the new campaign to the existing campaigns list.
+    Also posts the messages to the connected platforms (Slack, Discord).
     """
     try:
+        # Import oauth service
+        from app.services import oauth
+        
         # Generate a unique ID for the campaign
         campaign_id = str(uuid.uuid4())
         
@@ -134,12 +138,32 @@ async def launch_campaign(request: LaunchCampaignRequest):
         data_dir = Path("/data")
         data_dir.mkdir(parents=True, exist_ok=True)
         
+        # Post messages to connected platforms
+        posting_results = {}
+        for platform, message in request.messages.items():
+            try:
+                if platform == "slack":
+                    result = await oauth.post_slack_message(message)
+                    posting_results[platform] = "success"
+                    print(f"Posted to Slack: {result}")
+                elif platform == "discord":
+                    result = await oauth.post_discord_message(message)
+                    posting_results[platform] = "success"
+                    print(f"Posted to Discord: {result}")
+                else:
+                    posting_results[platform] = "not_implemented"
+                    print(f"Platform {platform} posting not implemented yet")
+            except Exception as e:
+                posting_results[platform] = f"error: {str(e)}"
+                print(f"Failed to post to {platform}: {str(e)}")
+        
         # Create the campaign data structure
         campaign_data = {
             "id": campaign_id,
             "project_name": request.project_name,
             "project_goal": request.project_goal,
             "messages": request.messages,
+            "posting_results": posting_results,
             "created_at": datetime.utcnow().isoformat()
         }
         
@@ -163,6 +187,7 @@ async def launch_campaign(request: LaunchCampaignRequest):
             json.dump(campaigns_list, f, indent=2)
         
         print(f"Campaign saved successfully to {file_path}, total campaigns: {len(campaigns_list)}")
+        print(f"Posting results: {posting_results}")
         
         return LaunchCampaignResponse(
             id=campaign_id,
