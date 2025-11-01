@@ -7,5 +7,29 @@
       "discord": "Hey everyone!\nWe're looking for your brilliant ideas to help shape the future of our project, asdfa. Got something exciting to share? Drop your thoughts and let's make sasdfa a success together!"
     },
     "created_at": "2025-11-01T10:29:29.371224"
+  },
+  {
+    "id": "cef0e157-ccfa-4e51-8cbf-38d02087e09b",
+    "project_name": "saf",
+    "project_goal": "asfd",
+    "messages": {
+      "slack": "Hey team!\nWe're buzzing with excitement over here and need your creative minds for our SAF project! Got an idea that could make a splash? Share it with us!"
+    },
+    "posting_results": {
+      "slack": "success"
+    },
+    "created_at": "2025-11-01T10:53:21.587409"
+  },
+  {
+    "id": "a6af5405-51ef-4b68-a43c-1cd944c91f41",
+    "project_name": "asdfas",
+    "project_goal": "sadfasdf",
+    "messages": {
+      "slack": "Hello Team!\nWe've got an exciting new project, \"asdfas,\" and we want your creative input to help achieve its goal: \"sadfasdf.\" Share your brilliant ideas and let's make this project a great success together!"
+    },
+    "posting_results": {
+      "slack": "success"
+    },
+    "created_at": "2025-11-01T10:54:06.924636"
   }
 ]
