@@ -125,7 +125,7 @@ export default function NewProject() {
   const steps = [
     { number: 1, title: "Define Mission", description: "What & Why" },
     { number: 2, title: "Connect Sources", description: "Where" },
-    { number: 3, title: "Design Campaign", description: "How" },
+    { number: 3, title: "Launch Campaign", description: "How" },
   ];
 
   // Get step icon and color
@@ -143,15 +143,15 @@ export default function NewProject() {
   };
 
   const getStepGradient = () => {
-    return "from-purple-500 to-pink-500";
+    return "from-blue-500 to-cyan-500";
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
       </div>
 
       <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
@@ -243,7 +243,7 @@ export default function NewProject() {
                         placeholder="e.g., Make Basel Greener"
                         value={projectName}
                         onChange={(e) => setProjectName(e.target.value)}
-                        className="h-12 text-base border-2 focus:border-purple-400 transition-colors"
+                        className="h-12 text-base border-2 focus:border-blue-400 transition-colors"
                       />
                       <p className="text-xs text-muted-foreground">
                         Choose a clear, memorable name for your project
@@ -266,43 +266,12 @@ export default function NewProject() {
                         rows={8}
                         value={projectGoal}
                         onChange={(e) => setProjectGoal(e.target.value)}
-                        className="text-base border-2 focus:border-purple-400 transition-colors resize-none"
+                        className="text-base border-2 focus:border-blue-400 transition-colors resize-none"
                       />
                       <p className="text-xs text-muted-foreground">
                         Be specific about your objectives and desired outcomes
                       </p>
                     </div>
-
-                    {/* Visual Separator */}
-                    <div className="flex items-center gap-4 pt-4">
-                      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
-                      <Sparkles className="h-4 w-4 text-muted-foreground" />
-                      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
-                    </div>
-
-                    {/* Quick Tips */}
-                    <Card className="bg-muted/50 border-0">
-                      <CardContent className="pt-6">
-                        <div className="flex items-start gap-3">
-                          <div className="h-8 w-8 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                            <Sparkles className="h-4 w-4 text-purple-600" />
-                          </div>
-                          <div className="space-y-2">
-                            <h4 className="font-semibold text-sm">
-                              💡 Quick Tips
-                            </h4>
-                            <ul className="text-sm text-muted-foreground space-y-1">
-                              <li>
-                                • Be clear and specific about what you want to
-                                accomplish
-                              </li>
-                              <li>• Include the "why" behind your project</li>
-                              <li>• Think about who will benefit from this</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -373,7 +342,7 @@ export default function NewProject() {
                       </div>
                       <div>
                         <CardTitle className="text-3xl font-bold tracking-tight">
-                          Design Your Campaign
+                          Launch Your Campaign
                         </CardTitle>
                         <CardDescription className="text-base mt-1">
                           AI-powered messages crafted for your audience

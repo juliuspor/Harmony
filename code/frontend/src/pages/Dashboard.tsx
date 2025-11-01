@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Lightbulb, ArrowUpDown, Filter, MessageSquare, Sparkles, Activity, Target } from "lucide-react";
+import { Plus, Lightbulb, ArrowUpDown, MessageSquare, Sparkles, Target } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -75,7 +75,6 @@ export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<string>("recent");
-  const [filterBy, setFilterBy] = useState<string>("all");
   const [totalInsights, setTotalInsights] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [liveMessages, setLiveMessages] = useState<LiveMessage[]>([]);
@@ -175,9 +174,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
       </div>
 
       <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
@@ -188,7 +187,7 @@ export default function Dashboard() {
                 initial={{ rotate: -10, scale: 0 }}
                 animate={{ rotate: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center shadow-lg"
+                className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 via-cyan-500 to-sky-500 flex items-center justify-center shadow-lg"
               >
                 <img src="/harmony_logo.png" alt="Harmony Logo" className="h-8 w-8" />
               </motion.div>
@@ -225,30 +224,17 @@ export default function Dashboard() {
                 Manage and monitor your active campaigns
               </p>
             </div>
-            <div className="flex gap-3">
-              <Select value={filterBy} onValueChange={setFilterBy}>
-                <SelectTrigger className="w-[160px] border-2">
-                  <Filter className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Filter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Projects</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="complete">Complete</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[160px] border-2">
-                  <ArrowUpDown className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">Most Recent</SelectItem>
-                  <SelectItem value="ideas">Most Ideas</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[160px] border-2">
+                <ArrowUpDown className="mr-2 h-4 w-4" />
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recent">Most Recent</SelectItem>
+                <SelectItem value="ideas">Most Ideas</SelectItem>
+                <SelectItem value="name">Alphabetical</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <AnimatePresence mode="wait">
@@ -276,8 +262,8 @@ export default function Dashboard() {
               >
                 <Card className="border-2 border-dashed rounded-3xl bg-muted/20">
                   <CardContent className="text-center py-20">
-                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 flex items-center justify-center mx-auto mb-6">
-                      <Target className="h-10 w-10 text-purple-600 dark:text-purple-400" />
+                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 flex items-center justify-center mx-auto mb-6">
+                      <Target className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                     </div>
                     <h3 className="text-2xl font-bold mb-2">No Projects Yet</h3>
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">
@@ -300,7 +286,18 @@ export default function Dashboard() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                {projects.map((project, index) => (
+                {[...projects].sort((a, b) => {
+                  switch (sortBy) {
+                    case "recent":
+                      return new Date(b.lastActivityDate).getTime() - new Date(a.lastActivityDate).getTime();
+                    case "ideas":
+                      return b.ideasCount - a.ideasCount;
+                    case "name":
+                      return a.title.localeCompare(b.title);
+                    default:
+                      return 0;
+                  }
+                }).map((project, index) => (
                   <motion.div
                     key={project.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -334,7 +331,7 @@ export default function Dashboard() {
                         {/* Status Badge */}
                         <div className="absolute top-4 left-4">
                           <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0 shadow-lg">
-                            <Activity className="h-3 w-3 mr-1" />
+                            <div className="h-2 w-2 rounded-full bg-white animate-pulse mr-2" />
                             Active
                           </Badge>
                         </div>
@@ -395,8 +392,8 @@ export default function Dashboard() {
           <CardContent className="p-0">
             {liveMessages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
-                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 flex items-center justify-center mb-6">
-                  <MessageSquare className="h-10 w-10 text-purple-600 dark:text-purple-400" />
+                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 flex items-center justify-center mb-6">
+                  <MessageSquare className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-lg font-bold mb-2">No Activity Yet</h3>
                 <p className="font-medium text-sm">Community ideas will appear here in real-time</p>
@@ -445,7 +442,7 @@ export default function Dashboard() {
                               <motion.span
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold shadow-sm"
+                                className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold shadow-sm"
                               >
                                 NEW
                               </motion.span>
