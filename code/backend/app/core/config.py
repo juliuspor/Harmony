@@ -1,5 +1,7 @@
 """Application configuration"""
 
+import os
+
 # Submission Limits
 MAX_SUBMISSIONS = 1000
 MIN_SUBMISSIONS_FOR_CLUSTERING = 2
@@ -12,4 +14,10 @@ KMEANS_N_INIT = 10
 
 # Model Settings
 EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
+
+# OpenAI Settings
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY_HACK")
+OPENAI_MODEL = "gpt-4o-mini"  # Using gpt-4o-mini as the available nano model
+SUMMARIZATION_MAX_TOKENS = 300
+SUMMARIZATION_TEMPERATURE = 0.3
 

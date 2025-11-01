@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from app.schemas import StoreSubmissionsRequest, StoreSubmissionsResponse, ClusterResponse
 from app.services.clustering import cluster_submissions
 from app.services.database import add_submissions, get_submissions
+from app.services.summarization import summarize_clusters
 from app.core import config
 import numpy as np
 
@@ -40,6 +41,7 @@ async def get_clusters(project_id: str):
     """
     Get clusters for a project by semantic similarity.
     Retrieves stored submissions from the database and performs clustering analysis.
+    Generates AI-powered summaries for each cluster.
     """
     try:
         # Retrieve submissions from database
@@ -57,10 +59,14 @@ async def get_clusters(project_id: str):
         # Cluster using stored embeddings
         clusters, num_clusters, silhouette = cluster_submissions(submissions, embeddings)
         
+        # Generate summaries for each cluster using OpenAI
+        summaries = await summarize_clusters(clusters)
+        
         return ClusterResponse(
             clusters=clusters,
             num_clusters=num_clusters,
-            silhouette_score=silhouette
+            silhouette_score=silhouette,
+            summaries=summaries
         )
             
     except HTTPException:

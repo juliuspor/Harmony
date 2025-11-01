@@ -16,4 +16,5 @@ class ClusterResponse(BaseModel):
     clusters: List[List[str]]
     num_clusters: int
     silhouette_score: float
+    summaries: List[str]
 
