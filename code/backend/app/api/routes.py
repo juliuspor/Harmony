@@ -1,8 +1,9 @@
 """API routes for submission clustering"""
 
 import json
+import logging
 from pathlib import Path
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from app.schemas import (
     StoreSubmissionsRequest,
     StoreSubmissionsResponse,
@@ -34,10 +35,8 @@ from app.services.debate_storage import (
 from app.services.consensus_analysis import calculate_consensus_score, calculate_pairwise_alignment_matrix
 from app.core import config
 import numpy as np
-import json
 import uuid
 from datetime import datetime
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
