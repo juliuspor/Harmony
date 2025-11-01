@@ -144,8 +144,7 @@ async def suggest_campaign(request: SuggestCampaignRequest):
 @router.post("/campaign", response_model=LaunchCampaignResponse)
 async def launch_campaign(request: LaunchCampaignRequest):
     """
-    Launch a campaign and store it in campaigns.json file.
-    Appends the new campaign to the existing campaigns list.
+    Launch a campaign and store it in MongoDB.
     Also posts the messages to the connected platforms (Slack, Discord).
     Starts monitoring channels for incoming submissions.
     """
@@ -154,14 +153,10 @@ async def launch_campaign(request: LaunchCampaignRequest):
         from app.services import oauth
         from app.services import slack_listener
         from app.services import discord_listener
+        from app.services import campaign_storage
         
         # Generate a unique ID for the campaign
         campaign_id = str(uuid.uuid4())
-        
-        # Create the data directory if it doesn't exist
-        # In Docker, this is mounted to code/data via volume mount
-        data_dir = Path("/data")
-        data_dir.mkdir(parents=True, exist_ok=True)
         
         # Post messages to connected platforms and start monitoring
         posting_results = {}
@@ -215,38 +210,17 @@ async def launch_campaign(request: LaunchCampaignRequest):
                 posting_results[platform] = f"error: {str(e)}"
                 print(f"Failed to post to {platform}: {str(e)}")
         
-        # Create the campaign data structure
-        campaign_data = {
-            "id": campaign_id,
-            "project_name": request.project_name,
-            "project_goal": request.project_goal,
-            "messages": request.messages,
-            "posting_results": posting_results,
-            "monitored_channels": monitored_channels,
-            "created_at": datetime.utcnow().isoformat(),
-            "num_clusters": 0
-        }
+        # Create the campaign in MongoDB
+        campaign_storage.create_campaign(
+            campaign_id=campaign_id,
+            project_name=request.project_name,
+            project_goal=request.project_goal,
+            messages=request.messages,
+            posting_results=posting_results,
+            monitored_channels=monitored_channels
+        )
         
-        # Read existing campaigns or create new list
-        file_path = data_dir / "campaigns.json"
-        campaigns_list = []
-        
-        if file_path.exists():
-            try:
-                with open(file_path, 'r') as f:
-                    campaigns_list = json.load(f)
-            except json.JSONDecodeError:
-                # If file is corrupted, start with empty list
-                campaigns_list = []
-        
-        # Append new campaign
-        campaigns_list.append(campaign_data)
-        
-        # Save back to file
-        with open(file_path, 'w') as f:
-            json.dump(campaigns_list, f, indent=2)
-        
-        print(f"Campaign saved successfully to {file_path}, total campaigns: {len(campaigns_list)}")
+        print(f"Campaign saved successfully to MongoDB: {campaign_id}")
         print(f"Posting results: {posting_results}")
         
         return LaunchCampaignResponse(
@@ -264,24 +238,13 @@ async def launch_campaign(request: LaunchCampaignRequest):
 @router.get("/campaigns")
 async def get_campaigns():
     """
-    Get all campaigns from campaigns.json file.
+    Get all campaigns from MongoDB.
     Returns list of all created campaigns.
     """
     try:
-        data_dir = Path("/data")
-        file_path = data_dir / "campaigns.json"
+        from app.services import campaign_storage
         
-        if not file_path.exists():
-            return {
-                "campaigns": [],
-                "count": 0
-            }
-        
-        try:
-            with open(file_path, 'r') as f:
-                campaigns_list = json.load(f)
-        except json.JSONDecodeError:
-            campaigns_list = []
+        campaigns_list = campaign_storage.get_all_campaigns()
         
         return {
             "campaigns": campaigns_list,
@@ -335,15 +298,10 @@ async def get_live_feed(limit: int = 50):
     Returns submissions with project info, sorted by timestamp (newest first).
     """
     try:
-        # Get all campaigns
-        data_dir = Path("/data")
-        file_path = data_dir / "campaigns.json"
+        from app.services import campaign_storage
         
-        if not file_path.exists():
-            return {"messages": [], "count": 0}
-        
-        with open(file_path, 'r') as f:
-            campaigns_list = json.load(f)
+        # Get all campaigns from MongoDB
+        campaigns_list = campaign_storage.get_all_campaigns()
         
         # Collect all submissions from all projects
         all_messages = []
@@ -402,39 +360,19 @@ async def get_contributors_count(project_id: str):
 
 
 @router.patch("/campaigns/{campaign_id}/clusters")
-async def update_campaign_clusters(campaign_id: str, num_clusters: int):
+async def update_campaign_clusters_endpoint(campaign_id: str, num_clusters: int):
     """
     Update the cluster count for a campaign.
     This is called when clusters are generated to store the count in campaign data.
     """
     try:
-        data_dir = Path("/data")
-        file_path = data_dir / "campaigns.json"
+        from app.services import campaign_storage
         
-        if not file_path.exists():
-            raise HTTPException(status_code=404, detail="Campaigns file not found")
+        # Update the campaign in MongoDB
+        success = campaign_storage.update_campaign_clusters(campaign_id, num_clusters)
         
-        # Read campaigns
-        with open(file_path, 'r') as f:
-            campaigns_list = json.load(f)
-        
-        # Find and update the campaign
-        campaign_found = False
-        for campaign in campaigns_list:
-            if campaign.get("id") == campaign_id:
-                campaign["num_clusters"] = num_clusters
-                campaign["last_cluster_update"] = datetime.utcnow().isoformat()
-                campaign_found = True
-                break
-        
-        if not campaign_found:
+        if not success:
             raise HTTPException(status_code=404, detail=f"Campaign {campaign_id} not found")
-        
-        # Save back to file
-        with open(file_path, 'w') as f:
-            json.dump(campaigns_list, f, indent=2)
-        
-        print(f"Updated campaign {campaign_id} with {num_clusters} clusters")
         
         return {
             "campaign_id": campaign_id,
