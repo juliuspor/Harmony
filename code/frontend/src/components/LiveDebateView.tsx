@@ -4,7 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Users, Sparkles, CheckCircle2, Clock, MessageSquare, User, Bot, Brain, Lightbulb, Zap, Target, Shield, UserCircle } from "lucide-react";
+import {
+  Users,
+  Sparkles,
+  CheckCircle2,
+  Clock,
+  MessageSquare,
+  User,
+  Bot,
+  Brain,
+  Lightbulb,
+  Zap,
+  Target,
+  Shield,
+  UserCircle,
+} from "lucide-react";
 import type { DebateResponse } from "@/lib/api";
 import { getDebateStatus } from "@/lib/api";
 
@@ -26,20 +40,30 @@ interface Message {
 // Generate consistent colors for agents based on their ID
 const getAgentColor = (agentId: string): string => {
   const colors = [
-    { bg: "bg-purple-100", text: "text-purple-700", border: "border-purple-200" },
+    {
+      bg: "bg-purple-100",
+      text: "text-purple-700",
+      border: "border-purple-200",
+    },
     { bg: "bg-blue-100", text: "text-blue-700", border: "border-blue-200" },
     { bg: "bg-green-100", text: "text-green-700", border: "border-green-200" },
-    { bg: "bg-orange-100", text: "text-orange-700", border: "border-orange-200" },
+    {
+      bg: "bg-orange-100",
+      text: "text-orange-700",
+      border: "border-orange-200",
+    },
     { bg: "bg-pink-100", text: "text-pink-700", border: "border-pink-200" },
     { bg: "bg-teal-100", text: "text-teal-700", border: "border-teal-200" },
   ];
-  
+
   if (agentId === "orchestrator") {
     return "bg-gray-100 text-gray-700 border-gray-200";
   }
-  
+
   // Hash the agent_id to get consistent color
-  const hash = agentId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const hash = agentId
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const colorIndex = hash % colors.length;
   return `${colors[colorIndex].bg} ${colors[colorIndex].text} ${colors[colorIndex].border}`;
 };
@@ -57,14 +81,16 @@ const getAgentIcon = (agentId: string) => {
     UserCircle,
     Sparkles,
   ];
-  
+
   // Orchestrator gets shield icon
   if (agentId === "orchestrator") {
     return Shield;
   }
-  
+
   // Hash the agent_id to get consistent icon
-  const hash = agentId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const hash = agentId
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const iconIndex = hash % icons.length;
   return icons[iconIndex];
 };
@@ -93,7 +119,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
     const fetchDebateStatus = async () => {
       try {
         const data = await getDebateStatus(debateId);
-        
+
         if (!isMounted) return;
 
         setDebate(data);
@@ -163,9 +189,8 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
 
   const isComplete = debate?.status === "completed";
   const isCancelled = debate?.status === "cancelled";
-  const currentRound = messages.length > 0 
-    ? Math.max(...messages.map(m => m.round_number))
-    : 1;
+  const currentRound =
+    messages.length > 0 ? Math.max(...messages.map((m) => m.round_number)) : 1;
 
   return (
     <div className="space-y-6">
@@ -176,7 +201,9 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
             <div className="flex items-center gap-3">
               <Users className="h-8 w-8 text-primary" />
               <div>
-                <p className="text-2xl font-bold">{debate?.agents?.length || 0}</p>
+                <p className="text-2xl font-bold">
+                  {debate?.agents?.length || 0}
+                </p>
                 <p className="text-xs text-muted-foreground">Agents</p>
               </div>
             </div>
@@ -221,7 +248,11 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
               )}
               <div>
                 <p className="text-sm font-bold capitalize">
-                  {isComplete ? "Complete" : isCancelled ? "Cancelled" : "Active"}
+                  {isComplete
+                    ? "Complete"
+                    : isCancelled
+                    ? "Cancelled"
+                    : "Active"}
                 </p>
                 <p className="text-xs text-muted-foreground">Status</p>
               </div>
@@ -229,6 +260,46 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Agents Panel */}
+      {debate?.agents && debate.agents.length > 0 && (
+        <Card className="border-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Debate Participants
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4">
+              {debate.agents
+                .filter((agent) => agent.agent_id !== "orchestrator")
+                .map((agent) => {
+                  const colorClasses = getAgentColor(agent.agent_id);
+                  const AgentIcon = getAgentIcon(agent.agent_id);
+                  return (
+                    <Card key={agent.agent_id} className="border">
+                      <CardContent className="pt-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            className={`h-10 w-10 border-2 ${colorClasses}`}
+                          >
+                            <AvatarFallback className={colorClasses}>
+                              <AgentIcon className="h-5 w-5" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <h4 className="font-semibold text-sm">
+                            {agent.agent_name}
+                          </h4>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Debate Area */}
       <Card className="border-2">
@@ -253,12 +324,100 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
         <CardContent className="p-0">
           <ScrollArea className="h-[600px]" ref={scrollRef}>
             <div className="p-6 space-y-4">
+              {/* Loading animation when no messages yet */}
+              {!isComplete && !isCancelled && messages.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col items-center justify-center h-[550px]"
+                >
+                  <div className="relative">
+                    {/* Animated background pulse */}
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.6, 0.3],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-pink-500/20 blur-2xl"
+                    />
+
+                    {/* Main icon container */}
+                    <div className="relative">
+                      <motion.div
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="h-24 w-24 rounded-2xl bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10 backdrop-blur-sm border border-border/50 flex items-center justify-center shadow-lg"
+                      >
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.1, 1],
+                          }}
+                          transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        >
+                          <Sparkles className="h-12 w-12 text-foreground" />
+                        </motion.div>
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Status text */}
+                  <div className="mt-8 text-center space-y-2">
+                    <motion.p
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-lg font-semibold text-foreground"
+                    >
+                      Initializing Debate
+                    </motion.p>
+                    <p className="text-sm text-muted-foreground">
+                      AI agents are preparing to join the conversation
+                    </p>
+                  </div>
+
+                  {/* Animated dots */}
+                  <div className="flex gap-2 mt-6">
+                    {[0, 1, 2].map((index) => (
+                      <motion.div
+                        key={index}
+                        className="h-2 w-2 rounded-full bg-foreground/60"
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0.4, 1, 0.4],
+                        }}
+                        transition={{
+                          duration: 1.2,
+                          repeat: Infinity,
+                          delay: index * 0.2,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
               <AnimatePresence initial={false}>
                 {messages.map((message, index) => {
                   const isOrchestrator = message.agent_id === "orchestrator";
                   const colorClasses = getAgentColor(message.agent_id);
                   const AgentIcon = getAgentIcon(message.agent_id);
-                  
+
                   return (
                     <motion.div
                       key={message.message_id || index}
@@ -267,18 +426,25 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                       transition={{ duration: 0.3 }}
                       className="flex gap-4"
                     >
-                      <Avatar className={`h-10 w-10 border-2 ${colorClasses} flex-shrink-0`}>
+                      <Avatar
+                        className={`h-10 w-10 border-2 ${colorClasses} flex-shrink-0`}
+                      >
                         {isOrchestrator && (
-                          <AvatarImage src="/images/moderator-avatar.png" alt="Moderator" />
+                          <AvatarImage
+                            src="/images/moderator-avatar.png"
+                            alt="Moderator"
+                          />
                         )}
                         <AvatarFallback className={colorClasses}>
                           <AgentIcon className="h-5 w-5" />
                         </AvatarFallback>
                       </Avatar>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-sm">{message.agent_name}</span>
+                          <span className="font-semibold text-sm">
+                            {message.agent_name}
+                          </span>
                           <Badge variant="outline" className="text-xs">
                             Round {message.round_number}
                           </Badge>
@@ -288,13 +454,21 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                             </Badge>
                           )}
                         </div>
-                        
-                        <Card className={`border-l-4 ${isOrchestrator ? 'border-l-gray-400 bg-gray-50' : `border-l-${colorClasses.split('-')[1]}-400`}`}>
+
+                        <Card
+                          className={`border-l-4 ${
+                            isOrchestrator
+                              ? "border-l-gray-400 bg-gray-50"
+                              : `border-l-${colorClasses.split("-")[1]}-400`
+                          }`}
+                        >
                           <CardContent className="pt-3 pb-3">
-                            <p className="text-sm leading-relaxed">{message.content}</p>
+                            <p className="text-sm leading-relaxed">
+                              {message.content}
+                            </p>
                           </CardContent>
                         </Card>
-                        
+
                         <p className="text-xs text-muted-foreground mt-1">
                           {new Date(message.timestamp).toLocaleTimeString()}
                         </p>
@@ -324,48 +498,6 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
           </ScrollArea>
         </CardContent>
       </Card>
-
-      {/* Agents Panel */}
-      {debate?.agents && debate.agents.length > 0 && (
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Debate Participants
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {debate.agents
-                .filter(agent => agent.agent_id !== "orchestrator")
-                .map((agent) => {
-                  const colorClasses = getAgentColor(agent.agent_id);
-                  const AgentIcon = getAgentIcon(agent.agent_id);
-                  return (
-                    <Card key={agent.agent_id} className="border">
-                      <CardContent className="pt-4">
-                        <div className="flex items-start gap-3">
-                          <Avatar className={`h-10 w-10 border-2 ${colorClasses}`}>
-                            <AvatarFallback className={colorClasses}>
-                              <AgentIcon className="h-5 w-5" />
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-sm mb-1">{agent.agent_name}</h4>
-                            <p className="text-xs text-muted-foreground line-clamp-2">
-                              {agent.persona_summary}
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
-
