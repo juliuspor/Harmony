@@ -365,7 +365,7 @@ def run_debate(
         logger.info(f"Successfully created {len(agents)} agents")
         
         # Create orchestrator (store but use OpenAI directly)
-        add_debate_agent(debate_id, "orchestrator", "Debate Moderator", -1, "Facilitates productive debate")
+        add_debate_agent(debate_id, "orchestrator", "Larkus Manz", -1, "Facilitates productive debate")
         
         # Build agent personas for OpenAI chat
         client = OpenAI(api_key=config.OPENAI_API_KEY)
@@ -386,7 +386,7 @@ You are participating in a structured debate. Guidelines:
 - Maintain respectful and constructive discourse
 - Keep responses under {config.AGENT_MESSAGE_MAX_WORDS} words"""
 
-        orchestrator_system = """You are a Debate Moderator. Your role is to facilitate productive debate by maintaining focus, preventing repetition, detecting stalemates, and ensuring respectful discourse. 
+        orchestrator_system = """You are Larkus Manz, a Debate Moderator. Your role is to facilitate productive debate by maintaining focus, preventing repetition, detecting stalemates, and ensuring respectful discourse. 
 
 Intervene when:
 - The debate becomes repetitive
@@ -405,7 +405,7 @@ Keep interventions brief and constructive."""
         
         # Add opening message from orchestrator
         opening = f"Welcome to the debate. We have {len(agents)} perspectives to explore. Let's begin with {agents[0].role}."
-        add_debate_message(debate_id, "orchestrator", "Debate Moderator", opening, round_number, "orchestrator_message")
+        add_debate_message(debate_id, "orchestrator", "Larkus Manz", opening, round_number, "orchestrator_message")
         debate_history.append({"role": "assistant", "content": opening})
         message_count += 1
         
@@ -449,7 +449,7 @@ Keep interventions brief and constructive."""
             if intervention:
                 intervention_msg = intervention.get("message", intervention["reason"])
                 add_intervention(debate_id, intervention["intervention_type"], intervention["reason"], intervention_msg)
-                add_debate_message(debate_id, "orchestrator", "Debate Moderator", intervention_msg, round_number, "orchestrator_message")
+                add_debate_message(debate_id, "orchestrator", "Larkus Manz", intervention_msg, round_number, "orchestrator_message")
                 debate_history.append({"role": "assistant", "content": f"Moderator: {intervention_msg}"})
                 message_count += 1
                 
@@ -466,7 +466,7 @@ Keep interventions brief and constructive."""
         
         # Final summary from orchestrator
         final_msg = f"The debate has concluded after {round_number} rounds with {message_count} messages. Thank you all for your contributions."
-        add_debate_message(debate_id, "orchestrator", "Debate Moderator", final_msg, round_number, "orchestrator_message")
+        add_debate_message(debate_id, "orchestrator", "Larkus Manz", final_msg, round_number, "orchestrator_message")
         
         # Calculate consensus and generate summary
         from app.services.consensus_analysis import calculate_consensus_score

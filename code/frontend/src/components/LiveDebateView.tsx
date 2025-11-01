@@ -217,12 +217,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                   <span className="text-red-600 text-xl">✕</span>
                 </div>
               ) : (
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <Sparkles className="h-8 w-8 text-primary" />
-                </motion.div>
+                <Sparkles className="h-8 w-8 text-primary" />
               )}
               <div>
                 <p className="text-sm font-bold capitalize">
