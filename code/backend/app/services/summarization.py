@@ -33,7 +33,7 @@ Below are all the submissions in this cluster:
 
 {combined_text}
 
-Please provide a concise summary (2-3 sentences) that captures:
+Please provide a concise summary (2 concise sentences) that captures:
 1. The main theme or topic shared by these submissions
 2. Key patterns or common elements
 3. The overall sentiment or perspective
@@ -144,7 +144,7 @@ Below are representative submissions from this cluster:
 
 {combined_text}
 
-Provide EXACTLY 2 words that best capture the core theme. Use lowercase. No punctuation, no quotes, no leading labels. Examples: "more cheese", "more trees", "better coffee".
+Provide EXACTLY 2 words that capture the core theme. Use lowercase. No punctuation, no quotes, no leading labels. Examples: "more cheese", "more trees", "better coffee".
 
 Title:"""
     
