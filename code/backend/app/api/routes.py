@@ -151,7 +151,7 @@ async def launch_campaign(request: LaunchCampaignRequest):
         for platform, message in request.messages.items():
             try:
                 if platform == "slack":
-                    result = await oauth.post_slack_message(message, channel="Ideation")
+                    result = await oauth.post_slack_message(message, channel="all-harmony")
                     posting_results[platform] = "success"
                     
                     # Get channel ID from the response

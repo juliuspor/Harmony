@@ -136,7 +136,7 @@ async def post_slack_message(message: str, channel: str = None, user_id: str = "
         if token_data:
             channel = token_data.get("incoming_webhook", {}).get("channel_id")
         if not channel:
-            channel = "Ideation"  # Default channel for campaigns
+            channel = "all-harmony"  # Default channel for campaigns
     
     async with httpx.AsyncClient() as client:
         response = await client.post(
