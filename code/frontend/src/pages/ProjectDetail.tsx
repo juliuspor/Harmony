@@ -69,10 +69,14 @@ export default function ProjectDetail() {
   const [analysisResult, setAnalysisResult] = useState<ConsensusResult | null>(
     null
   );
-  const [expandedCluster, setExpandedCluster] = useState<number | null>(null);
+  const [expandedClusters, setExpandedClusters] = useState<Set<number>>(
+    new Set()
+  );
   const [debateId, setDebateId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("clusters");
-  const [estimatedTime, setEstimatedTime] = useState<number | undefined>(undefined);
+  const [estimatedTime, setEstimatedTime] = useState<number | undefined>(
+    undefined
+  );
   const loadingSectionRef = useRef<HTMLDivElement>(null);
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
   const [project, setProject] = useState<any>(null);
@@ -86,12 +90,14 @@ export default function ProjectDetail() {
     const fetchProjectData = async () => {
       try {
         // Fetch all campaigns
-        const campaignsResponse = await fetch("http://localhost:8000/campaigns");
+        const campaignsResponse = await fetch(
+          "http://localhost:8000/campaigns"
+        );
         const campaignsData = await campaignsResponse.json();
-        
+
         // Find the campaign with matching ID
         const campaign = campaignsData.campaigns.find((c: any) => c.id === id);
-        
+
         if (campaign) {
           // Set project immediately to show page structure
           setProject({
@@ -100,37 +106,48 @@ export default function ProjectDetail() {
             goal: campaign.project_goal,
             status: "collecting",
           });
-          
+
           // Fetch submissions count (non-blocking)
           fetch(`http://localhost:8000/submissions?project_id=${id}`)
-            .then(res => res.json())
-            .then(data => setSubmissionsCount(data.count || 0))
-            .catch(error => console.error("Failed to fetch submissions:", error));
-          
+            .then((res) => res.json())
+            .then((data) => setSubmissionsCount(data.count || 0))
+            .catch((error) =>
+              console.error("Failed to fetch submissions:", error)
+            );
+
           // Fetch clusters if available (non-blocking)
           fetch(`http://localhost:8000/projects/${id}/clusters`)
-            .then(res => {
+            .then((res) => {
               if (res.ok) return res.json();
               throw new Error("No clusters yet");
             })
-            .then(clustersResult => {
+            .then((clustersResult) => {
               setClustersData(clustersResult);
               // Update campaign with cluster count (fire and forget)
-              fetch(`http://localhost:8000/campaigns/${id}/clusters?num_clusters=${clustersResult.num_clusters}`, {
-                method: 'PATCH',
-              }).catch(err => console.log("Failed to update campaign cluster count:", err));
+              fetch(
+                `http://localhost:8000/campaigns/${id}/clusters?num_clusters=${clustersResult.num_clusters}`,
+                {
+                  method: "PATCH",
+                }
+              ).catch((err) =>
+                console.log("Failed to update campaign cluster count:", err)
+              );
             })
-            .catch(error => console.log("No clusters available yet:", error))
+            .catch((error) => console.log("No clusters available yet:", error))
             .finally(() => setClustersLoading(false));
-          
+
           // Fetch contributors count (non-blocking)
           fetch(`http://localhost:8000/projects/${id}/contributors`)
-            .then(res => {
+            .then((res) => {
               if (res.ok) return res.json();
               throw new Error("Failed to fetch contributors");
             })
-            .then(contributorsResult => setContributorsCount(contributorsResult.contributors || 0))
-            .catch(error => console.log("Failed to fetch contributors:", error));
+            .then((contributorsResult) =>
+              setContributorsCount(contributorsResult.contributors || 0)
+            )
+            .catch((error) =>
+              console.log("Failed to fetch contributors:", error)
+            );
         } else {
           console.error("Campaign not found");
           // Navigate back to dashboard if project not found
@@ -161,24 +178,24 @@ export default function ProjectDetail() {
 
   const handleStartAnalysis = async () => {
     if (!id) return;
-    
+
     try {
       if (analysisResult) setAnalysisResult(null);
-      
+
       // Switch to debate tab
       setActiveTab("debate");
-      
+
       // Estimate duration for display
       const maxRounds = 3;
       const maxMessages = 15;
       const estimated = estimateDebateDuration(maxRounds, maxMessages);
       setEstimatedTime(estimated);
-      
+
       // Start the debate
       const response = await createDebate(id, maxRounds, maxMessages);
       setDebateId(response.debate_id);
       setIsAnalyzing(true);
-      
+
       // Scroll to the debate section
       setTimeout(() => {
         loadingSectionRef.current?.scrollIntoView({
@@ -190,7 +207,10 @@ export default function ProjectDetail() {
       console.error("Failed to start debate:", error);
       toast({
         title: "Failed to start debate",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
         variant: "destructive",
       });
       setIsAnalyzing(false);
@@ -201,7 +221,7 @@ export default function ProjectDetail() {
     setAnalysisResult(result);
     setIsAnalyzing(false);
     setDebateId(null);
-    
+
     // Scroll to synthesize section to move the analysis UI to the top
     setTimeout(() => {
       synthesizeSectionRef.current?.scrollIntoView({
@@ -248,19 +268,25 @@ export default function ProjectDetail() {
       <main className="container mx-auto px-8 py-8">
         {/* Tabs Section */}
         <div className="mb-8">
-          <Tabs 
-            defaultValue="clusters" 
+          <Tabs
+            defaultValue="clusters"
             className="space-y-8"
             value={activeTab}
             onValueChange={setActiveTab}
           >
             <div className="flex justify-center mb-8">
               <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-muted p-1 border-2">
-                <TabsTrigger value="clusters" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
+                <TabsTrigger
+                  value="clusters"
+                  className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6"
+                >
                   <Network className="mr-2 h-4 w-4" />
                   Cluster Info
                 </TabsTrigger>
-                <TabsTrigger value="debate" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
+                <TabsTrigger
+                  value="debate"
+                  className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm px-6"
+                >
                   <Users className="mr-2 h-4 w-4" />
                   Agent Debate
                   {isAnalyzing && (
@@ -296,7 +322,7 @@ export default function ProjectDetail() {
                         >
                           <div className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-xl" />
                         </motion.div>
-                        
+
                         {/* Icon container */}
                         <motion.div
                           animate={{
@@ -329,7 +355,10 @@ export default function ProjectDetail() {
                                   ease: "linear",
                                 }}
                               >
-                                <Network className="h-16 w-16 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
+                                <Network
+                                  className="h-16 w-16 text-purple-600 dark:text-purple-400"
+                                  strokeWidth={1.5}
+                                />
                               </motion.div>
                             </div>
                           </motion.div>
@@ -339,9 +368,10 @@ export default function ProjectDetail() {
                       {/* Static loading text */}
                       <motion.p
                         className="text-lg text-foreground/80 text-center tracking-tight font-light"
-                        style={{ 
-                          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif',
-                          letterSpacing: '-0.01em'
+                        style={{
+                          fontFamily:
+                            '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif',
+                          letterSpacing: "-0.01em",
                         }}
                         animate={{ opacity: [0.6, 1, 0.6] }}
                         transition={{
@@ -358,9 +388,13 @@ export default function ProjectDetail() {
               ) : clusterData.length === 0 ? (
                 <Card className="border-2">
                   <CardContent className="pt-6 text-center py-12">
-                    <Network className="mx-auto h-16 w-16 text-muted-foreground mb-4" strokeWidth={1.5} />
+                    <Network
+                      className="mx-auto h-16 w-16 text-muted-foreground mb-4"
+                      strokeWidth={1.5}
+                    />
                     <p className="text-muted-foreground font-medium">
-                      No clusters available yet. Ideas will be clustered once enough submissions are collected.
+                      No clusters available yet. Ideas will be clustered once
+                      enough submissions are collected.
                     </p>
                   </CardContent>
                 </Card>
@@ -372,28 +406,33 @@ export default function ProjectDetail() {
                       {clusterData.length} idea clusters discovered
                     </h2>
                     <p className="text-lg text-muted-foreground">
-                      AI-powered thematic analysis of {submissionsCount} community submissions
+                      AI-powered thematic analysis of {submissionsCount}{" "}
+                      community submissions
                     </p>
                   </div>
 
                   {/* Cluster Cards Grid */}
-                  <div 
-                    className={`grid gap-5 ${
-                      clusterData.length === 2 ? 'grid-cols-1 lg:grid-cols-2' :
-                      clusterData.length === 3 ? 'grid-cols-1 lg:grid-cols-3' :
-                      clusterData.length === 4 ? 'grid-cols-1 md:grid-cols-2' :
-                      clusterData.length === 5 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
-                      'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                  <div
+                    className={`grid gap-5 items-start ${
+                      clusterData.length === 2
+                        ? "grid-cols-1 lg:grid-cols-2"
+                        : clusterData.length === 3
+                        ? "grid-cols-1 lg:grid-cols-3"
+                        : clusterData.length === 4
+                        ? "grid-cols-1 md:grid-cols-2"
+                        : clusterData.length === 5
+                        ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                        : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
                     }`}
                   >
                     {clusterData.map((cluster) => {
-                      const isExpanded = expandedCluster === cluster.id;
-                      
+                      const isExpanded = expandedClusters.has(cluster.id);
+
                       return (
                         <Card
                           key={cluster.id}
                           className={`group relative overflow-hidden transition-all duration-500 border-0 shadow-sm hover:shadow-xl rounded-3xl ${
-                            isExpanded ? 'shadow-2xl' : ''
+                            isExpanded ? "shadow-2xl" : ""
                           }`}
                           style={
                             isExpanded
@@ -409,18 +448,27 @@ export default function ProjectDetail() {
                             style={{
                               background: `linear-gradient(135deg, ${cluster.gradient.from} 0%, ${cluster.gradient.to} 100%)`,
                             }}
-                            onClick={() =>
-                              setExpandedCluster(
-                                isExpanded ? null : cluster.id
-                              )
-                            }
+                            onClick={() => {
+                              setExpandedClusters((prev) => {
+                                const newSet = new Set(prev);
+                                if (isExpanded) {
+                                  newSet.delete(cluster.id);
+                                } else {
+                                  newSet.add(cluster.id);
+                                }
+                                return newSet;
+                              });
+                            }}
                           >
                             {/* Decorative element */}
                             <div className="absolute -right-12 -top-12 w-40 h-40 rounded-full bg-white/10" />
-                            
+
                             <div className="relative z-10 flex items-center gap-4 flex-1">
                               <div className="h-14 w-14 rounded-xl bg-white/95 flex items-center justify-center shadow-lg">
-                                <span className="text-2xl font-bold" style={{ color: cluster.gradient.from }}>
+                                <span
+                                  className="text-2xl font-bold"
+                                  style={{ color: cluster.gradient.from }}
+                                >
                                   {cluster.id}
                                 </span>
                               </div>
@@ -436,10 +484,10 @@ export default function ProjectDetail() {
                                 </div>
                               </div>
                             </div>
-                            
-                            <div 
+
+                            <div
                               className={`relative z-10 transform transition-transform duration-300 ${
-                                isExpanded ? 'rotate-180' : ''
+                                isExpanded ? "rotate-180" : ""
                               }`}
                             >
                               <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -469,11 +517,15 @@ export default function ProjectDetail() {
                                 </p>
                               </div>
                             )}
-                            
+
                             {!isExpanded && (
-                              <button 
+                              <button
                                 className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-                                onClick={() => setExpandedCluster(cluster.id)}
+                                onClick={() => {
+                                  setExpandedClusters((prev) =>
+                                    new Set(prev).add(cluster.id)
+                                  );
+                                }}
                               >
                                 View all {cluster.ideas.length} ideas →
                               </button>
@@ -485,13 +537,19 @@ export default function ProjectDetail() {
                             <CardContent className="pt-0 pb-6 animate-in slide-in-from-top-2">
                               <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin">
                                 <div className="flex items-center justify-between mb-3 sticky top-0 bg-card py-2 border-b">
-                                  <h5 className="font-semibold text-sm">All Ideas</h5>
-                                  <Button 
-                                    variant="ghost" 
+                                  <h5 className="font-semibold text-sm">
+                                    All Ideas
+                                  </h5>
+                                  <Button
+                                    variant="ghost"
                                     size="sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setExpandedCluster(null);
+                                      setExpandedClusters((prev) => {
+                                        const newSet = new Set(prev);
+                                        newSet.delete(cluster.id);
+                                        return newSet;
+                                      });
                                     }}
                                   >
                                     Collapse
@@ -505,7 +563,9 @@ export default function ProjectDetail() {
                                       borderLeftColor: cluster.gradient.accent,
                                     }}
                                   >
-                                    <span className="font-medium text-muted-foreground mr-2">#{i + 1}</span>
+                                    <span className="font-medium text-muted-foreground mr-2">
+                                      #{i + 1}
+                                    </span>
                                     {idea.text}
                                   </div>
                                 ))}
@@ -524,7 +584,9 @@ export default function ProjectDetail() {
               {!isAnalyzing && !analysisResult ? (
                 <Card className="border-2 rounded-2xl">
                   <CardHeader>
-                    <CardTitle className="text-2xl font-bold">Synthesize</CardTitle>
+                    <CardTitle className="text-2xl font-bold">
+                      Synthesize
+                    </CardTitle>
                     <CardDescription className="text-base">
                       AI agents simulate debate to form consensus from your
                       collected ideas
@@ -532,14 +594,14 @@ export default function ProjectDetail() {
                   </CardHeader>
                   <CardContent className="flex h-96 items-center justify-center bg-muted/30 rounded-xl">
                     <div className="text-center">
-                      <Sparkles className="mx-auto h-16 w-16 text-muted-foreground mb-4" strokeWidth={1.5} />
+                      <Sparkles
+                        className="mx-auto h-16 w-16 text-muted-foreground mb-4"
+                        strokeWidth={1.5}
+                      />
                       <p className="text-muted-foreground mb-6 font-medium">
                         Start the simulated debate to synthesize insights
                       </p>
-                      <Button
-                        size="lg"
-                        onClick={handleStartAnalysis}
-                      >
+                      <Button size="lg" onClick={handleStartAnalysis}>
                         <Sparkles className="mr-2 h-5 w-5" />
                         Start Simulation
                       </Button>
@@ -562,7 +624,11 @@ export default function ProjectDetail() {
                 </div>
               ) : analysisResult ? (
                 <div className="w-full overflow-visible pb-4">
-                  <DebateSimulation key="debate-result" result={analysisResult} autoStart={false} />
+                  <DebateSimulation
+                    key="debate-result"
+                    result={analysisResult}
+                    autoStart={false}
+                  />
                 </div>
               ) : null}
             </TabsContent>
