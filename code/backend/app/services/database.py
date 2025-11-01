@@ -1,8 +1,11 @@
+"""Database service for storing and retrieving submissions"""
+
 import chromadb
 from chromadb.utils import embedding_functions
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
+from app.core import config
 
 _client = None
 _collection = None
@@ -17,13 +20,13 @@ def get_chroma_client():
 
 
 def get_collection():
-    """Get or create the opinions collection"""
+    """Get or create the submissions collection"""
     global _collection
     if _collection is None:
         client = get_chroma_client()
         
         # Create custom embedding function that uses our sentence transformer model
-        from clustering import get_model
+        from app.services.clustering import get_model
         
         class SentenceTransformerEmbedding(embedding_functions.EmbeddingFunction):
             def __call__(self, input: List[str]) -> List[List[float]]:
@@ -35,36 +38,44 @@ def get_collection():
         
         # Get or create collection
         _collection = client.get_or_create_collection(
-            name="opinions",
+            name="submissions",
             embedding_function=embedding_function,
             metadata={"hnsw:space": "cosine"}
         )
     return _collection
 
 
-def add_opinions(opinions: List[str], project_id: Optional[str] = None) -> List[str]:
+def add_submissions(submissions: List[str], project_id: str) -> List[str]:
     """
-    Add opinions to the vector database
-    Returns list of IDs for the added opinions
+    Add submissions to the vector database
+    
+    Args:
+        submissions: List of submission texts
+        project_id: Project identifier
+    
+    Returns:
+        List of IDs for the added submissions
     """
+    if len(submissions) > config.MAX_SUBMISSIONS:
+        raise ValueError(f"Cannot add more than {config.MAX_SUBMISSIONS} submissions at once")
+    
     collection = get_collection()
     
-    # Generate unique IDs for each opinion
-    ids = [str(uuid.uuid4()) for _ in opinions]
+    # Generate unique IDs for each submission
+    ids = [str(uuid.uuid4()) for _ in submissions]
     
-    # Create metadata for each opinion
+    # Create metadata for each submission (store full text, not truncated)
     metadatas = [
         {
-            "project_id": project_id or "default",
+            "project_id": project_id,
             "timestamp": datetime.utcnow().isoformat(),
-            "text": opinion[:200]  # Store truncated text in metadata for reference
         }
-        for opinion in opinions
+        for _ in submissions
     ]
     
     # Add to collection (embeddings are computed automatically)
     collection.add(
-        documents=opinions,
+        documents=submissions,
         ids=ids,
         metadatas=metadatas
     )
@@ -72,56 +83,72 @@ def add_opinions(opinions: List[str], project_id: Optional[str] = None) -> List[
     return ids
 
 
-def get_opinions(project_id: Optional[str] = None, limit: int = 200) -> Dict[str, Any]:
+def get_submissions(project_id: str, limit: Optional[int] = None) -> Dict[str, Any]:
     """
-    Retrieve opinions from the database
+    Retrieve submissions from the database
+    
+    Args:
+        project_id: Project identifier to filter by
+        limit: Maximum number of submissions to retrieve (defaults to MAX_SUBMISSIONS)
+    
+    Returns:
+        Dictionary containing documents, metadatas, and embeddings
     """
+    if limit is None:
+        limit = config.MAX_SUBMISSIONS
+    
     collection = get_collection()
     
-    if project_id:
-        results = collection.get(
-            where={"project_id": project_id},
-            limit=limit,
-            include=["documents", "metadatas", "embeddings"]
-        )
-    else:
-        results = collection.get(
-            limit=limit,
-            include=["documents", "metadatas", "embeddings"]
-        )
+    results = collection.get(
+        where={"project_id": project_id},
+        limit=limit,
+        include=["documents", "metadatas", "embeddings"]
+    )
     
     return results
 
 
-def search_similar_opinions(query: str, project_id: Optional[str] = None, n_results: int = 10) -> Dict[str, Any]:
+def search_similar_submissions(query: str, project_id: str, n_results: int = 10) -> Dict[str, Any]:
     """
-    Search for similar opinions using semantic search
+    Search for similar submissions using semantic search
+    
+    Args:
+        query: Search query text
+        project_id: Project identifier to filter by
+        n_results: Number of results to return
+    
+    Returns:
+        Dictionary containing similar documents, metadatas, and distances
     """
     collection = get_collection()
-    
-    where_filter = {"project_id": project_id} if project_id else None
     
     results = collection.query(
         query_texts=[query],
         n_results=n_results,
-        where=where_filter,
+        where={"project_id": project_id},
         include=["documents", "metadatas", "distances"]
     )
     
     return results
 
 
-def delete_opinions(opinion_ids: List[str]) -> None:
+def delete_submissions(submission_ids: List[str]) -> None:
     """
-    Delete opinions by their IDs
+    Delete submissions by their IDs
+    
+    Args:
+        submission_ids: List of submission IDs to delete
     """
     collection = get_collection()
-    collection.delete(ids=opinion_ids)
+    collection.delete(ids=submission_ids)
 
 
 def clear_project(project_id: str) -> None:
     """
-    Delete all opinions for a specific project
+    Delete all submissions for a specific project
+    
+    Args:
+        project_id: Project identifier
     """
     collection = get_collection()
     results = collection.get(where={"project_id": project_id})
@@ -132,12 +159,15 @@ def clear_project(project_id: str) -> None:
 def get_stats() -> Dict[str, Any]:
     """
     Get database statistics
+    
+    Returns:
+        Dictionary containing collection stats
     """
     collection = get_collection()
     count = collection.count()
     
     return {
-        "total_opinions": count,
+        "total_submissions": count,
         "collection_name": collection.name,
         "metadata": collection.metadata
     }
