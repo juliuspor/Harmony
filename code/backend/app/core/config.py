@@ -38,6 +38,8 @@ SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")  # App-level token for Socket Mod
 DISCORD_CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 DISCORD_REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI", "http://localhost:8000/oauth/discord/callback")
+DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")  # Pre-authorized bot token
+DISCORD_DEFAULT_CHANNEL_ID = os.getenv("DISCORD_DEFAULT_CHANNEL_ID")  # Default channel for campaigns
 
 # Base URL for OAuth
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
