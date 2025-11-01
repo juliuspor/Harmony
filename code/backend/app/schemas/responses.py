@@ -1,7 +1,7 @@
 """Response schemas for API endpoints"""
 
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict
 
 
 class StoreSubmissionsResponse(BaseModel):
@@ -17,4 +17,9 @@ class ClusterResponse(BaseModel):
     num_clusters: int
     silhouette_score: float
     summaries: List[str]
+
+
+class SuggestCampaignResponse(BaseModel):
+    """Response schema for campaign suggestions"""
+    suggestions: Dict[str, str]
 
