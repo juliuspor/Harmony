@@ -71,6 +71,7 @@ export default function ProjectDetail() {
   const [loading, setLoading] = useState(true);
   const [submissionsCount, setSubmissionsCount] = useState(0);
   const [clustersData, setClustersData] = useState<any>(null);
+  const [contributorsCount, setContributorsCount] = useState(0);
 
   // Fetch project data from backend
   useEffect(() => {
@@ -110,9 +111,27 @@ export default function ProjectDetail() {
             if (clustersResponse.ok) {
               const clustersResult = await clustersResponse.json();
               setClustersData(clustersResult);
+              
+              // Update campaign with cluster count (fire and forget)
+              fetch(`http://localhost:8000/campaigns/${id}/clusters?num_clusters=${clustersResult.num_clusters}`, {
+                method: 'PATCH',
+              }).catch(err => console.log("Failed to update campaign cluster count:", err));
             }
           } catch (error) {
             console.log("No clusters available yet:", error);
+          }
+          
+          // Fetch contributors count
+          try {
+            const contributorsResponse = await fetch(
+              `http://localhost:8000/projects/${id}/contributors`
+            );
+            if (contributorsResponse.ok) {
+              const contributorsResult = await contributorsResponse.json();
+              setContributorsCount(contributorsResult.contributors || 0);
+            }
+          } catch (error) {
+            console.log("Failed to fetch contributors:", error);
           }
         } else {
           console.error("Campaign not found");
@@ -220,7 +239,9 @@ export default function ProjectDetail() {
               <p className="text-sm font-medium text-muted-foreground">
                 Contributors
               </p>
-              <p className="mt-2 text-4xl font-bold text-foreground">12</p>
+              <p className="mt-2 text-4xl font-bold text-foreground">
+                {contributorsCount}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -228,7 +249,9 @@ export default function ProjectDetail() {
               <p className="text-sm font-medium text-muted-foreground">
                 Themes Identified
               </p>
-              <p className="mt-2 text-4xl font-bold text-foreground">5</p>
+              <p className="mt-2 text-4xl font-bold text-foreground">
+                {clustersData?.num_clusters || 0}
+              </p>
             </CardContent>
           </Card>
           <Card>

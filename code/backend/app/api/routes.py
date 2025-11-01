@@ -11,7 +11,7 @@ from app.schemas import (
     LaunchCampaignResponse
 )
 from app.services.clustering import cluster_submissions
-from app.services.database import add_submissions, get_submissions
+from app.services.database import add_submissions, get_submissions, get_unique_contributors
 from app.services.summarization import summarize_clusters, generate_cluster_titles
 import asyncio
 from app.services.ai_suggestions import generate_campaign_suggestions
@@ -182,7 +182,8 @@ async def launch_campaign(request: LaunchCampaignRequest):
             "messages": request.messages,
             "posting_results": posting_results,
             "monitored_channels": monitored_channels,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.utcnow().isoformat(),
+            "num_clusters": 0
         }
         
         # Read existing campaigns or create new list
@@ -283,3 +284,70 @@ async def get_submissions_endpoint(project_id: str = None):
     except Exception as e:
         print(f"Exception in get_submissions: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to get submissions: {str(e)}")
+
+
+@router.get("/projects/{project_id}/contributors")
+async def get_contributors_count(project_id: str):
+    """
+    Get the count of unique contributors for a project.
+    Returns the number of unique user IDs that have submitted ideas.
+    """
+    try:
+        count = get_unique_contributors(project_id)
+        return {
+            "project_id": project_id,
+            "contributors": count
+        }
+    except Exception as e:
+        print(f"Exception in get_contributors_count: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get contributors count: {str(e)}")
+
+
+@router.patch("/campaigns/{campaign_id}/clusters")
+async def update_campaign_clusters(campaign_id: str, num_clusters: int):
+    """
+    Update the cluster count for a campaign.
+    This is called when clusters are generated to store the count in campaign data.
+    """
+    try:
+        data_dir = Path("/data")
+        file_path = data_dir / "campaigns.json"
+        
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="Campaigns file not found")
+        
+        # Read campaigns
+        with open(file_path, 'r') as f:
+            campaigns_list = json.load(f)
+        
+        # Find and update the campaign
+        campaign_found = False
+        for campaign in campaigns_list:
+            if campaign.get("id") == campaign_id:
+                campaign["num_clusters"] = num_clusters
+                campaign["last_cluster_update"] = datetime.utcnow().isoformat()
+                campaign_found = True
+                break
+        
+        if not campaign_found:
+            raise HTTPException(status_code=404, detail=f"Campaign {campaign_id} not found")
+        
+        # Save back to file
+        with open(file_path, 'w') as f:
+            json.dump(campaigns_list, f, indent=2)
+        
+        print(f"Updated campaign {campaign_id} with {num_clusters} clusters")
+        
+        return {
+            "campaign_id": campaign_id,
+            "num_clusters": num_clusters,
+            "message": "Cluster count updated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Exception in update_campaign_clusters: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to update campaign clusters: {str(e)}")

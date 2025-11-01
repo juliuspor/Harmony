@@ -54,13 +54,14 @@ def get_collection(force_refresh: bool = False):
     return _collection
 
 
-def add_submissions(submissions: List[str], project_id: str) -> List[str]:
+def add_submissions(submissions: List[str], project_id: str, user_ids: Optional[List[str]] = None) -> List[str]:
     """
     Add submissions to the vector database
     
     Args:
         submissions: List of submission texts
         project_id: Project identifier
+        user_ids: Optional list of user IDs corresponding to each submission
     
     Returns:
         List of IDs for the added submissions
@@ -74,13 +75,16 @@ def add_submissions(submissions: List[str], project_id: str) -> List[str]:
     ids = [str(uuid.uuid4()) for _ in submissions]
     
     # Create metadata for each submission (store full text, not truncated)
-    metadatas = [
-        {
+    metadatas = []
+    for i, _ in enumerate(submissions):
+        metadata = {
             "project_id": project_id,
             "timestamp": datetime.utcnow().isoformat(),
         }
-        for _ in submissions
-    ]
+        # Add user_id if provided
+        if user_ids and i < len(user_ids) and user_ids[i]:
+            metadata["user_id"] = user_ids[i]
+        metadatas.append(metadata)
     
     # Add to collection (embeddings are computed automatically)
     collection.add(
@@ -166,6 +170,32 @@ def clear_project(project_id: str) -> None:
     results = collection.get(where={"project_id": project_id})
     if results["ids"]:
         collection.delete(ids=results["ids"])
+
+
+def get_unique_contributors(project_id: str) -> int:
+    """
+    Get the count of unique contributors for a project
+    
+    Args:
+        project_id: Project identifier
+    
+    Returns:
+        Count of unique user IDs
+    """
+    collection = get_collection(force_refresh=True)
+    results = collection.get(
+        where={"project_id": project_id},
+        include=["metadatas"]
+    )
+    
+    # Extract unique user IDs from metadatas
+    user_ids = set()
+    for metadata in results["metadatas"]:
+        user_id = metadata.get("user_id")
+        if user_id:
+            user_ids.add(user_id)
+    
+    return len(user_ids)
 
 
 def get_stats() -> Dict[str, Any]:

@@ -100,6 +100,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<string>("recent");
   const [filterBy, setFilterBy] = useState<string>("all");
+  const [totalInsights, setTotalInsights] = useState(0);
 
   // Fetch campaigns from backend
   useEffect(() => {
@@ -139,6 +140,12 @@ export default function Dashboard() {
         );
         
         setProjects(projectsWithCounts);
+        
+        // Calculate total insights from campaign data (no expensive API calls)
+        const totalThemes = data.campaigns.reduce((sum: number, campaign: any) => {
+          return sum + (campaign.num_clusters || 0);
+        }, 0);
+        setTotalInsights(totalThemes);
       } catch (error) {
         console.error("Failed to fetch campaigns:", error);
       } finally {
@@ -196,7 +203,9 @@ export default function Dashboard() {
                   <p className="text-sm font-medium text-muted-foreground">
                     Insights Generated
                   </p>
-                  <p className="mt-2 text-3xl font-bold text-foreground">12</p>
+                  <p className="mt-2 text-3xl font-bold text-foreground">
+                    {totalInsights}
+                  </p>
                 </div>
                 <TrendingUp className="h-12 w-12 text-foreground" />
               </div>

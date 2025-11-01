@@ -17,9 +17,9 @@ _active_monitors: Dict[str, str] = {}  # channel_id -> project_id
 
 def add_submission(project_id: str, message: str, user_id: str, channel_id: str, timestamp: str):
     """Add a new submission to the database"""
-    # Store submission in the database
-    add_submissions([message], project_id)
-    print(f"✅ New submission saved for project {project_id}: {message[:50]}...")
+    # Store submission in the database with user_id
+    add_submissions([message], project_id, user_ids=[user_id])
+    print(f"✅ New submission saved for project {project_id} from user {user_id}: {message[:50]}...")
 
 
 def start_monitoring_channel(channel_id: str, project_id: str):

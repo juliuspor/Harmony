@@ -1,10 +1,10 @@
 [
   {
-    "id": "9ef49c2b-9c37-43e8-b91f-b81b82949873",
-    "project_name": "make basel greener",
-    "project_goal": "we want to idaete on how we can make the ciry of basel greener",
+    "id": "ae0e1893-e778-43b2-a698-2b31bcb2299f",
+    "project_name": "Make Switzerland great again ",
+    "project_goal": "ideate on making switzerland great again!",
     "messages": {
-      "slack": "Hey team! \ud83c\udf3f We're on a mission to make Basel greener, and we want your ideas! Share your thoughts on how we can enhance our city's green spaces and sustainability efforts!"
+      "slack": "Hey team! \ud83c\udf1f We\u2019re on a mission to Make Switzerland Great Again, and we want your awesome ideas! Drop your thoughts and suggestions here to help us shape a brighter future!"
     },
     "posting_results": {
       "slack": "success"
@@ -12,21 +12,8 @@
     "monitored_channels": {
       "slack": "C09QZ299A0Y"
     },
-    "created_at": "2025-11-01T12:41:03.698880"
-  },
-  {
-    "id": "17adff89-003b-4d2c-b7ca-8dac7aa06c79",
-    "project_name": "lalllalall",
-    "project_goal": "alallalla",
-    "messages": {
-      "slack": "Hey team! We\u2019re on the lookout for your awesome ideas for our project lalllalall. Share your thoughts and let\u2019s make this project shine together!"
-    },
-    "posting_results": {
-      "slack": "success"
-    },
-    "monitored_channels": {
-      "slack": "C09QZ299A0Y"
-    },
-    "created_at": "2025-11-01T12:47:17.253417"
+    "created_at": "2025-11-01T12:59:29.359221",
+    "num_clusters": 3,
+    "last_cluster_update": "2025-11-01T13:00:15.039308"
   }
 ]
