@@ -19,7 +19,6 @@ interface ClusterVisualizationData {
   id: number;
   theme: string;
   color: string;
-  similarity: number;
   ideas: { text: string }[];
 }
 
@@ -45,14 +44,12 @@ function extractTheme(ideas: string[]): string {
 }
 
 function transformClustersToVisualization(
-  clusters: string[][],
-  silhouetteScore: number
+  clusters: string[][]
 ): ClusterVisualizationData[] {
   return clusters.map((ideas, index) => ({
     id: index + 1,
     theme: extractTheme(ideas),
     color: CLUSTER_COLORS[index % CLUSTER_COLORS.length],
-    similarity: Math.round((silhouetteScore + 1) * 50),
     ideas: ideas.map((text) => ({ text })),
   }));
 }
@@ -155,8 +152,7 @@ export default function ProjectDetail() {
   const clusterData = useMemo(() => {
     if (clustersData && clustersData.clusters) {
       return transformClustersToVisualization(
-        clustersData.clusters,
-        clustersData.silhouette_score
+        clustersData.clusters
       );
     }
     return [];
@@ -259,7 +255,11 @@ export default function ProjectDetail() {
               <p className="text-sm font-medium text-muted-foreground">
                 Consensus Score
               </p>
-              <p className="mt-2 text-4xl font-bold text-foreground">78%</p>
+              <p className="mt-2 text-4xl font-bold text-foreground">
+                {clustersData?.silhouette_score 
+                  ? `${Math.round((clustersData.silhouette_score + 1) * 50)}%`
+                  : 'N/A'}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -356,9 +356,6 @@ export default function ProjectDetail() {
                                     <div className="text-sm font-semibold px-2 line-clamp-2">
                                       {cluster.theme}
                                     </div>
-                                    <div className="text-xs mt-2 opacity-90">
-                                      {cluster.similarity}% similar
-                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -406,12 +403,7 @@ export default function ProjectDetail() {
                                   }
                                 </CardTitle>
                                 <CardDescription className="text-base mt-1">
-                                  {
-                                    clusterData.find(
-                                      (c) => c.id === expandedCluster
-                                    )?.similarity
-                                  }
-                                  % similarity · All ideas in this group
+                                  All ideas in this group
                                 </CardDescription>
                               </div>
                             </div>
