@@ -94,9 +94,9 @@ export function estimateDebateDuration(maxRounds?: number, maxMessages?: number)
 }
 
 /**
- * Create a mock debate using sample_clusters.json data
+ * Create a debate from clusters for a project
  */
-export async function createMockDebate(
+export async function createDebate(
   projectId: string,
   maxRounds?: number,
   maxMessages?: number
@@ -105,7 +105,7 @@ export async function createMockDebate(
   if (maxRounds !== undefined) requestBody.max_rounds = maxRounds;
   if (maxMessages !== undefined) requestBody.max_messages = maxMessages;
 
-  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/debates/mock`, {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/debates`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -115,7 +115,7 @@ export async function createMockDebate(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Failed to create mock debate: ${response.status} ${errorText}`);
+    throw new Error(`Failed to create debate: ${response.status} ${errorText}`);
   }
 
   return response.json();
