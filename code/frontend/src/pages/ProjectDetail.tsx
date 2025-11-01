@@ -56,8 +56,6 @@ function transformClustersToVisualization(
     ideas: ideas.map((text) => ({ text })),
   }));
 }
-import { createMockDebate, getDebateStatus, getConsensusResults, estimateDebateDuration } from "@/lib/api";
-import { toast } from "sonner";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -68,7 +66,6 @@ export default function ProjectDetail() {
   );
   const [expandedCluster, setExpandedCluster] = useState<number | null>(null);
   const [debateId, setDebateId] = useState<string | null>(null);
-  const [estimatedTime, setEstimatedTime] = useState<number>(0);
   const [activeTab, setActiveTab] = useState("clusters");
   const loadingSectionRef = useRef<HTMLDivElement>(null);
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
@@ -184,7 +181,6 @@ export default function ProjectDetail() {
     setDebateId(null);
     
     // Scroll to synthesize section to move the analysis UI to the top
-    // Use a small delay to ensure the result is rendered
     setTimeout(() => {
       synthesizeSectionRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -504,7 +500,6 @@ export default function ProjectDetail() {
                     duration={0} // No auto-complete, wait for real results
                     autoStart={true}
                     onComplete={handleAnalysisComplete}
-                    processingTime={estimatedTime}
                     debateId={debateId || undefined}
                   />
                 </div>
