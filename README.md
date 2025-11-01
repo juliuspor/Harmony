@@ -1,254 +1,223 @@
-# BaselHack - Opinion Clustering Platform
+# Harmony
 
-An intelligent platform for clustering and analyzing opinions using semantic embeddings and vector database technology.
+An intelligent platform that transforms community opinions into **collective intelligence** through AI-powered clustering, debate simulation, and consensus analysis.
 
-## 🚀 Features
+## Features
 
-- **Semantic Opinion Clustering**: Automatically group similar opinions using AI
-- **Vector Database**: Persistent storage with ChromaDB for efficient similarity search
-- **Real-time Analysis**: Fast clustering with optimal k-selection
-- **Project Management**: Organize opinions by projects
-- **Semantic Search**: Find similar opinions by meaning, not just keywords
-- **Modern UI**: React + TypeScript frontend with Tailwind CSS
-- **RESTful API**: FastAPI backend with full API documentation
+### Semantic Intelligence
+- **Semantic Clustering**: Automatically group similar opinions using AI embeddings and vector similarity
+- **Vector Search**: ChromaDB-powered semantic search for finding similar opinions
 
-## 🏗️ Architecture
+### Multi-Agent AI
+- **AI Debate Simulation**: Run multi-agent debates with agent-to-agent communication representing different opinion clusters
+- **Consensus Analysis**: Calculate consensus scores, semantic alignment, and convergence metrics between agents
 
-### Backend
-- **FastAPI**: High-performance Python API framework
-- **ChromaDB**: Vector database for embedding storage
-- **SentenceTransformers**: BAAI/bge-small-en-v1.5 model for embeddings
-- **scikit-learn**: K-means clustering with automatic k-selection
+### Platform Integration
+- **Campaign Management**: Create and launch campaigns to collect community input from Slack and Discord
+- **Real-time Monitoring**: Live dashboard showing submissions as they arrive from connected platforms
 
-### Frontend
-- **React + TypeScript**: Type-safe component architecture
-- **Vite**: Fast build tooling
-- **Tailwind CSS**: Modern utility-first styling
-- **shadcn/ui**: Beautiful UI components
+## Architecture
 
-## 📦 Quick Start
-
-### Using Docker (Recommended)
-
-```bash
-# Clone the repository
-cd BaselHack/code
-
-# Start all services
-docker-compose up --build
-
-# Backend API: http://localhost:8000
-# Frontend: http://localhost:5173 (if configured)
+```mermaid
+graph TB
+    subgraph Platforms
+        Slack[Slack]
+        Discord[Discord]
+    end
+    
+    subgraph Frontend
+        UI[React + TypeScript UI]
+    end
+    
+    subgraph Backend
+        API[FastAPI Server]
+        Listeners[Platform Listeners]
+    end
+    
+    subgraph Services
+        Campaign[Campaign Service]
+        Clustering[Clustering Service]
+        Consensus[Consensus Service]
+    end
+    
+    subgraph Intelligence Layer
+        OpenAI[OpenAI API]
+        Orchestrator[Orchestrator Agent]
+        Agent1[Agent 1] -.A2A.-> Agent2[Agent 2]
+        Agent2 -.A2A.-> Agent3[Agent 3]
+        Agent3 -.A2A.-> Agent1
+        Orchestrator -->|Manages| Agent1
+        Orchestrator -->|Manages| Agent2
+        Orchestrator -->|Manages| Agent3
+    end
+    
+    subgraph Storage
+        MongoDB[(MongoDB<br/>Campaigns + Debates)]
+        ChromaDB[(ChromaDB<br/>Vector Embeddings)]
+    end
+    
+    UI <-->|REST API| API
+    API -->|Create| Campaign
+    Campaign <-->|Generate| OpenAI
+    Campaign -->|Post| Slack
+    Campaign -->|Post| Discord
+    Campaign -->|Store| MongoDB
+    Slack -->|Messages| Listeners
+    Discord -->|Messages| Listeners
+    Listeners -->|Submissions| API
+    API -->|Store| MongoDB
+    API -->|Embeddings| ChromaDB
+    API -->|Trigger| Clustering
+    API -->|Start| Orchestrator
+    Clustering -->|Query| ChromaDB
+    Clustering <-->|Summaries| OpenAI
+    Clustering -->|Results| UI
+    Orchestrator -->|Results| MongoDB
+    Orchestrator -->|Trigger| Consensus
+    Consensus -->|Analyze| MongoDB
+    Consensus -->|Metrics| UI
+    
+    style Orchestrator fill:#fff4e6
+    style Agent1 fill:#e1f5ff
+    style Agent2 fill:#e1f5ff
+    style Agent3 fill:#e1f5ff
+    style Campaign fill:#f0f9ff
+    style Clustering fill:#f0f9ff
+    style Consensus fill:#f0f9ff
 ```
 
-### Manual Setup
+### Tech Stack
 
-#### Backend Setup
+**Backend**: FastAPI • MongoDB • ChromaDB • OpenAI/CrewAI • Slack/Discord SDK  
+**Frontend**: React + TypeScript • Vite • Tailwind CSS • shadcn/ui  
+**Intelligence**: Multi-agent debates with Agent-to-Agent (A2A) communication
+
+## Getting Started
+
+### Prerequisites
+
+- Docker and Docker Compose
+- Python 3.9+
+- Node.js 18+
+
+### Setup Instructions
+
+**1. Install Backend Dependencies**
 
 ```bash
 cd code/backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-
-# Run the server
-python main.py
-
-# API available at http://localhost:8000
 ```
 
-#### Frontend Setup
+**2. Install Frontend Dependencies**
 
 ```bash
 cd code/frontend
-
-# Install dependencies
 npm install
-
-# Run development server
-npm run dev
-
-# Frontend available at http://localhost:5173
 ```
 
-## 📖 API Documentation
+**3. Configure Environment Variables**
 
-### Key Endpoints
+Create a `.env` file in the `code` directory:
+
+```bash
+# OpenAI API Key (required for AI features)
+OPENAI_API_KEY_HACK=your_openai_api_key
+
+# Slack Integration (optional)
+SLACK_CLIENT_ID=your_slack_client_id
+SLACK_CLIENT_SECRET=your_slack_client_secret
+SLACK_BOT_TOKEN=your_slack_bot_token
+SLACK_APP_TOKEN=your_slack_app_token
+
+# Discord Integration (optional)
+DISCORD_CLIENT_ID=your_discord_client_id
+DISCORD_CLIENT_SECRET=your_discord_client_secret
+DISCORD_BOT_TOKEN=your_discord_bot_token
+DISCORD_DEFAULT_CHANNEL_ID=your_discord_channel_id
+```
+
+**4. Start Backend Services (MongoDB + Backend API)**
+
+```bash
+cd code
+docker-compose up --build
+```
+
+Backend API will be available at `http://localhost:8000`
+
+**5. Start Frontend**
+
+```bash
+cd code/frontend
+npm run dev
+```
+
+Frontend will be available at `http://localhost:5173`
+
+## How It Works
+
+1. **Create a Campaign** - Define your mission, connect data sources (Slack, Discord), design your campaign with AI-generated messages
+2. **Collect Submissions** - Posts campaign messages to platforms, monitors channels, stores submissions with embeddings
+3. **Analyze Opinions** - Cluster submissions by semantic similarity, view AI-generated summaries and statistics
+4. **Run AI Debates** - Create AI agents representing clusters, calculate consensus metrics and alignment scores
+
+## API Endpoints
+
+### Campaign Management
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/cluster` | POST | Cluster opinions (in-memory) |
-| `/opinions/store` | POST | Store opinions with embeddings |
-| `/opinions/cluster-stored` | POST | Cluster stored opinions |
-| `/opinions/search` | POST | Semantic similarity search |
-| `/db/stats` | GET | Database statistics |
+| `/suggest` | POST | Generate AI campaign suggestions |
+| `/campaign` | POST | Launch a new campaign |
+| `/campaigns` | GET | List all campaigns |
 
-For detailed API documentation, see [Backend API Documentation](./code/backend/API_DOCUMENTATION.md)
+### Submissions & Clustering
 
-## 🧪 Testing
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/projects/{id}/submissions` | POST | Store submissions for a project |
+| `/submissions` | GET | Get submissions by project |
+| `/projects/{id}/clusters` | GET | Get semantic clusters |
+| `/live-feed` | GET | Get real-time submission feed |
 
-### Backend Tests
+### Debate & Consensus
 
-```bash
-cd code/backend
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/projects/{id}/debates` | POST | Start a new debate |
+| `/debates/{id}` | GET | Get debate details and messages |
+| `/debates/{id}/consensus` | GET | Get consensus analysis |
 
-# Start the server
-python main.py
+See full API documentation at `http://localhost:8000/docs` when running.
 
-# In another terminal, run tests
-python test_vector_db.py
-```
-
-### Example Usage
-
-```python
-import requests
-
-# Store opinions
-response = requests.post('http://localhost:8000/opinions/store', json={
-    "opinions": [
-        "Great product quality",
-        "Excellent customer service",
-        "Fast shipping"
-    ],
-    "project_id": "customer_feedback"
-})
-
-# Cluster stored opinions
-response = requests.post('http://localhost:8000/opinions/cluster-stored', json={
-    "project_id": "customer_feedback"
-})
-
-# Search for similar opinions
-response = requests.post('http://localhost:8000/opinions/search', json={
-    "query": "customer support",
-    "n_results": 5
-})
-```
-
-## 🎯 Use Cases
-
-- **Customer Feedback Analysis**: Group similar customer reviews and comments
-- **Survey Response Clustering**: Analyze and categorize open-ended survey responses
-- **Content Organization**: Automatically organize and group similar content
-- **Sentiment Analysis**: Identify patterns in user opinions
-- **Market Research**: Analyze and cluster consumer opinions
-
-## 🔧 Configuration
-
-### Backend Configuration
-
-```bash
-# ChromaDB path (optional)
-export CHROMA_DB_PATH="./chroma_db"
-
-# API settings
-export API_HOST="0.0.0.0"
-export API_PORT="8000"
-```
-
-### Frontend Configuration
-
-Edit `code/frontend/vite.config.ts` to configure the frontend build settings.
-
-## 📂 Project Structure
+## Project Structure
 
 ```
 BaselHack/
 ├── code/
-│   ├── backend/                 # FastAPI backend
-│   │   ├── main.py             # API entry point
-│   │   ├── routes.py           # API endpoints
-│   │   ├── clustering.py       # Clustering logic
-│   │   ├── database.py         # Vector database operations
-│   │   ├── schemas.py          # Data models
-│   │   ├── requirements.txt    # Python dependencies
-│   │   ├── Dockerfile          # Docker configuration
-│   │   ├── test_vector_db.py   # Test suite
-│   │   └── README.md           # Backend documentation
-│   ├── frontend/               # React frontend
+│   ├── backend/
+│   │   ├── app/
+│   │   │   ├── api/              # API routes and OAuth
+│   │   │   ├── core/             # Configuration
+│   │   │   ├── services/         # Business logic
+│   │   │   │   ├── clustering.py
+│   │   │   │   ├── debate.py
+│   │   │   │   ├── ai_suggestions.py
+│   │   │   │   ├── slack_listener.py
+│   │   │   │   └── discord_listener.py
+│   │   │   └── schemas/          # Pydantic models
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   ├── frontend/
 │   │   ├── src/
-│   │   ├── public/
+│   │   │   ├── components/       # React components
+│   │   │   ├── pages/            # Page components
+│   │   │   └── lib/              # Utilities
 │   │   └── package.json
-│   └── docker-compose.yml      # Docker orchestration
-├── documentation/              # Project documentation
-├── assets/                     # Project assets
-└── README.md                   # This file
+│   └── docker-compose.yml
+├── chroma_db/                    # Vector database storage
+└── README.md
 ```
-
-## 🌟 Key Features Explained
-
-### Vector Database Integration
-
-The platform uses ChromaDB, a vector database optimized for embeddings:
-
-- **Persistent Storage**: Embeddings are computed once and stored
-- **Fast Retrieval**: Efficient similarity search across large datasets
-- **Project Organization**: Group opinions by project for easy management
-- **Semantic Search**: Find opinions by meaning, not just keywords
-
-### Intelligent Clustering
-
-- **Automatic k-selection**: Finds optimal number of clusters (2-6)
-- **Silhouette Score**: Quality metric for cluster evaluation
-- **Semantic Similarity**: Groups opinions by meaning using embeddings
-- **Reproducible**: Consistent results with fixed random seed
-
-## 📊 Performance
-
-- Embedding 100 opinions: ~2 seconds
-- Clustering 100 opinions: ~0.5 seconds
-- Semantic search: ~0.1 seconds
-- Batch storage: ~2.5 seconds for 100 opinions
-
-## 🛠️ Development
-
-### Adding New Features
-
-1. **Backend**: Add endpoints in `routes.py`, logic in `clustering.py` or `database.py`
-2. **Frontend**: Add components in `src/components/`, pages in `src/pages/`
-3. **Database**: Extend `database.py` for new ChromaDB operations
-
-### Dependencies
-
-Backend dependencies are in `code/backend/requirements.txt`
-Frontend dependencies are in `code/frontend/package.json`
-
-## 🐛 Troubleshooting
-
-### Backend Issues
-
-**ChromaDB not initialized**: Ensure `chroma_db` directory is writable
-**Out of memory**: Reduce batch size or opinion limit
-**Slow embeddings**: Consider GPU acceleration with CUDA-enabled PyTorch
-
-### Frontend Issues
-
-**API connection failed**: Ensure backend is running on port 8000
-**Build errors**: Clear node_modules and reinstall dependencies
-
-## 📝 License
-
-See LICENSE file for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📧 Support
-
-For issues or questions:
-- Check the [Backend Documentation](./code/backend/README.md)
-- Review [API Documentation](./code/backend/API_DOCUMENTATION.md)
-- Run test suite for diagnostics
-
----
-
-Built with ❤️ for BaselHack
