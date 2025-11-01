@@ -8,17 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Lightbulb, TrendingUp, ArrowUpDown, Filter } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { Plus, Lightbulb, TrendingUp, ArrowUpDown, Filter, MessageSquare, User } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -82,21 +72,6 @@ const getRelativeTime = (isoDate: string): string => {
   return `${diffDays} days ago`;
 };
 
-const CustomLegend = ({ payload }: any) => {
-  return (
-    <div className="flex items-center justify-center gap-6 mt-4">
-      {payload.map((entry: any, index: number) => (
-        <div key={`legend-${index}`} className="flex items-center gap-2">
-          <div
-            className="w-3 h-3 rounded-sm"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-sm text-muted-foreground">{entry.value}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -106,6 +81,8 @@ export default function Dashboard() {
   const [filterBy, setFilterBy] = useState<string>("all");
   const [totalInsights, setTotalInsights] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [liveMessages, setLiveMessages] = useState<any[]>([]);
+  const [previousMessageIds, setPreviousMessageIds] = useState<Set<string>>(new Set());
 
   // Fetch campaigns from backend
   useEffect(() => {
@@ -166,6 +143,33 @@ export default function Dashboard() {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fetch live messages feed
+  useEffect(() => {
+    const fetchLiveMessages = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/live-feed?limit=20");
+        const data = await response.json();
+        const messages = data.messages || [];
+        
+        // Track which messages are new
+        const newMessageIds = new Set<string>(messages.map((m: any) => m.id));
+        setPreviousMessageIds(newMessageIds);
+        
+        setLiveMessages(messages);
+      } catch (error) {
+        console.error("Failed to fetch live messages:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchLiveMessages();
+
+    // Refresh every 5 seconds for real-time updates
+    const interval = setInterval(fetchLiveMessages, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -306,43 +310,78 @@ export default function Dashboard() {
         </div>
         <div className="mb-6">
         <h2 className="text-2xl font-bold text-foreground">
-              Insights
+              Live Activity Feed
         </h2>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Trends</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5" />
+              Recent Ideas submitted by Users
+            </CardTitle>
             <CardDescription>
-              Ideas collected per project and month
+              Real-time feed of ideas submitted across all projects
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={trendData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  className="stroke-border"
-                />
-                <XAxis dataKey="month" className="text-muted-foreground" />
-                <YAxis className="text-muted-foreground" />
-                <RechartsTooltip />
-                <Legend iconType="square" content={<CustomLegend />} />
-                <Line
-                  type="monotone"
-                  dataKey="project1"
-                  stroke="hsl(0, 70%, 40%)"
-                  name="Make Basel Greener"
-                  strokeWidth={2}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="project2"
-                  stroke="hsl(220, 80%, 45%)"
-                  name="Team-Building"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {liveMessages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
+                <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
+                <p>No messages yet. Messages will appear here as they arrive.</p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scroll-smooth">
+                {liveMessages.map((msg, index) => {
+                  const isNew = index === 0 && !previousMessageIds.has(msg.id);
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex gap-3 p-4 rounded-lg border transition-all animate-in slide-in-from-top-2 fade-in duration-500 ${
+                        isNew 
+                          ? 'border-primary bg-primary/10 hover:bg-primary/15 shadow-lg shadow-primary/20' 
+                          : 'border-border bg-muted/30 hover:bg-muted/50'
+                      }`}
+                      style={{ 
+                        animationDelay: `${index * 50}ms`,
+                        animationFillMode: 'backwards'
+                      }}
+                    >
+                      <div className="flex-shrink-0">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          isNew 
+                            ? 'bg-primary/20 ring-2 ring-primary animate-pulse' 
+                            : 'bg-primary/10 ring-2 ring-primary/20'
+                        }`}>
+                          <User className="h-5 w-5 text-primary" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-sm text-foreground">
+                            Anonymous User
+                          </span>
+                          {isNew && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-medium animate-in fade-in">
+                              NEW
+                            </span>
+                          )}
+                          <span className="text-xs text-muted-foreground">•</span>
+                          <span className="text-xs text-primary font-medium">
+                            {msg.project_name}
+                          </span>
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {msg.timestamp ? getRelativeTime(msg.timestamp) : "just now"}
+                          </span>
+                        </div>
+                        <p className="text-sm text-foreground break-words leading-relaxed">
+                          {msg.message}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>

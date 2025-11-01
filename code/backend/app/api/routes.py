@@ -267,7 +267,8 @@ async def get_submissions_endpoint(project_id: str = None):
                     "id": id_,
                     "message": doc,
                     "project_id": meta.get("project_id"),
-                    "timestamp": meta.get("timestamp")
+                    "timestamp": meta.get("timestamp"),
+                    "user_id": meta.get("user_id")
                 }
                 for id_, doc, meta in zip(results["ids"], results["documents"], results["metadatas"])
             ]
@@ -284,6 +285,62 @@ async def get_submissions_endpoint(project_id: str = None):
     except Exception as e:
         print(f"Exception in get_submissions: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to get submissions: {str(e)}")
+
+
+@router.get("/live-feed")
+async def get_live_feed(limit: int = 50):
+    """
+    Get recent submissions across all projects for live feed display.
+    Returns submissions with project info, sorted by timestamp (newest first).
+    """
+    try:
+        # Get all campaigns
+        data_dir = Path("/data")
+        file_path = data_dir / "campaigns.json"
+        
+        if not file_path.exists():
+            return {"messages": [], "count": 0}
+        
+        with open(file_path, 'r') as f:
+            campaigns_list = json.load(f)
+        
+        # Collect all submissions from all projects
+        all_messages = []
+        
+        for campaign in campaigns_list:
+            project_id = campaign.get("id")
+            project_name = campaign.get("project_name")
+            
+            try:
+                results = get_submissions(project_id)
+                
+                for id_, doc, meta in zip(results["ids"], results["documents"], results["metadatas"]):
+                    all_messages.append({
+                        "id": id_,
+                        "message": doc,
+                        "project_id": project_id,
+                        "project_name": project_name,
+                        "timestamp": meta.get("timestamp"),
+                        "user_id": meta.get("user_id")
+                    })
+            except Exception as e:
+                print(f"Failed to fetch submissions for project {project_id}: {str(e)}")
+                continue
+        
+        # Sort by timestamp (newest first)
+        all_messages.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        
+        # Limit results
+        limited_messages = all_messages[:limit]
+        
+        return {
+            "messages": limited_messages,
+            "count": len(limited_messages)
+        }
+        
+    except Exception as e:
+        print(f"Exception in get_live_feed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get live feed: {str(e)}")
 
 
 @router.get("/projects/{project_id}/contributors")
