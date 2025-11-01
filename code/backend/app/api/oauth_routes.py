@@ -214,6 +214,14 @@ async def get_oauth_status(platform: str, user_id: str = "default"):
             "stored_at": "pre-configured"
         }
     
+    if platform == "discord" and config.DISCORD_BOT_TOKEN:
+        return {
+            "connected": True,
+            "platform": platform,
+            "method": "bot_token",
+            "stored_at": "pre-configured"
+        }
+    
     # Otherwise check OAuth tokens
     token_data = oauth.get_token(platform, user_id)
     if token_data:

@@ -36,6 +36,7 @@ from app.services.consensus_analysis import calculate_consensus_score, calculate
 from app.core import config
 import numpy as np
 import uuid
+import os
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -149,9 +150,10 @@ async def launch_campaign(request: LaunchCampaignRequest):
     Starts monitoring channels for incoming submissions.
     """
     try:
-        # Import oauth service and slack listener
+        # Import oauth service and listeners
         from app.services import oauth
         from app.services import slack_listener
+        from app.services import discord_listener
         
         # Generate a unique ID for the campaign
         campaign_id = str(uuid.uuid4())
@@ -181,9 +183,31 @@ async def launch_campaign(request: LaunchCampaignRequest):
                     
                     print(f"Posted to Slack: {result}")
                 elif platform == "discord":
-                    result = await oauth.post_discord_message(message)
-                    posting_results[platform] = "success"
-                    print(f"Posted to Discord: {result}")
+                    # For Discord, we need to specify a channel ID
+                    # Try to use pre-configured channel or get from OAuth data
+                    channel_id = None
+                    if config.DISCORD_BOT_TOKEN:
+                        # Use a default channel if configured, or get from token data
+                        token_data = oauth.get_token("discord")
+                        if token_data:
+                            channel_id = token_data.get("channel_id")
+                        # If no channel_id stored, we'll need to configure it
+                        # For now, we can use an env variable for default channel
+                        if not channel_id:
+                            channel_id = config.DISCORD_DEFAULT_CHANNEL_ID
+                    
+                    if channel_id:
+                        result = await oauth.post_discord_message(message, channel_id=channel_id)
+                        posting_results[platform] = "success"
+                        
+                        # Start monitoring this Discord channel for submissions
+                        discord_listener.start_monitoring_channel(channel_id, campaign_id)
+                        monitored_channels[platform] = channel_id
+                        print(f"🎧 Started monitoring Discord channel {channel_id} for campaign {campaign_id}")
+                        print(f"Posted to Discord: {result}")
+                    else:
+                        posting_results[platform] = "error: no channel configured"
+                        print(f"Discord channel_id not configured")
                 else:
                     posting_results[platform] = "not_implemented"
                     print(f"Platform {platform} posting not implemented yet")

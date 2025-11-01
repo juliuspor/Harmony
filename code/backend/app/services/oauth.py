@@ -158,27 +158,52 @@ async def post_slack_message(message: str, channel: str = None, user_id: str = "
 
 async def post_discord_message(message: str, channel_id: str = None, user_id: str = "default") -> Dict[str, Any]:
     """Post a message to Discord"""
-    token_data = get_token("discord", user_id)
-    if not token_data:
-        raise ValueError("No Discord token found. Please connect Discord first.")
+    from app.core import config
     
-    access_token = token_data.get("access_token")
-    if not access_token:
-        raise ValueError("Invalid Discord token data")
-    
-    # Note: For Discord bot posting, you typically need a webhook URL or bot token
-    # This is a simplified version - in production, you'd use Discord webhooks
-    if not channel_id:
-        webhook_url = token_data.get("webhook_url")
-        if webhook_url:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    webhook_url,
-                    json={"content": message}
-                )
-                if response.status_code not in [200, 204]:
-                    raise ValueError(f"Discord post error: {response.text}")
-                return {"ok": True}
-    
-    raise ValueError("Discord channel_id or webhook_url required")
+    # First, try to use the pre-configured bot token if available
+    if config.DISCORD_BOT_TOKEN:
+        # Import discord_listener to use its posting functionality
+        from app.services import discord_listener
+        
+        if not channel_id:
+            # Try to get channel from stored OAuth data
+            token_data = get_token("discord", user_id)
+            if token_data:
+                channel_id = token_data.get("channel_id")
+            if not channel_id:
+                raise ValueError("Discord channel_id required when using bot token")
+        
+        print(f"Using Discord bot token to post to channel {channel_id}")
+        # This function is now synchronous, but we're in an async context
+        # Run it in a thread pool to avoid blocking
+        import asyncio
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(
+            None, 
+            discord_listener.post_discord_message_to_channel, 
+            message, 
+            channel_id
+        )
+        return result
+    else:
+        # Fall back to OAuth webhook
+        token_data = get_token("discord", user_id)
+        if not token_data:
+            raise ValueError("No Discord token found. Please connect Discord first or configure DISCORD_BOT_TOKEN.")
+        
+        # Note: For Discord bot posting, you typically need a webhook URL or bot token
+        # This is a simplified version - in production, you'd use Discord webhooks
+        if not channel_id:
+            webhook_url = token_data.get("webhook", {}).get("url")
+            if webhook_url:
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(
+                        webhook_url,
+                        json={"content": message}
+                    )
+                    if response.status_code not in [200, 204]:
+                        raise ValueError(f"Discord post error: {response.text}")
+                    return {"ok": True}
+        
+        raise ValueError("Discord channel_id or webhook_url required")
 

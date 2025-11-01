@@ -12,14 +12,16 @@ from contextlib import asynccontextmanager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events"""
-    # Startup: Start Slack listener
-    from app.services import slack_listener
+    # Startup: Start Slack and Discord listeners
+    from app.services import slack_listener, discord_listener
     slack_listener.start_slack_listener()
+    discord_listener.start_discord_listener()
     
     yield
     
-    # Shutdown: Stop Slack listener
+    # Shutdown: Stop Slack and Discord listeners
     slack_listener.stop_slack_listener()
+    discord_listener.stop_discord_listener()
 
 
 # Configure logging
