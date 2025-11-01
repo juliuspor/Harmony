@@ -100,14 +100,28 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastMessageCountRef = useRef(0);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when new messages arrive (only within the container)
   useEffect(() => {
-    if (scrollRef.current && messages.length > lastMessageCountRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (messages.length > lastMessageCountRef.current) {
+      // Find the ScrollArea viewport element
+      const scrollArea = scrollContainerRef.current;
+      if (scrollArea) {
+        // ScrollArea creates a viewport with data-radix-scroll-area-viewport attribute
+        const viewport = scrollArea.querySelector('[data-radix-scroll-area-viewport]') as HTMLDivElement;
+        if (viewport) {
+          // Scroll only the viewport, not the entire page
+          setTimeout(() => {
+            viewport.scrollTo({
+              top: viewport.scrollHeight,
+              behavior: 'smooth'
+            });
+          }, 100);
+        }
+      }
       lastMessageCountRef.current = messages.length;
     }
   }, [messages]);
@@ -262,15 +276,15 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
       </div>
 
       {/* Agents Panel */}
-      {debate?.agents && debate.agents.length > 0 && (
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Debate Participants
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card className="border-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Debate Participants
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {debate?.agents && debate.agents.length > 0 ? (
             <div className="flex flex-wrap gap-4">
               {debate.agents
                 .filter((agent) => agent.agent_id !== "orchestrator")
@@ -297,9 +311,13 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                   );
                 })}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="py-8 text-center text-muted-foreground">
+              <p className="text-sm">Waiting for agents to join...</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Main Debate Area */}
       <Card className="border-2 border-blue-200 dark:border-blue-800">
@@ -322,7 +340,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[600px]" ref={scrollRef}>
+          <ScrollArea className="h-[600px]" ref={scrollContainerRef}>
             <div className="p-6 space-y-4">
               {/* Loading animation when no messages yet */}
               {!isComplete && !isCancelled && messages.length === 0 && (
