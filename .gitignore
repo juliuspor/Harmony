@@ -31,6 +31,9 @@ code/data/campaigns.json.backup
 code/data/oauth_tokens.json
 code/data/submissions.json
 code/data
+code/.vite
+code/frontend/.vite
+code/vite
 
 # IDEs
 .vscode/
