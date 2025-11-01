@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Brain, TrendingUp, Lightbulb, CheckCircle2, Sparkles, MessageSquare, Zap, Clock } from "lucide-react";
+import { Brain, TrendingUp, Lightbulb, CheckCircle2, Sparkles, MessageSquare, Zap, Clock, ArrowLeft } from "lucide-react";
 import { LiveDebateView } from "./LiveDebateView";
 import { getConsensusResults } from "@/lib/api";
 import type { DebateResponse } from "@/lib/api";
@@ -274,7 +274,7 @@ export function DebateSimulation({
               onClick={() => setShowLiveView(false)}
               className="gap-2"
             >
-              <CheckCircle2 className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4" />
               Back to Summary
             </Button>
           </div>
