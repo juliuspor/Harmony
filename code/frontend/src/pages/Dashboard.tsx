@@ -156,8 +156,8 @@ export default function Dashboard() {
     // Initial fetch
     fetchLiveMessages();
 
-    // Refresh every 2 seconds for real-time updates
-    const interval = setInterval(fetchLiveMessages, 500);
+    // Refresh every 250ms for real-time updates
+    const interval = setInterval(fetchLiveMessages, 350);
 
     return () => clearInterval(interval);
   }, []);
