@@ -53,9 +53,10 @@ Summary:"""
                 {"role": "system", "content": "You are a helpful assistant that summarizes groups of text submissions, identifying common themes and patterns."},
                 {"role": "user", "content": prompt}
             ],
-            "max_tokens": config.SUMMARIZATION_MAX_TOKENS,
-            "temperature": config.SUMMARIZATION_TEMPERATURE
+            "max_tokens": config.SUMMARIZATION_MAX_TOKENS
         }
+        
+        print(f"Summarizing cluster {cluster_index + 1} with model {config.OPENAI_MODEL}")
         
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
@@ -64,14 +65,26 @@ Summary:"""
             timeout=30
         )
         
+        print(f"Response status: {response.status_code}")
+        
         response.raise_for_status()
         result = response.json()
         
-        return result["choices"][0]["message"]["content"].strip()
+        print(f"API Response: {json.dumps(result, indent=2)[:500]}")
+        
+        message_content = result["choices"][0]["message"]["content"]
+        print(f"Message content type: {type(message_content)}, value: '{message_content}'")
+        
+        summary = message_content.strip() if message_content else "No summary generated"
+        print(f"Generated summary for cluster {cluster_index + 1} (length: {len(summary)}): {summary[:200]}")
+        
+        return summary
     
     except Exception as e:
         # Return error information but don't fail the entire clustering
-        return f"Error generating summary: {str(e)}"
+        error_msg = f"Error generating summary: {str(e)}"
+        print(f"Summarization error for cluster {cluster_index + 1}: {error_msg}")
+        return error_msg
 
 
 async def summarize_cluster(texts: List[str], cluster_index: int) -> str:

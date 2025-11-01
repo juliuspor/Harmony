@@ -72,7 +72,7 @@ No Markdown formatting, only new lines afer the hello message, just plain text. 
     
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=config.OPENAI_MODEL,
             messages=[
                 {
                     "role": "system",
@@ -91,7 +91,6 @@ No Markdown formatting, only new lines afer the hello message, just plain text. 
                     "schema": schema
                 }
             },
-            temperature=0.7,
             max_tokens=2000
         )
         
