@@ -1,8 +1,5 @@
 """Slack event listener service for capturing user submissions"""
 
-import json
-import asyncio
-from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any
 from slack_sdk.socket_mode import SocketModeClient
@@ -10,6 +7,7 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.socket_mode.request import SocketModeRequest
 from slack_sdk.web import WebClient
 from app.core import config
+from app.services.database import add_submissions
 import threading
 
 
@@ -17,61 +15,10 @@ import threading
 _active_monitors: Dict[str, str] = {}  # channel_id -> project_id
 
 
-def get_submissions_file_path() -> Path:
-    """Get the path to the submissions file"""
-    data_dir = Path("/data")
-    data_dir.mkdir(parents=True, exist_ok=True)
-    return data_dir / "submissions.json"
-
-
-def load_submissions() -> list:
-    """Load all submissions from file"""
-    file_path = get_submissions_file_path()
-    if file_path.exists():
-        try:
-            with open(file_path, 'r') as f:
-                return json.load(f)
-        except json.JSONDecodeError:
-            return []
-    return []
-
-
-def save_submissions(submissions: list):
-    """Save submissions to file"""
-    file_path = get_submissions_file_path()
-    with open(file_path, 'w') as f:
-        json.dump(submissions, f, indent=2)
-
-
 def add_submission(project_id: str, message: str, user_id: str, channel_id: str, timestamp: str):
-    """Add a new submission to the file"""
-    submissions = load_submissions()
-    
-    # Find or create project entry
-    project_entry = None
-    for entry in submissions:
-        if entry.get("project_id") == project_id:
-            project_entry = entry
-            break
-    
-    if not project_entry:
-        project_entry = {
-            "project_id": project_id,
-            "source": "slack",
-            "channel_id": channel_id,
-            "submissions": []
-        }
-        submissions.append(project_entry)
-    
-    # Add the submission
-    project_entry["submissions"].append({
-        "message": message,
-        "user_id": user_id,
-        "timestamp": timestamp,
-        "received_at": datetime.utcnow().isoformat()
-    })
-    
-    save_submissions(submissions)
+    """Add a new submission to the database"""
+    # Store submission in the database
+    add_submissions([message], project_id)
     print(f"✅ New submission saved for project {project_id}: {message[:50]}...")
 
 
@@ -106,9 +53,26 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
             text = event.get("text", "")
             timestamp = event.get("ts")
             subtype = event.get("subtype")
+            bot_id = event.get("bot_id")
             
             # Ignore bot messages and message changes
             if subtype in ["bot_message", "message_changed", "message_deleted"]:
+                return
+            
+            # Ignore messages from bots (check bot_id field)
+            if bot_id:
+                print(f"🤖 Ignoring bot message: {text[:50]}...")
+                return
+            
+            # Ignore messages without a user_id
+            if not user_id:
+                print(f"⚠️ Ignoring message without user_id: {text[:50]}...")
+                return
+            
+            # Get our bot's user ID and ignore messages from our own bot
+            bot_user_id = get_bot_user_id()
+            if bot_user_id and user_id == bot_user_id:
+                print(f"🤖 Ignoring message from our own bot: {text[:50]}...")
                 return
             
             # Check if we're monitoring this channel

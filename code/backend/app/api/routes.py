@@ -220,19 +220,28 @@ async def launch_campaign(request: LaunchCampaignRequest):
 
 
 @router.get("/submissions")
-async def get_submissions(project_id: str = None):
+async def get_submissions_endpoint(project_id: str = None):
     """
     Get all submissions or submissions for a specific project.
     Returns submissions captured from Slack messages.
     """
     try:
-        from app.services import slack_listener
-        
-        submissions = slack_listener.load_submissions()
-        
-        # Filter by project_id if provided
         if project_id:
-            submissions = [s for s in submissions if s.get("project_id") == project_id]
+            # Get submissions for specific project from database
+            results = get_submissions(project_id)
+            submissions = [
+                {
+                    "id": id_,
+                    "message": doc,
+                    "project_id": meta.get("project_id"),
+                    "timestamp": meta.get("timestamp")
+                }
+                for id_, doc, meta in zip(results["ids"], results["documents"], results["metadatas"])
+            ]
+        else:
+            # If no project_id provided, return empty list 
+            # (getting all submissions across all projects not implemented)
+            submissions = []
         
         return {
             "submissions": submissions,
