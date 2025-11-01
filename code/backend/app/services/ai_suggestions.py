@@ -50,7 +50,7 @@ def generate_campaign_suggestions(
     
     # Create the prompt
     source_list = ", ".join(connected_sources)
-    prompt = f"""You are a campaign strategist helping to create call to ideation messages for different communication platforms.
+    prompt = f"""You are a campaign strategist helping to create an engaging call to ideation messages for different communication platforms.
 
 Project Name: {project_name}
 Project Goal: {project_goal}
@@ -66,8 +66,8 @@ Platform Guidelines:
 - teams: Professional but friendly. Similar to Slack but slightly more formal.
 - form: Clear, concise description for an online form. Focus on instructions and what you're looking for.
 
-Make the messages not longer than one sentence.
-No Markdown formatting, just plain text. No ** or * or # or anything else.
+Make the messages not longer than three sentences.
+No Markdown formatting, only new lines afer the hello message, just plain text. No ** or * or # or anything else.
 """
     
     try:
