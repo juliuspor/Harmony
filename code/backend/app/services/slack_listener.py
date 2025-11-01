@@ -55,29 +55,35 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
             subtype = event.get("subtype")
             bot_id = event.get("bot_id")
             
+            # Log ALL incoming messages for debugging
+            print(f"📬 Incoming message: channel={channel_id}, user={user_id}, subtype={subtype}, bot_id={bot_id}, text='{text[:50]}...'")
+            
             # Ignore bot messages and message changes
             if subtype in ["bot_message", "message_changed", "message_deleted"]:
+                print(f"⏭️ Skipping subtype '{subtype}'")
                 return
             
             # Ignore messages from bots (check bot_id field)
             if bot_id:
-                print(f"🤖 Ignoring bot message: {text[:50]}...")
+                print(f"🤖 Ignoring bot message (has bot_id)")
                 return
             
             # Ignore messages without a user_id
             if not user_id:
-                print(f"⚠️ Ignoring message without user_id: {text[:50]}...")
+                print(f"⚠️ Ignoring message without user_id")
                 return
             
             # Get our bot's user ID and ignore messages from our own bot
             bot_user_id = get_bot_user_id()
             if bot_user_id and user_id == bot_user_id:
-                print(f"🤖 Ignoring message from our own bot: {text[:50]}...")
+                print(f"🤖 Ignoring message from our own bot (user_id matches)")
                 return
             
             # Check if we're monitoring this channel
             if channel_id in _active_monitors:
                 project_id = _active_monitors[channel_id]
+                
+                print(f"✅ Valid user message for monitored channel {channel_id}, saving to project {project_id}")
                 
                 # Save the submission
                 add_submission(
@@ -88,7 +94,9 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
                     timestamp=timestamp
                 )
                 
-                print(f"📨 Received message in monitored channel {channel_id}: {text[:50]}...")
+                print(f"📨 Submission saved: {text[:50]}...")
+            else:
+                print(f"ℹ️ Message in unmonitored channel {channel_id}, skipping. Monitored channels: {list(_active_monitors.keys())}")
 
 
 _socket_client: Optional[SocketModeClient] = None

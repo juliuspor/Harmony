@@ -19,10 +19,17 @@ def get_chroma_client():
     return _client
 
 
-def get_collection():
-    """Get or create the submissions collection"""
+def get_collection(force_refresh: bool = False):
+    """
+    Get or create the submissions collection
+    
+    Args:
+        force_refresh: If True, forces a refresh of the collection from the database
+    """
     global _collection
-    if _collection is None:
+    
+    # Force refresh or create if doesn't exist
+    if _collection is None or force_refresh:
         client = get_chroma_client()
         
         # Create custom embedding function that uses our sentence transformer model
@@ -36,12 +43,14 @@ def get_collection():
         
         embedding_function = SentenceTransformerEmbedding()
         
-        # Get or create collection
+        # Get or create collection (this always gets the latest from disk)
         _collection = client.get_or_create_collection(
             name="submissions",
             embedding_function=embedding_function,
             metadata={"hnsw:space": "cosine"}
         )
+        print(f"📊 Collection loaded: {_collection.count()} total submissions in database")
+    
     return _collection
 
 
@@ -97,13 +106,16 @@ def get_submissions(project_id: str, limit: Optional[int] = None) -> Dict[str, A
     if limit is None:
         limit = config.MAX_SUBMISSIONS
     
-    collection = get_collection()
+    # Always get fresh collection to ensure latest data
+    collection = get_collection(force_refresh=True)
     
     results = collection.get(
         where={"project_id": project_id},
         limit=limit,
         include=["documents", "metadatas", "embeddings"]
     )
+    
+    print(f"📥 Retrieved {len(results['ids'])} submissions for project {project_id}")
     
     return results
 

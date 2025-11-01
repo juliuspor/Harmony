@@ -1,10 +1,10 @@
 [
   {
-    "id": "b6498700-d13e-42d3-a9da-f24eed792f5d",
-    "project_name": "asdfas",
-    "project_goal": "sadfasdf",
+    "id": "9ef49c2b-9c37-43e8-b91f-b81b82949873",
+    "project_name": "make basel greener",
+    "project_goal": "we want to idaete on how we can make the ciry of basel greener",
     "messages": {
-      "slack": "Hey team! \ud83c\udf89 We\u2019re on the lookout for your brilliant ideas for our asdfas project! Drop your thoughts in this channel and let\u2019s make something amazing together!"
+      "slack": "Hey team! \ud83c\udf3f We're on a mission to make Basel greener, and we want your ideas! Share your thoughts on how we can enhance our city's green spaces and sustainability efforts!"
     },
     "posting_results": {
       "slack": "success"
@@ -12,14 +12,14 @@
     "monitored_channels": {
       "slack": "C09QZ299A0Y"
     },
-    "created_at": "2025-11-01T12:09:36.925793"
+    "created_at": "2025-11-01T12:41:03.698880"
   },
   {
-    "id": "88690ec6-87f3-4969-8c7c-71913d16abaa",
-    "project_name": "Basel Hackahton ",
-    "project_goal": "basel organize hackahton ",
+    "id": "17adff89-003b-4d2c-b7ca-8dac7aa06c79",
+    "project_name": "lalllalall",
+    "project_goal": "alallalla",
     "messages": {
-      "slack": "Hey team! We're gearing up for the Basel Hackathon and want your bright ideas to make it awesome. Share your thoughts on themes, challenges, or anything else that sparks your creativity!"
+      "slack": "Hey team! We\u2019re on the lookout for your awesome ideas for our project lalllalall. Share your thoughts and let\u2019s make this project shine together!"
     },
     "posting_results": {
       "slack": "success"
@@ -27,6 +27,6 @@
     "monitored_channels": {
       "slack": "C09QZ299A0Y"
     },
-    "created_at": "2025-11-01T12:21:55.680253"
+    "created_at": "2025-11-01T12:47:17.253417"
   }
 ]
