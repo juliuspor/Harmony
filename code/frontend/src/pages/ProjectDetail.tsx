@@ -241,160 +241,165 @@ export default function ProjectDetail() {
             </TabsList>
 
             <TabsContent value="clusters" className="space-y-4">
-              {/* Header */}
-              <div className="text-center mb-2">
-                <h3 className="text-2xl font-bold mb-1">Idea Islands</h3>
-                <p className="text-muted-foreground text-sm">
-                  {clusterData.length} groups of similar ideas · Click to
-                  explore
-                </p>
-              </div>
+              <Card className="border border-border/50 shadow-sm bg-card text-card-foreground rounded-lg">
+                <CardContent className="pt-6">
+                  {/* Header */}
+                  <div className="text-center mb-2">
+                    <h3 className="text-2xl font-bold mb-1">Idea Islands</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {clusterData.length} groups of similar ideas · Click to
+                      explore
+                    </p>
+                  </div>
 
-              {/* Bubble Circle */}
-              <div className="relative z-10 rounded-2xl bg-gradient-to-br from-slate-50/50 to-gray-100/50 dark:from-slate-900/20 dark:to-gray-900/20 py-4 mb-8 overflow-visible">
-                <div className="flex items-center justify-center">
-                  <div className="relative w-[520px] h-[420px]">
-                    <div className="relative w-full h-full">
-                      {clusterData.map((cluster, index) => {
-                        const isExpanded = expandedCluster === cluster.id;
-                        const size = 90 + cluster.ideas.length * 15;
+                  {/* Bubble Circle */}
+                  <div className="relative z-10 rounded-lg border border-border/50 pb-4 mb-8 overflow-visible">
+                    <div className="flex items-center justify-center">
+                      <div className="relative w-[520px] h-[420px]">
+                        <div className="relative w-full h-full">
+                          {clusterData.map((cluster, index) => {
+                            const isExpanded = expandedCluster === cluster.id;
+                            const size = 90 + cluster.ideas.length * 15;
 
-                        // Centered radial layout
-                        const angle =
-                          (index * 2 * Math.PI) / clusterData.length -
-                          Math.PI / 2;
-                        const radius = 30; // circle radius
-                        const centerX = 35; // move circle more to the left
-                        const centerY = 38; // move circle up slightly
-                        const left = centerX + radius * Math.cos(angle);
-                        const top = centerY + radius * Math.sin(angle);
+                            // Centered radial layout
+                            const angle =
+                              (index * 2 * Math.PI) / clusterData.length -
+                              Math.PI / 2;
+                            const radius = 30; // circle radius
+                            const centerX = 35; // move circle more to the left
+                            const centerY = 38; // move circle up slightly
+                            const left = centerX + radius * Math.cos(angle);
+                            const top = centerY + radius * Math.sin(angle);
 
-                        return (
-                          <div
-                            key={cluster.id}
-                            className="absolute z-0"
-                            style={{
-                              left: `${left}%`,
-                              top: `${top}%`,
-                              transform: "translate(-50%, -50%)",
-                              animation: `float ${
-                                3 + index * 0.5
-                              }s ease-in-out infinite`,
-                            }}
-                          >
-                            <div
-                              className="rounded-full flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-2xl"
-                              style={{
-                                width: `${size}px`,
-                                height: `${size}px`,
-                                backgroundColor: cluster.color,
-                                opacity: isExpanded ? 1 : 0.9,
-                                transform: isExpanded
-                                  ? "scale(1.15)"
-                                  : "scale(1)",
-                              }}
-                              onClick={() =>
-                                setExpandedCluster(
-                                  isExpanded ? null : cluster.id
-                                )
-                              }
-                            >
-                              <div className="text-center text-white p-4">
-                                <div className="text-4xl font-bold mb-2">
-                                  {cluster.ideas.length}
-                                </div>
-                                <div className="text-sm font-semibold px-2 line-clamp-2">
-                                  {cluster.theme}
-                                </div>
-                                <div className="text-xs mt-2 opacity-90">
-                                  {cluster.similarity}% similar
+                            return (
+                              <div
+                                key={cluster.id}
+                                className="absolute z-0"
+                                style={{
+                                  left: `${left}%`,
+                                  top: `${top}%`,
+                                  transform: "translate(-50%, -50%)",
+                                  animation: `float ${
+                                    3 + index * 0.5
+                                  }s ease-in-out infinite`,
+                                }}
+                              >
+                                <div
+                                  className="rounded-full flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-2xl"
+                                  style={{
+                                    width: `${size}px`,
+                                    height: `${size}px`,
+                                    backgroundColor: cluster.color,
+                                    opacity: isExpanded ? 1 : 0.9,
+                                    transform: isExpanded
+                                      ? "scale(1.15)"
+                                      : "scale(1)",
+                                  }}
+                                  onClick={() =>
+                                    setExpandedCluster(
+                                      isExpanded ? null : cluster.id
+                                    )
+                                  }
+                                >
+                                  <div className="text-center text-white p-4">
+                                    <div className="text-4xl font-bold mb-2">
+                                      {cluster.ideas.length}
+                                    </div>
+                                    <div className="text-sm font-semibold px-2 line-clamp-2">
+                                      {cluster.theme}
+                                    </div>
+                                    <div className="text-xs mt-2 opacity-90">
+                                      {cluster.similarity}% similar
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Expanded Details (well below bubbles, no overlap) */}
-              {expandedCluster !== null && (
-                <div className="relative z-20 mt-4">
-                  <Card
-                    className="border-4 animate-in slide-in-from-bottom-4"
-                    style={{
-                      borderColor:
-                        clusterData.find((c) => c.id === expandedCluster)
-                          ?.color || "transparent",
-                    }}
-                  >
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div
-                            className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg"
-                            style={{
-                              backgroundColor: clusterData.find(
-                                (c) => c.id === expandedCluster
-                              )?.color,
-                            }}
-                          >
-                            {
-                              clusterData.find((c) => c.id === expandedCluster)
-                                ?.ideas.length
-                            }
-                          </div>
-                          <div>
-                            <CardTitle className="text-2xl">
-                              {
-                                clusterData.find(
-                                  (c) => c.id === expandedCluster
-                                )?.theme
-                              }
-                            </CardTitle>
-                            <CardDescription className="text-base mt-1">
-                              {
-                                clusterData.find(
-                                  (c) => c.id === expandedCluster
-                                )?.similarity
-                              }
-                              % similarity · All ideas in this group
-                            </CardDescription>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setExpandedCluster(null)}
-                        >
-                          Close
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {clusterData
-                          .find((c) => c.id === expandedCluster)
-                          ?.ideas.map((idea, i) => (
-                            <div
-                              key={i}
-                              className="p-4 rounded-lg border-l-4 bg-muted/30 hover:bg-muted/50 transition-colors"
-                              style={{
-                                borderLeftColor: clusterData.find(
-                                  (c) => c.id === expandedCluster
-                                )?.color,
-                              }}
-                            >
-                              <p className="text-sm">{idea.text}</p>
+                  {/* Expanded Details (well below bubbles, no overlap) */}
+                  {expandedCluster !== null && (
+                    <div className="relative z-20 mt-4">
+                      <Card
+                        className="border-4 animate-in slide-in-from-bottom-4"
+                        style={{
+                          borderColor:
+                            clusterData.find((c) => c.id === expandedCluster)
+                              ?.color || "transparent",
+                        }}
+                      >
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div
+                                className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg"
+                                style={{
+                                  backgroundColor: clusterData.find(
+                                    (c) => c.id === expandedCluster
+                                  )?.color,
+                                }}
+                              >
+                                {
+                                  clusterData.find(
+                                    (c) => c.id === expandedCluster
+                                  )?.ideas.length
+                                }
+                              </div>
+                              <div>
+                                <CardTitle className="text-2xl">
+                                  {
+                                    clusterData.find(
+                                      (c) => c.id === expandedCluster
+                                    )?.theme
+                                  }
+                                </CardTitle>
+                                <CardDescription className="text-base mt-1">
+                                  {
+                                    clusterData.find(
+                                      (c) => c.id === expandedCluster
+                                    )?.similarity
+                                  }
+                                  % similarity · All ideas in this group
+                                </CardDescription>
+                              </div>
                             </div>
-                          ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setExpandedCluster(null)}
+                            >
+                              Close
+                            </Button>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid gap-3 md:grid-cols-2">
+                            {clusterData
+                              .find((c) => c.id === expandedCluster)
+                              ?.ideas.map((idea, i) => (
+                                <div
+                                  key={i}
+                                  className="p-4 rounded-lg border-l-4 bg-muted/30 hover:bg-muted/50 transition-colors"
+                                  style={{
+                                    borderLeftColor: clusterData.find(
+                                      (c) => c.id === expandedCluster
+                                    )?.color,
+                                  }}
+                                >
+                                  <p className="text-sm">{idea.text}</p>
+                                </div>
+                              ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
               <style>{`
                 @keyframes float {
