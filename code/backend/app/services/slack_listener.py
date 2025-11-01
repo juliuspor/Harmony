@@ -114,6 +114,22 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
                         print(f"🤖 Ignoring message from our own bot (user_id matches)")
                         return
                     
+                    # Fetch user's display name from Slack API
+                    username = user_id  # Fallback to ID if we can't get the name
+                    try:
+                        user_info = client.web_client.users_info(user=user_id)
+                        if user_info.get("ok"):
+                            user_data = user_info.get("user", {})
+                            # Use display name, real name, or username in order of preference
+                            username = (
+                                user_data.get("profile", {}).get("display_name") or 
+                                user_data.get("real_name") or 
+                                user_data.get("name") or 
+                                user_id
+                            )
+                    except Exception as e:
+                        print(f"⚠️ Could not fetch username for {user_id}: {str(e)}")
+                    
                     # Check if we're monitoring this channel
                     if channel_id in _active_monitors:
                         project_id = _active_monitors[channel_id]
@@ -128,11 +144,11 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
                             # Remove oldest entries (this is approximate since sets are unordered)
                             _processed_messages.pop()
                         
-                        # Save the submission
+                        # Save the submission with username instead of user_id
                         add_submission(
                             project_id=project_id,
                             message=text,
-                            user_id=user_id,
+                            user_id=username,
                             channel_id=channel_id,
                             timestamp=timestamp
                         )

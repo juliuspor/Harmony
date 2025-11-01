@@ -66,7 +66,8 @@ class DiscordBot(discord.Client):
         try:
             # Get message details
             channel_id = str(message.channel.id)
-            user_id = str(message.author.id)
+            # Use display name (server nickname) or global name, fallback to username
+            username = message.author.display_name or message.author.global_name or message.author.name
             text = message.content
             timestamp = message.created_at.isoformat()
             
@@ -79,7 +80,7 @@ class DiscordBot(discord.Client):
                 return
             
             # Log ALL incoming messages for debugging
-            print(f"📬 Incoming Discord message: channel={channel_id}, user={user_id}, author={message.author.name}, bot={message.author.bot}, text='{text[:50]}...'")
+            print(f"📬 Incoming Discord message: channel={channel_id}, user={username}, bot={message.author.bot}, text='{text[:50]}...'")
             
             # Ignore bot messages
             if message.author.bot:
@@ -109,7 +110,7 @@ class DiscordBot(discord.Client):
                 add_submission(
                     project_id=project_id,
                     message=text,
-                    user_id=user_id,
+                    user_id=username,
                     channel_id=channel_id,
                     timestamp=timestamp
                 )
