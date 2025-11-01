@@ -276,15 +276,15 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
       </div>
 
       {/* Agents Panel */}
-      {debate?.agents && debate.agents.length > 0 && (
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Debate Participants
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card className="border-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Debate Participants
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {debate?.agents && debate.agents.length > 0 ? (
             <div className="flex flex-wrap gap-4">
               {debate.agents
                 .filter((agent) => agent.agent_id !== "orchestrator")
@@ -311,9 +311,13 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                   );
                 })}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="py-8 text-center text-muted-foreground">
+              <p className="text-sm">Waiting for agents to join...</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Main Debate Area */}
       <Card className="border-2">
