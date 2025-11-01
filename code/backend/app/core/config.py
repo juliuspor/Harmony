@@ -15,9 +15,12 @@ KMEANS_N_INIT = 10
 # Model Settings
 EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 
-# OpenAI Settings
+# OpenAI and CrewAI Settings
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY_HACK")
-OPENAI_MODEL = "gpt-4o"
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
+OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
+OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "2000"))
+
 SUMMARIZATION_MAX_TOKENS = 300
 SUMMARIZATION_TEMPERATURE = 0.3
 SUGGESTIONS_TEMPERATURE = 0.7
@@ -39,12 +42,6 @@ DISCORD_REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI", "http://localhost:8000/
 
 # Base URL for OAuth
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
-
-# OpenAI/CrewAI Settings
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
-OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
-OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "2000"))
 
 # Debate Settings
 DEFAULT_MAX_ROUNDS = 3
