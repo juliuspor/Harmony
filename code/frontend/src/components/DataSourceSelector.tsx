@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { MessageSquare, Mail, Users, MessageCircle, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -9,7 +9,7 @@ interface DataSource {
   id: string;
   name: string;
   description: string;
-  icon: React.ReactNode;
+  logo: string;
   requiresOAuth: boolean;
 }
 
@@ -18,28 +18,14 @@ const dataSources: DataSource[] = [
     id: "slack",
     name: "Slack",
     description: "Monitor channels for new ideas and discussions",
-    icon: <MessageSquare className="h-6 w-6" />,
+    logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 127 127'%3E%3Cpath d='M27.2 80c0 7.3-5.9 13.2-13.2 13.2C6.7 93.2.8 87.3.8 80c0-7.3 5.9-13.2 13.2-13.2h13.2V80zm6.6 0c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2v33c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V80z' fill='%23E01E5A'/%3E%3Cpath d='M47 27c-7.3 0-13.2-5.9-13.2-13.2C33.8 6.5 39.7.6 47 .6c7.3 0 13.2 5.9 13.2 13.2V27H47zm0 6.7c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H13.9C6.6 60.1.7 54.2.7 46.9c0-7.3 5.9-13.2 13.2-13.2H47z' fill='%2336C5F0'/%3E%3Cpath d='M99.9 46.9c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H99.9V46.9zm-6.6 0c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V13.8C66.9 6.5 72.8.6 80.1.6c7.3 0 13.2 5.9 13.2 13.2v33.1z' fill='%232EB67D'/%3E%3Cpath d='M80.1 99.8c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V99.8h13.2zm0-6.6c-7.3 0-13.2-5.9-13.2-13.2 0-7.3 5.9-13.2 13.2-13.2h33.1c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H80.1z' fill='%23ECB22E'/%3E%3C/svg%3E",
     requiresOAuth: true,
-  },
-  {
-    id: "teams",
-    name: "Microsoft Teams",
-    description: "Watch team chats and conversations",
-    icon: <Users className="h-6 w-6" />,
-    requiresOAuth: false,
-  },
-  {
-    id: "outlook",
-    name: "Outlook",
-    description: "Scan emails sent to specific addresses",
-    icon: <Mail className="h-6 w-6" />,
-    requiresOAuth: false,
   },
   {
     id: "discord",
     name: "Discord",
     description: "Monitor servers for new ideas and conversations",
-    icon: <MessageCircle className="h-6 w-6" />,
+    logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 127.14 96.36'%3E%3Cpath fill='%235865f2' d='M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15zM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69z'/%3E%3C/svg%3E",
     requiresOAuth: true,
   },
 ];
@@ -146,15 +132,17 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
       {dataSources.map((source) => (
         <Card
           key={source.id}
-          className={`transition-all ${
+          className={`transition-all border-2 ${
             selectedSources.includes(source.id)
-              ? "border-primary bg-primary/5"
-              : "hover:border-primary/50"
+              ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20"
+              : "hover:border-purple-300"
           }`}
         >
           <CardContent className="flex items-center justify-between p-6">
             <div className="flex items-start space-x-4 flex-1">
-              <div className="text-primary">{source.icon}</div>
+              <div className="flex-shrink-0">
+                <img src={source.logo} alt={source.name} className="h-8 w-8" />
+              </div>
               <div className="flex-1 space-y-1">
                 <Label className="font-semibold text-foreground">
                   {source.name}
@@ -165,15 +153,17 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
             <Button
               onClick={() => handleConnect(source.id, source.requiresOAuth)}
               variant={selectedSources.includes(source.id) ? "default" : "outline"}
-              className="ml-4"
+              className={`ml-4 transition-all ${
+                selectedSources.includes(source.id) 
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0' 
+                  : 'border-2 border-purple-300 text-purple-600 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white hover:border-0'
+              }`}
             >
               {selectedSources.includes(source.id) ? (
                 <>
                   <Check className="mr-2 h-4 w-4" />
-                  Selected
+                  Connected
                 </>
-              ) : (source.requiresOAuth && connectionStatus[source.id]) ? (
-                "Connected - Click to Use"
               ) : (
                 "Connect"
               )}
