@@ -211,7 +211,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
     <div className="space-y-6">
       {/* Header Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-2 border-blue-200 dark:border-blue-800">
+        <Card className="border-2 border-gray-200 dark:border-gray-800">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <Users className="h-8 w-8 text-blue-500" />
@@ -225,10 +225,10 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-cyan-200 dark:border-cyan-800">
+        <Card className="border-2 border-gray-200 dark:border-gray-800">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <MessageSquare className="h-8 w-8 text-cyan-500" />
+              <MessageSquare className="h-8 w-8 text-blue-500" />
               <div>
                 <p className="text-2xl font-bold">{messages.length}</p>
                 <p className="text-xs text-muted-foreground">Messages</p>
@@ -237,10 +237,10 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-sky-200 dark:border-sky-800">
+        <Card className="border-2 border-gray-200 dark:border-gray-800">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Clock className="h-8 w-8 text-sky-500" />
+              <Clock className="h-8 w-8 text-blue-500" />
               <div>
                 <p className="text-2xl font-bold">{currentRound}</p>
                 <p className="text-xs text-muted-foreground">Round</p>
@@ -249,7 +249,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           </CardContent>
         </Card>
 
-        <Card className="border-2">
+        <Card className="border-2 border-gray-200 dark:border-gray-800">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               {isComplete ? (
@@ -259,7 +259,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
                   <span className="text-red-600 text-xl">✕</span>
                 </div>
               ) : (
-                <Sparkles className="h-8 w-8 text-primary" />
+                <Sparkles className="h-8 w-8 text-blue-500" />
               )}
               <div>
                 <p className="text-sm font-bold capitalize">
@@ -277,7 +277,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
       </div>
 
       {/* Agents Panel */}
-      <Card className="border-2">
+      <Card className="border-2 border-gray-200 dark:border-gray-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
@@ -321,7 +321,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
       </Card>
 
       {/* Main Debate Area */}
-      <Card className="border-2 border-blue-200 dark:border-blue-800">
+      <Card className="border-2 border-gray-200 dark:border-gray-800">
         <CardHeader className="border-b bg-muted/30">
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-blue-500" />
