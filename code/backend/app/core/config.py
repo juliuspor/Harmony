@@ -19,7 +19,7 @@ EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY_HACK")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
-OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "2000"))
+OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
 
 SUMMARIZATION_MAX_TOKENS = 300
 SUMMARIZATION_TEMPERATURE = 0.3
@@ -50,23 +50,35 @@ DEFAULT_MAX_ROUNDS = 3
 DEFAULT_MAX_MESSAGES = 30
 
 # Orchestrator Intervention Settings
-INTERVENTION_REPETITION_THRESHOLD = 3  # Number of similar messages before intervention
-INTERVENTION_OFF_TOPIC_THRESHOLD = 0.3  # Semantic similarity threshold for off-topic detection
-INTERVENTION_STALEMATE_THRESHOLD = 5  # Number of rounds without progress
+INTERVENTION_REPETITION_THRESHOLD = 2  # Number of similar messages before intervention
+INTERVENTION_OFF_TOPIC_THRESHOLD = 0.5  # Semantic similarity threshold for off-topic detection
+INTERVENTION_STALEMATE_THRESHOLD = 2  # Number of rounds without progress
 DETECT_ETHICAL_VIOLATIONS = True  # Enable insult/profanity detection
 
 # Consensus Analysis Settings
-CONSENSUS_SEMANTIC_WEIGHT = 0.4
-CONSENSUS_AGREEMENT_WEIGHT = 0.25
-CONSENSUS_CONVERGENCE_WEIGHT = 0.20
-CONSENSUS_RESOLUTION_WEIGHT = 0.15
+# Measures how similar agents' final positions are 
+# using AI embeddings to compare meaning. This is the most 
+# important metric as it captures true alignment of views.
+CONSENSUS_SEMANTIC_WEIGHT = 0.70
+
+# Ratio of explicit agreement vs disagreement keywords
+# in messages (e.g., "I agree" vs "I disagree")
+CONSENSUS_AGREEMENT_WEIGHT = 0.20
+
+# Measures if agents' positions became more similar
+# over time by comparing early vs late round positions
+CONSENSUS_CONVERGENCE_WEIGHT = 0.05
+
+# Tracks how many counter-arguments were addressed
+# or resolved during the debate
+CONSENSUS_RESOLUTION_WEIGHT = 0.05
 
 # Debate Generation Settings
 PERSONA_GENERATION_TEMPERATURE = 0.7
 MAX_SUBMISSIONS_FOR_PERSONA = 5
-DEBATE_CONTEXT_MESSAGE_LIMIT = 8
+DEBATE_CONTEXT_MESSAGE_LIMIT = 3
 AGENT_MESSAGE_MAX_TOKENS_RATIO = 0.5
-AGENT_MESSAGE_MAX_WORDS = 200
+AGENT_MESSAGE_MAX_WORDS = 100
 
 # Intervention Similarity Thresholds
 REPETITION_SIMILARITY_THRESHOLD = 0.85
