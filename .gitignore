@@ -23,6 +23,13 @@ build/
 .env
 .env.local
 
+# Data files (now stored in MongoDB)
+code/data/campaigns.json
+code/data/campaigns.json.backup
+code/data/oauth_tokens.json
+code/data/submissions.json
+code/data
+
 # IDEs
 .vscode/
 .idea/
