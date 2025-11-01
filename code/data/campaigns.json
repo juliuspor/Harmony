@@ -1,47 +1,44 @@
 [
   {
-    "id": "46538318-0de5-4c1a-b26f-78fe6d8946bd",
-    "project_name": "asdfa",
-    "project_goal": "sasdfa",
+    "id": "25fdb4c8-215c-4b48-84fa-04e099392c9f",
+    "project_name": "asdf",
+    "project_goal": "sadfdsf",
     "messages": {
-      "discord": "Hey everyone!\nWe're looking for your brilliant ideas to help shape the future of our project, asdfa. Got something exciting to share? Drop your thoughts and let's make sasdfa a success together!"
-    },
-    "created_at": "2025-11-01T10:29:29.371224"
-  },
-  {
-    "id": "cef0e157-ccfa-4e51-8cbf-38d02087e09b",
-    "project_name": "saf",
-    "project_goal": "asfd",
-    "messages": {
-      "slack": "Hey team!\nWe're buzzing with excitement over here and need your creative minds for our SAF project! Got an idea that could make a splash? Share it with us!"
+      "slack": "Hey team! \ud83c\udf1f We're on the lookout for your brilliant ideas to help us achieve our project goals. Drop your thoughts and let's brainstorm together!"
     },
     "posting_results": {
       "slack": "success"
     },
-    "created_at": "2025-11-01T10:53:21.587409"
+    "created_at": "2025-11-01T11:39:18.294526"
   },
   {
-    "id": "a6af5405-51ef-4b68-a43c-1cd944c91f41",
-    "project_name": "asdfas",
-    "project_goal": "sadfasdf",
+    "id": "1ff58506-164c-4610-a846-cf1333c77bca",
+    "project_name": "asfdas",
+    "project_goal": "asdfasf",
     "messages": {
-      "slack": "Hello Team!\nWe've got an exciting new project, \"asdfas,\" and we want your creative input to help achieve its goal: \"sadfasdf.\" Share your brilliant ideas and let's make this project a great success together!"
+      "slack": "Hey team! \ud83c\udf89 We're diving into our new project, and we want your awesome ideas to make it shine! Drop your thoughts in the channel and let's brainstorm together!"
     },
     "posting_results": {
       "slack": "success"
     },
-    "created_at": "2025-11-01T10:54:06.924636"
+    "monitored_channels": {
+      "slack": "C09QZ299A0Y"
+    },
+    "created_at": "2025-11-01T11:53:15.480215"
   },
   {
-    "id": "c7cc119c-265e-45cb-80bf-0b001c3ac7fc",
-    "project_name": "sadfas",
-    "project_goal": "dsadfas",
+    "id": "f6db9e60-2857-49a5-b34d-4b5dae1b6a96",
+    "project_name": "make basel greener",
+    "project_goal": "make basel greener\n",
     "messages": {
-      "slack": "Hey team! We're on the lookout for your creative ideas for our project, so don\u2019t hold back! Share your thoughts and let\u2019s brainstorm together!"
+      "slack": "Hey team! \ud83c\udf31 We're on a mission to make Basel greener, and we want to hear your awesome ideas! Drop your thoughts in this channel and let's brainstorm together!"
     },
     "posting_results": {
       "slack": "success"
     },
-    "created_at": "2025-11-01T11:06:57.741314"
+    "monitored_channels": {
+      "slack": "C09QZ299A0Y"
+    },
+    "created_at": "2025-11-01T11:54:04.308260"
   }
 ]

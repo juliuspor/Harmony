@@ -129,10 +129,12 @@ async def launch_campaign(request: LaunchCampaignRequest):
     Launch a campaign and store it in campaigns.json file.
     Appends the new campaign to the existing campaigns list.
     Also posts the messages to the connected platforms (Slack, Discord).
+    Starts monitoring channels for incoming submissions.
     """
     try:
-        # Import oauth service
+        # Import oauth service and slack listener
         from app.services import oauth
+        from app.services import slack_listener
         
         # Generate a unique ID for the campaign
         campaign_id = str(uuid.uuid4())
@@ -142,13 +144,24 @@ async def launch_campaign(request: LaunchCampaignRequest):
         data_dir = Path("/data")
         data_dir.mkdir(parents=True, exist_ok=True)
         
-        # Post messages to connected platforms
+        # Post messages to connected platforms and start monitoring
         posting_results = {}
+        monitored_channels = {}
+        
         for platform, message in request.messages.items():
             try:
                 if platform == "slack":
-                    result = await oauth.post_slack_message(message)
+                    result = await oauth.post_slack_message(message, channel="Ideation")
                     posting_results[platform] = "success"
+                    
+                    # Get channel ID from the response
+                    channel_id = result.get("channel")
+                    if channel_id:
+                        # Start monitoring this channel for submissions
+                        slack_listener.start_monitoring_channel(channel_id, campaign_id)
+                        monitored_channels[platform] = channel_id
+                        print(f"🎧 Started monitoring Slack channel {channel_id} for campaign {campaign_id}")
+                    
                     print(f"Posted to Slack: {result}")
                 elif platform == "discord":
                     result = await oauth.post_discord_message(message)
@@ -168,6 +181,7 @@ async def launch_campaign(request: LaunchCampaignRequest):
             "project_goal": request.project_goal,
             "messages": request.messages,
             "posting_results": posting_results,
+            "monitored_channels": monitored_channels,
             "created_at": datetime.utcnow().isoformat()
         }
         
@@ -203,3 +217,28 @@ async def launch_campaign(request: LaunchCampaignRequest):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Failed to launch campaign: {str(e)}")
+
+
+@router.get("/submissions")
+async def get_submissions(project_id: str = None):
+    """
+    Get all submissions or submissions for a specific project.
+    Returns submissions captured from Slack messages.
+    """
+    try:
+        from app.services import slack_listener
+        
+        submissions = slack_listener.load_submissions()
+        
+        # Filter by project_id if provided
+        if project_id:
+            submissions = [s for s in submissions if s.get("project_id") == project_id]
+        
+        return {
+            "submissions": submissions,
+            "count": len(submissions)
+        }
+        
+    except Exception as e:
+        print(f"Exception in get_submissions: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get submissions: {str(e)}")
