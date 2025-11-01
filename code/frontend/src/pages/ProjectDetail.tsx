@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Sparkles, Network, Users } from "lucide-react";
 import { DebateSimulation } from "@/components/DebateSimulation";
 import type { ConsensusResult } from "@/components/DebateSimulation";
+import { createDebate, estimateDebateDuration } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 // Interfaces
 interface ClusterVisualizationData {
@@ -62,6 +64,7 @@ function transformClustersToVisualization(
 export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<ConsensusResult | null>(
     null
@@ -69,6 +72,7 @@ export default function ProjectDetail() {
   const [expandedCluster, setExpandedCluster] = useState<number | null>(null);
   const [debateId, setDebateId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("clusters");
+  const [estimatedTime, setEstimatedTime] = useState<number | undefined>(undefined);
   const loadingSectionRef = useRef<HTMLDivElement>(null);
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
   const [project, setProject] = useState<any>(null);
@@ -167,15 +171,42 @@ export default function ProjectDetail() {
     return [];
   }, [clustersData]);
 
-  const handleStartAnalysis = () => {
-    if (analysisResult) setAnalysisResult(null);
-    setIsAnalyzing(true);
-    setTimeout(() => {
-      loadingSectionRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
+  const handleStartAnalysis = async () => {
+    if (!id) return;
+    
+    try {
+      if (analysisResult) setAnalysisResult(null);
+      
+      // Switch to debate tab
+      setActiveTab("debate");
+      
+      // Estimate duration for display
+      const maxRounds = 3;
+      const maxMessages = 15;
+      const estimated = estimateDebateDuration(maxRounds, maxMessages);
+      setEstimatedTime(estimated);
+      
+      // Start the debate
+      const response = await createDebate(id, maxRounds, maxMessages);
+      setDebateId(response.debate_id);
+      setIsAnalyzing(true);
+      
+      // Scroll to the debate section
+      setTimeout(() => {
+        loadingSectionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    } catch (error) {
+      console.error("Failed to start debate:", error);
+      toast({
+        title: "Failed to start debate",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
       });
-    }, 100);
+      setIsAnalyzing(false);
+    }
   };
 
   const handleAnalysisComplete = (result: ConsensusResult) => {
@@ -485,6 +516,7 @@ export default function ProjectDetail() {
                     autoStart={true}
                     onComplete={handleAnalysisComplete}
                     debateId={debateId || undefined}
+                    processingTime={estimatedTime}
                   />
                 </div>
               ) : analysisResult ? (

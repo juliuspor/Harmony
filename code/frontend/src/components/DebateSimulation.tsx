@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, TrendingUp, Lightbulb, CheckCircle2, Sparkles, MessageSquare, Zap, Clock } from "lucide-react";
+import { LiveDebateView } from "./LiveDebateView";
+import { getConsensusResults } from "@/lib/api";
+import type { DebateResponse } from "@/lib/api";
 
 export interface ConsensusResult {
   score: number;
@@ -45,6 +48,7 @@ export function DebateSimulation({
   const [isLoading, setIsLoading] = useState(autoStart);
   const [result, setResult] = useState<ConsensusResult | null>(customResult || null);
   const [progress, setProgress] = useState(0);
+  const [showLiveView, setShowLiveView] = useState(false);
   // Use refs to track if loading has started and preserve state across re-renders
   const loadingStartedRef = useRef(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,7 +59,52 @@ export function DebateSimulation({
     ? `debate-loading-${debateId}` 
     : `debate-loading-${duration}-${processingTime}`;
 
+  // Handle debate completion from LiveDebateView
+  const handleDebateComplete = async (debateData: DebateResponse) => {
+    try {
+      // Fetch consensus results
+      if (!debateId) return;
+      
+      const consensus = await getConsensusResults(debateId);
+      
+      const consensusResult: ConsensusResult = {
+        score: Math.round(consensus.consensus_score),
+        semanticAlignment: consensus.semantic_alignment,
+        agreementRatio: consensus.agreement_ratio,
+        convergenceScore: consensus.convergence_score,
+        resolutionRate: consensus.resolution_rate,
+        sentiment: consensus.sentiment as "positive" | "neutral" | "negative",
+        keyInsights: consensus.key_insights,
+        keyAlignments: consensus.key_alignments,
+        proArguments: consensus.pro_arguments,
+        conArguments: consensus.con_arguments,
+      };
+      
+      setResult(consensusResult);
+      setIsLoading(false);
+      setShowLiveView(false);
+      
+      // Clear session storage
+      sessionStorage.removeItem(sessionKey);
+      sessionStorage.removeItem(`${sessionKey}-progress`);
+      
+      onComplete?.(consensusResult);
+    } catch (error) {
+      console.error("Failed to fetch consensus results:", error);
+      // Still mark as complete even if consensus fetch fails
+      setIsLoading(false);
+      setShowLiveView(false);
+    }
+  };
+
   useEffect(() => {
+    // If we have a debateId and autoStart is true, show live view immediately
+    if (debateId && autoStart && !customResult) {
+      setShowLiveView(true);
+      setIsLoading(false);
+      return;
+    }
+
     // If custom result is provided or autoStart is false, don't start loading
     if (!autoStart || customResult) {
       loadingStartedRef.current = false;
@@ -200,6 +249,11 @@ export function DebateSimulation({
       sessionStorage.removeItem(`${sessionKey}-progress`);
     }
   }, [customResult, sessionKey]);
+
+  // Show live debate view if we have a debateId
+  if (showLiveView && debateId) {
+    return <LiveDebateView debateId={debateId} onComplete={handleDebateComplete} />;
+  }
 
   return (
     <div className="w-full overflow-visible">

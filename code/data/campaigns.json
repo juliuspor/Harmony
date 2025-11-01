@@ -1,0 +1,36 @@
+[
+  {
+    "id": "c8475643-d8e2-4343-a41b-cf86c7d9cd4c",
+    "project_name": "Save the climate in Basel",
+    "project_goal": "We need to stop global warming in Basel",
+    "messages": {
+      "slack": "Hey team!\nWe're gathering innovative ideas to help combat climate change right here in Basel. Share your thoughts and let's make a difference together!"
+    },
+    "posting_results": {
+      "slack": "success"
+    },
+    "monitored_channels": {
+      "slack": "C09Q16UKX7X"
+    },
+    "created_at": "2025-11-01T16:49:05.279171",
+    "num_clusters": 5,
+    "last_cluster_update": "2025-11-01T16:49:40.738940"
+  },
+  {
+    "id": "804b2520-8d5e-4111-92f5-43e2f3b352b1",
+    "project_name": "Save the dolphins",
+    "project_goal": "We need to intervene now!",
+    "messages": {
+      "discord": "Hey Dolphin Defenders!\nWe're calling on all creative minds to help us brainstorm ways to protect our beloved dolphins. Drop your innovative ideas and let's make waves for change!"
+    },
+    "posting_results": {
+      "discord": "success"
+    },
+    "monitored_channels": {
+      "discord": "1434208038662705329"
+    },
+    "created_at": "2025-11-01T16:53:15.228235",
+    "num_clusters": 9,
+    "last_cluster_update": "2025-11-01T16:53:55.101407"
+  }
+]
