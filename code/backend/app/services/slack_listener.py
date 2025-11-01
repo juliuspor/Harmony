@@ -1,15 +1,15 @@
 """Slack event listener service for capturing user submissions"""
 
+import threading
 from datetime import datetime
-from typing import Optional, Dict, Any
-from slack_sdk.socket_mode import SocketModeClient
-from slack_sdk.socket_mode.response import SocketModeResponse
-from slack_sdk.socket_mode.request import SocketModeRequest
-from slack_sdk.web import WebClient
+from typing import Any, Dict, Optional
+
 from app.core import config
 from app.services.database import add_submissions
-import threading
-
+from slack_sdk.socket_mode import SocketModeClient
+from slack_sdk.socket_mode.request import SocketModeRequest
+from slack_sdk.socket_mode.response import SocketModeResponse
+from slack_sdk.web import WebClient
 
 # Store active channel monitoring
 _active_monitors: Dict[str, str] = {}  # channel_id -> project_id
@@ -18,15 +18,20 @@ _active_monitors: Dict[str, str] = {}  # channel_id -> project_id
 _processed_messages: set = set()
 
 
-def add_submission(project_id: str, message: str, user_id: str, channel_id: str, timestamp: str):
+def add_submission(
+    project_id: str, message: str, user_id: str, channel_id: str, timestamp: str
+):
     """Add a new submission to the database"""
     try:
         # Store submission in the database with user_id
         add_submissions([message], project_id, user_ids=[user_id])
-        print(f"✅ New submission saved for project {project_id} from user {user_id}: {message[:50]}...")
+        print(
+            f"✅ New submission saved for project {project_id} from user {user_id}: {message[:50]}..."
+        )
     except Exception as e:
         print(f"❌ Failed to save submission: {str(e)}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -49,13 +54,13 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
         # Acknowledge the request IMMEDIATELY to prevent timeouts
         response = SocketModeResponse(envelope_id=req.envelope_id)
         client.send_socket_mode_response(response)
-        
+
         # Process the event in a separate thread to avoid blocking
         def process_event():
             try:
                 event = req.payload.get("event", {})
                 event_type = event.get("type")
-                
+
                 if event_type == "message":
                     # Get message details
                     channel_id = event.get("channel")
@@ -64,22 +69,26 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
                     timestamp = event.get("ts")
                     subtype = event.get("subtype")
                     bot_id = event.get("bot_id")
-                    
+
                     # Create unique message ID for deduplication
                     message_id = f"{channel_id}:{timestamp}"
-                    
+
                     # Check if we've already processed this message
                     if message_id in _processed_messages:
-                        print(f"⏭️ Already processed message {message_id}, skipping duplicate")
+                        print(
+                            f"⏭️ Already processed message {message_id}, skipping duplicate"
+                        )
                         return
-                    
+
                     # Log ALL incoming messages for debugging
-                    print(f"📬 Incoming message: channel={channel_id}, user={user_id}, subtype={subtype}, bot_id={bot_id}, ts={timestamp}, text='{text[:50]}...'")
-                    
+                    print(
+                        f"📬 Incoming message: channel={channel_id}, user={user_id}, subtype={subtype}, bot_id={bot_id}, ts={timestamp}, text='{text[:50]}...'"
+                    )
+
                     # Ignore bot messages, message changes, and system messages
                     system_subtypes = [
                         "bot_message",
-                        "message_changed", 
+                        "message_changed",
                         "message_deleted",
                         "channel_join",
                         "channel_leave",
@@ -87,33 +96,33 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
                         "channel_purpose",
                         "channel_name",
                         "pinned_item",
-                        "unpinned_item"
+                        "unpinned_item",
                     ]
                     if subtype in system_subtypes:
                         print(f"⏭️ Skipping system message subtype '{subtype}'")
                         return
-                    
+
                     # Ignore messages from bots
                     if bot_id:
                         print(f"🤖 Ignoring bot message (has bot_id)")
                         return
-                    
+
                     # Ignore messages without a user_id
                     if not user_id:
                         print(f"⚠️ Ignoring message without user_id")
                         return
-                    
+
                     # Ignore empty messages
                     if not text or text.strip() == "":
                         print(f"⚠️ Ignoring empty message")
                         return
-                    
+
                     # Get our bot's user ID and ignore messages from our own bot
                     bot_user_id = get_bot_user_id()
                     if bot_user_id and user_id == bot_user_id:
                         print(f"🤖 Ignoring message from our own bot (user_id matches)")
                         return
-                    
+
                     # Fetch user's display name from Slack API
                     username = user_id  # Fallback to ID if we can't get the name
                     try:
@@ -122,46 +131,51 @@ def process_message(client: SocketModeClient, req: SocketModeRequest):
                             user_data = user_info.get("user", {})
                             # Use display name, real name, or username in order of preference
                             username = (
-                                user_data.get("profile", {}).get("display_name") or 
-                                user_data.get("real_name") or 
-                                user_data.get("name") or 
-                                user_id
+                                user_data.get("profile", {}).get("display_name")
+                                or user_data.get("real_name")
+                                or user_data.get("name")
+                                or user_id
                             )
                     except Exception as e:
                         print(f"⚠️ Could not fetch username for {user_id}: {str(e)}")
-                    
+
                     # Check if we're monitoring this channel
                     if channel_id in _active_monitors:
                         project_id = _active_monitors[channel_id]
-                        
-                        print(f"✅ Valid user message for monitored channel {channel_id}, saving to project {project_id}")
-                        
+
+                        print(
+                            f"✅ Valid user message for monitored channel {channel_id}, saving to project {project_id}"
+                        )
+
                         # Mark as processed BEFORE saving to prevent duplicate processing
                         _processed_messages.add(message_id)
-                        
+
                         # Keep only last 1000 message IDs to prevent memory bloat
                         if len(_processed_messages) > 1000:
                             # Remove oldest entries (this is approximate since sets are unordered)
                             _processed_messages.pop()
-                        
+
                         # Save the submission with username instead of user_id
                         add_submission(
                             project_id=project_id,
                             message=text,
                             user_id=username,
                             channel_id=channel_id,
-                            timestamp=timestamp
+                            timestamp=timestamp,
                         )
-                        
+
                         print(f"📨 Submission saved: {text[:50]}...")
                     else:
-                        print(f"ℹ️ Message in unmonitored channel {channel_id}, skipping. Monitored channels: {list(_active_monitors.keys())}")
-                        
+                        print(
+                            f"ℹ️ Message in unmonitored channel {channel_id}, skipping. Monitored channels: {list(_active_monitors.keys())}"
+                        )
+
             except Exception as e:
                 print(f"❌ Error processing message event: {str(e)}")
                 import traceback
+
                 traceback.print_exc()
-        
+
         # Process in background thread to not block the Socket Mode client
         processing_thread = threading.Thread(target=process_event, daemon=True)
         processing_thread.start()
@@ -174,40 +188,44 @@ _listener_thread: Optional[threading.Thread] = None
 def start_slack_listener():
     """Start the Slack Socket Mode listener in a background thread"""
     global _socket_client, _listener_thread
-    
+
     if not config.SLACK_APP_TOKEN or not config.SLACK_BOT_TOKEN:
-        print("⚠️  Slack listener not started: SLACK_APP_TOKEN or SLACK_BOT_TOKEN not configured")
+        print(
+            "⚠️  Slack listener not started: SLACK_APP_TOKEN or SLACK_BOT_TOKEN not configured"
+        )
         return
-    
+
     if _socket_client is not None:
         print("ℹ️  Slack listener already running")
         return
-    
+
     def run_listener():
         try:
             global _socket_client
             _socket_client = SocketModeClient(
                 app_token=config.SLACK_APP_TOKEN,
-                web_client=WebClient(token=config.SLACK_BOT_TOKEN)
+                web_client=WebClient(token=config.SLACK_BOT_TOKEN),
             )
-            
+
             # Register message handler
             _socket_client.socket_mode_request_listeners.append(process_message)
-            
+
             print("🚀 Starting Slack Socket Mode listener...")
             _socket_client.connect()
             print("✅ Slack listener connected and ready!")
-            
+
             # Keep the connection alive
             import time
+
             while True:
                 time.sleep(1)
-                
+
         except Exception as e:
             print(f"❌ Slack listener error: {str(e)}")
             import traceback
+
             traceback.print_exc()
-    
+
     # Start in background thread
     _listener_thread = threading.Thread(target=run_listener, daemon=True)
     _listener_thread.start()
@@ -230,7 +248,7 @@ def get_bot_user_id() -> Optional[str]:
     """Get the bot's user ID"""
     if not config.SLACK_BOT_TOKEN:
         return None
-    
+
     try:
         client = WebClient(token=config.SLACK_BOT_TOKEN)
         response = client.auth_test()
@@ -238,4 +256,3 @@ def get_bot_user_id() -> Optional[str]:
     except Exception as e:
         print(f"Error getting bot user ID: {str(e)}")
         return None
-

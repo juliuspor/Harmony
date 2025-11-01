@@ -55,18 +55,18 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
   useEffect(() => {
     // Check connection status for OAuth sources
     const checkStatus = async () => {
-      for (const source of dataSources.filter(s => s.requiresOAuth)) {
+      for (const source of dataSources.filter((s) => s.requiresOAuth)) {
         try {
           const response = await fetch(`http://localhost:8000/oauth/status/${source.id}`);
           const data = await response.json();
-          setConnectionStatus(prev => ({ ...prev, [source.id]: data.connected }));
+          setConnectionStatus((prev) => ({ ...prev, [source.id]: data.connected }));
         } catch (error) {
           console.error(`Failed to check ${source.id} status:`, error);
         }
       }
     };
     checkStatus();
-    
+
     // Poll for status updates every 2 seconds
     const interval = setInterval(checkStatus, 2000);
     return () => clearInterval(interval);
@@ -84,12 +84,15 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
       // Already connected, just toggle selection
       const isCurrentlySelected = selectedSources.includes(sourceId);
       handleToggle(sourceId);
-      
+
       // Show toast to confirm the connection is real and active
       if (!isCurrentlySelected) {
-        toast.success(`${sourceId.charAt(0).toUpperCase() + sourceId.slice(1)} connected! Messages will be posted to your workspace.`, {
-          description: "OAuth connection active"
-        });
+        toast.success(
+          `${sourceId.charAt(0).toUpperCase() + sourceId.slice(1)} connected! Messages will be posted to your workspace.`,
+          {
+            description: "OAuth connection active",
+          }
+        );
       }
       return;
     }
@@ -99,7 +102,7 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
     const height = 700;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
-    
+
     const oauthWindow = window.open(
       `http://localhost:8000/oauth/${sourceId}/initiate`,
       `${sourceId}_oauth`,
@@ -121,9 +124,11 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
             const response = await fetch(`http://localhost:8000/oauth/status/${sourceId}`);
             const data = await response.json();
             if (data.connected) {
-              setConnectionStatus(prev => ({ ...prev, [sourceId]: true }));
+              setConnectionStatus((prev) => ({ ...prev, [sourceId]: true }));
               handleToggle(sourceId);
-              toast.success(`${sourceId.charAt(0).toUpperCase() + sourceId.slice(1)} connected successfully!`);
+              toast.success(
+                `${sourceId.charAt(0).toUpperCase() + sourceId.slice(1)} connected successfully!`
+              );
             }
           } catch (error) {
             console.error(`Failed to check ${sourceId} status:`, error);
@@ -158,9 +163,7 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
                 <img src={source.logo} alt={source.name} className="h-8 w-8" />
               </div>
               <div className="flex-1 space-y-1">
-                <Label className="font-semibold text-foreground">
-                  {source.name}
-                </Label>
+                <Label className="font-semibold text-foreground">{source.name}</Label>
                 <p className="text-sm text-muted-foreground">{source.description}</p>
               </div>
             </div>
@@ -168,9 +171,9 @@ export function DataSourceSelector({ selectedSources, onSourcesChange }: DataSou
               onClick={() => handleConnect(source.id, source.requiresOAuth)}
               variant={selectedSources.includes(source.id) ? "default" : "outline"}
               className={`ml-4 transition-all ${
-                selectedSources.includes(source.id) 
-                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0' 
-                  : 'border-2 border-blue-300 text-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-600 hover:text-white hover:border-0'
+                selectedSources.includes(source.id)
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0"
+                  : "border-2 border-blue-300 text-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-600 hover:text-white hover:border-0"
               }`}
             >
               {selectedSources.includes(source.id) ? (

@@ -73,7 +73,7 @@ export interface ConsensusResponse {
 
 /**
  * Estimate debate duration based on parameters.
- * 
+ *
  * @param maxRounds - Maximum debate rounds
  * @param maxMessages - Maximum messages
  * @returns Estimated duration in seconds
@@ -82,18 +82,18 @@ export function estimateDebateDuration(maxRounds?: number, maxMessages?: number)
   const rounds = maxRounds || 3;
   const messages = maxMessages || 15;
   const secondsPerMessage = 3.5;
-  
+
   // Estimate: ~5 agents, so ~5 messages per round
   const estimatedMessages = Math.min(messages, rounds * 5);
   const estimatedSeconds = estimatedMessages * secondsPerMessage;
-  
+
   // Add buffer for setup and analysis
   return Math.ceil(estimatedSeconds + 30);
 }
 
 /**
  * Create a debate from project clusters.
- * 
+ *
  * @param projectId - Project identifier
  * @param maxRounds - Maximum debate rounds
  * @param maxMessages - Maximum messages
@@ -126,7 +126,7 @@ export async function createDebate(
 
 /**
  * Get debate status and details.
- * 
+ *
  * @param debateId - Debate identifier
  * @returns Debate response data
  */
@@ -143,7 +143,7 @@ export async function getDebateStatus(debateId: string): Promise<DebateResponse>
 
 /**
  * Get consensus analysis for a completed debate.
- * 
+ *
  * @param debateId - Debate identifier
  * @returns Consensus analysis results
  */
@@ -157,4 +157,3 @@ export async function getConsensusResults(debateId: string): Promise<ConsensusRe
 
   return response.json();
 }
-

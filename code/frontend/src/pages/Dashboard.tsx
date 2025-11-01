@@ -2,13 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Lightbulb, ArrowUpDown, MessageSquare, Sparkles, Target } from "lucide-react";
 import {
@@ -55,20 +49,19 @@ const getProjectImage = (): string => {
 const getRelativeTime = (isoDate: string): string => {
   const now = new Date();
   // Ensure the ISO date is treated as UTC by appending 'Z' if not present
-  const dateString = isoDate.endsWith('Z') ? isoDate : `${isoDate}Z`;
+  const dateString = isoDate.endsWith("Z") ? isoDate : `${isoDate}Z`;
   const date = new Date(dateString);
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
-  
+
   if (diffMins === 0) return "just now";
-  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
   if (diffDays === 1) return "1 day ago";
   return `${diffDays} days ago`;
 };
-
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -86,7 +79,7 @@ export default function Dashboard() {
       try {
         const response = await fetch("http://localhost:8000/campaigns");
         const data = await response.json();
-        
+
         // Transform backend campaigns to frontend projects
         const transformedProjects: Project[] = data.campaigns.map((campaign: any) => ({
           id: campaign.id,
@@ -97,7 +90,7 @@ export default function Dashboard() {
           lastActivityDate: campaign.created_at || new Date().toISOString(),
           imageUrl: getProjectImage(),
         }));
-        
+
         // Fetch submission counts for each project
         const projectsWithCounts = await Promise.all(
           transformedProjects.map(async (project) => {
@@ -116,9 +109,9 @@ export default function Dashboard() {
             }
           })
         );
-        
+
         setProjects(projectsWithCounts);
-        
+
         // Calculate total insights from campaign data (no expensive API calls)
         const totalThemes = data.campaigns.reduce((sum: number, campaign: any) => {
           return sum + (campaign.num_clusters || 0);
@@ -150,11 +143,11 @@ export default function Dashboard() {
         const response = await fetch("http://localhost:8000/live-feed?limit=20");
         const data = await response.json();
         const messages = data.messages || [];
-        
+
         // Track which messages are new
         const newMessageIds = new Set<string>(messages.map((m: any) => m.id));
         setPreviousMessageIds(newMessageIds);
-        
+
         setLiveMessages(messages);
       } catch (error) {
         console.error("Failed to fetch live messages:", error);
@@ -194,15 +187,17 @@ export default function Dashboard() {
               <div>
                 <div className="flex items-center gap-3 mb-1">
                   <h1 className="text-3xl font-bold text-foreground tracking-tight">Harmony</h1>
-                  <Badge variant="secondary" className="text-xs font-semibold">AI-Powered</Badge>
+                  <Badge variant="secondary" className="text-xs font-semibold">
+                    AI-Powered
+                  </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground font-medium">
                   Transforming community opinions into collective intelligence
                 </p>
               </div>
             </div>
-            <Button 
-              onClick={() => navigate("/projects/new")} 
+            <Button
+              onClick={() => navigate("/projects/new")}
               size="lg"
               className="h-12 px-6 font-semibold"
             >
@@ -236,7 +231,7 @@ export default function Dashboard() {
               </SelectContent>
             </Select>
           </div>
-          
+
           <AnimatePresence mode="wait">
             {loading ? (
               <motion.div
@@ -267,12 +262,10 @@ export default function Dashboard() {
                     </div>
                     <h3 className="text-2xl font-bold mb-2">No Projects Yet</h3>
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      Get started by creating your first project to collect and analyze community ideas
+                      Get started by creating your first project to collect and analyze community
+                      ideas
                     </p>
-                    <Button
-                      onClick={() => navigate("/projects/new")}
-                      size="lg"
-                    >
+                    <Button onClick={() => navigate("/projects/new")} size="lg">
                       <Plus className="mr-2 h-5 w-5" />
                       Create Your First Project
                     </Button>
@@ -280,88 +273,95 @@ export default function Dashboard() {
                 </Card>
               </motion.div>
             ) : (
-              <motion.div 
+              <motion.div
                 className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                {[...projects].sort((a, b) => {
-                  switch (sortBy) {
-                    case "recent":
-                      return new Date(b.lastActivityDate).getTime() - new Date(a.lastActivityDate).getTime();
-                    case "ideas":
-                      return b.ideasCount - a.ideasCount;
-                    case "name":
-                      return a.title.localeCompare(b.title);
-                    default:
-                      return 0;
-                  }
-                }).map((project, index) => (
-                  <motion.div
-                    key={project.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.3 }}
-                  >
-                    <Card
-                      className="group cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden border-2 rounded-3xl bg-card hover:border-primary/50 h-full"
-                      onClick={() => navigate(`/projects/${project.id}`)}
+                {[...projects]
+                  .sort((a, b) => {
+                    switch (sortBy) {
+                      case "recent":
+                        return (
+                          new Date(b.lastActivityDate).getTime() -
+                          new Date(a.lastActivityDate).getTime()
+                        );
+                      case "ideas":
+                        return b.ideasCount - a.ideasCount;
+                      case "name":
+                        return a.title.localeCompare(b.title);
+                      default:
+                        return 0;
+                    }
+                  })
+                  .map((project, index) => (
+                    <motion.div
+                      key={project.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.3 }}
                     >
-                      <div className="relative w-full h-52 overflow-hidden">
-                        <img 
-                          src={project.imageUrl} 
-                          alt={project.title} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                        
-                        {/* Floating Stats */}
-                        <motion.div 
-                          className="absolute bottom-4 right-4"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          <div className="px-4 py-2 rounded-full bg-white/95 backdrop-blur-md text-sm font-bold text-foreground flex items-center gap-2 shadow-xl">
-                            <Lightbulb className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
-                            {project.ideasCount}
-                            <span className="text-xs font-normal text-muted-foreground">ideas</span>
-                          </div>
-                        </motion.div>
+                      <Card
+                        className="group cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden border-2 rounded-3xl bg-card hover:border-primary/50 h-full"
+                        onClick={() => navigate(`/projects/${project.id}`)}
+                      >
+                        <div className="relative w-full h-52 overflow-hidden">
+                          <img
+                            src={project.imageUrl}
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-                        {/* Status Badge */}
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0 shadow-lg">
-                            <div className="h-2 w-2 rounded-full bg-white animate-pulse mr-2" />
-                            Active
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <CardHeader className="pb-3 pt-6">
-                        <CardTitle className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors">
-                          {project.title}
-                        </CardTitle>
-                        <CardDescription className="mt-2 line-clamp-2 text-sm leading-relaxed">
-                          {project.goal}
-                        </CardDescription>
-                      </CardHeader>
-                      
-                      <CardContent className="pb-6">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground font-medium">
-                            Updated {getRelativeTime(project.lastActivityDate)}
-                          </span>
+                          {/* Floating Stats */}
                           <motion.div
-                            className="text-primary font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
-                            whileHover={{ x: 5 }}
+                            className="absolute bottom-4 right-4"
+                            whileHover={{ scale: 1.05 }}
                           >
-                            View →
+                            <div className="px-4 py-2 rounded-full bg-white/95 backdrop-blur-md text-sm font-bold text-foreground flex items-center gap-2 shadow-xl">
+                              <Lightbulb className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
+                              {project.ideasCount}
+                              <span className="text-xs font-normal text-muted-foreground">
+                                ideas
+                              </span>
+                            </div>
                           </motion.div>
+
+                          {/* Status Badge */}
+                          <div className="absolute top-4 left-4">
+                            <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0 shadow-lg">
+                              <div className="h-2 w-2 rounded-full bg-white animate-pulse mr-2" />
+                              Active
+                            </Badge>
+                          </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
+
+                        <CardHeader className="pb-3 pt-6">
+                          <CardTitle className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors">
+                            {project.title}
+                          </CardTitle>
+                          <CardDescription className="mt-2 line-clamp-2 text-sm leading-relaxed">
+                            {project.goal}
+                          </CardDescription>
+                        </CardHeader>
+
+                        <CardContent className="pb-6">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground font-medium">
+                              Updated {getRelativeTime(project.lastActivityDate)}
+                            </span>
+                            <motion.div
+                              className="text-primary font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
+                              whileHover={{ x: 5 }}
+                            >
+                              View →
+                            </motion.div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
               </motion.div>
             )}
           </AnimatePresence>
@@ -387,7 +387,7 @@ export default function Dashboard() {
             </Badge>
           </motion.div>
         </div>
-        
+
         <Card className="border-2 rounded-3xl overflow-hidden bg-card/95 backdrop-blur-sm shadow-xl">
           <CardContent className="p-0">
             {liveMessages.length === 0 ? (
@@ -406,26 +406,30 @@ export default function Dashboard() {
                     return (
                       <motion.div
                         key={msg.id}
-                        initial={isNew ? { opacity: 0, x: -20, backgroundColor: "rgba(var(--primary), 0.1)" } : false}
+                        initial={
+                          isNew
+                            ? { opacity: 0, x: -20, backgroundColor: "rgba(var(--primary), 0.1)" }
+                            : false
+                        }
                         animate={{ opacity: 1, x: 0, backgroundColor: "transparent" }}
                         transition={{ duration: 0.5 }}
                         className={`flex gap-4 px-6 py-5 border-b last:border-b-0 transition-all ${
-                          isNew 
-                            ? 'bg-primary/5 hover:bg-primary/10 border-l-4 border-l-primary' 
-                            : 'hover:bg-muted/30 border-l-4 border-l-transparent'
+                          isNew
+                            ? "bg-primary/5 hover:bg-primary/10 border-l-4 border-l-primary"
+                            : "hover:bg-muted/30 border-l-4 border-l-transparent"
                         }`}
                       >
                         <div className="flex-shrink-0 pt-0.5">
-                          <motion.div 
+                          <motion.div
                             className={`w-11 h-11 rounded-xl flex items-center justify-center ${
-                              isNew 
-                                ? 'bg-gradient-to-br from-[#5865F2]/20 to-[#5865F2]/10' 
-                                : 'bg-[#5865F2]/10'
+                              isNew
+                                ? "bg-gradient-to-br from-[#5865F2]/20 to-[#5865F2]/10"
+                                : "bg-[#5865F2]/10"
                             }`}
                             whileHover={{ scale: 1.05, rotate: 5 }}
                           >
-                            <svg 
-                              className={`h-5 w-5 ${isNew ? 'text-[#5865F2]' : 'text-[#5865F2]/70'}`}
+                            <svg
+                              className={`h-5 w-5 ${isNew ? "text-[#5865F2]" : "text-[#5865F2]/70"}`}
                               viewBox="0 0 127.14 96.36"
                               fill="currentColor"
                             >
@@ -455,9 +459,7 @@ export default function Dashboard() {
                               {msg.project_name}
                             </Badge>
                           </div>
-                          <p className="text-sm text-foreground leading-relaxed">
-                            {msg.message}
-                          </p>
+                          <p className="text-sm text-foreground leading-relaxed">{msg.message}</p>
                         </div>
                       </motion.div>
                     );

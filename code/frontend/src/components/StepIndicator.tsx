@@ -22,8 +22,8 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                 step.number < currentStep
                   ? "border-primary bg-primary text-primary-foreground"
                   : step.number === currentStep
-                  ? "border-primary bg-background text-primary"
-                  : "border-border bg-background text-muted-foreground"
+                    ? "border-primary bg-background text-primary"
+                    : "border-border bg-background text-muted-foreground"
               }`}
             >
               {step.number < currentStep ? (
@@ -35,16 +35,12 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
             <div className="ml-4">
               <p
                 className={`font-semibold ${
-                  step.number <= currentStep
-                    ? "text-foreground"
-                    : "text-muted-foreground"
+                  step.number <= currentStep ? "text-foreground" : "text-muted-foreground"
                 }`}
               >
                 {step.title}
               </p>
-              <p className="text-sm text-muted-foreground">
-                {step.description}
-              </p>
+              <p className="text-sm text-muted-foreground">{step.description}</p>
             </div>
           </div>
           {index < steps.length - 1 && (

@@ -62,9 +62,7 @@ const getAgentColor = (agentId: string): string => {
   }
 
   // Hash the agent_id to get consistent color
-  const hash = agentId
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const hash = agentId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const colorIndex = hash % colors.length;
   return `${colors[colorIndex].bg} ${colors[colorIndex].text} ${colors[colorIndex].border}`;
 };
@@ -72,16 +70,7 @@ const getAgentColor = (agentId: string): string => {
 // Get agent icon based on their ID
 const getAgentIcon = (agentId: string) => {
   // Icons array for consistent assignment
-  const icons = [
-    Bot,
-    Brain,
-    Lightbulb,
-    User,
-    Zap,
-    Target,
-    UserCircle,
-    Sparkles,
-  ];
+  const icons = [Bot, Brain, Lightbulb, User, Zap, Target, UserCircle, Sparkles];
 
   // Orchestrator gets shield icon
   if (agentId === "orchestrator") {
@@ -89,9 +78,7 @@ const getAgentIcon = (agentId: string) => {
   }
 
   // Hash the agent_id to get consistent icon
-  const hash = agentId
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const hash = agentId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const iconIndex = hash % icons.length;
   return icons[iconIndex];
 };
@@ -112,13 +99,15 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
       const scrollArea = scrollContainerRef.current;
       if (scrollArea) {
         // ScrollArea creates a viewport with data-radix-scroll-area-viewport attribute
-        const viewport = scrollArea.querySelector('[data-radix-scroll-area-viewport]') as HTMLDivElement;
+        const viewport = scrollArea.querySelector(
+          "[data-radix-scroll-area-viewport]"
+        ) as HTMLDivElement;
         if (viewport) {
           // Scroll only the viewport, not the entire page
           setTimeout(() => {
             viewport.scrollTo({
               top: viewport.scrollHeight,
-              behavior: 'smooth'
+              behavior: "smooth",
             });
           }, 100);
         }
@@ -184,9 +173,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           >
             <Sparkles className="h-12 w-12 text-primary" />
           </motion.div>
-          <p className="mt-4 text-muted-foreground font-medium">
-            Initializing debate...
-          </p>
+          <p className="mt-4 text-muted-foreground font-medium">Initializing debate...</p>
         </CardContent>
       </Card>
     );
@@ -204,8 +191,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
 
   const isComplete = debate?.status === "completed";
   const isCancelled = debate?.status === "cancelled";
-  const currentRound =
-    messages.length > 0 ? Math.max(...messages.map((m) => m.round_number)) : 1;
+  const currentRound = messages.length > 0 ? Math.max(...messages.map((m) => m.round_number)) : 1;
 
   return (
     <div className="space-y-6">
@@ -216,9 +202,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
             <div className="flex items-center gap-3">
               <Users className="h-8 w-8 text-blue-500" />
               <div>
-                <p className="text-2xl font-bold">
-                  {debate?.agents?.length || 0}
-                </p>
+                <p className="text-2xl font-bold">{debate?.agents?.length || 0}</p>
                 <p className="text-xs text-muted-foreground">Agents</p>
               </div>
             </div>
@@ -263,11 +247,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
               )}
               <div>
                 <p className="text-sm font-bold capitalize">
-                  {isComplete
-                    ? "Complete"
-                    : isCancelled
-                    ? "Cancelled"
-                    : "Active"}
+                  {isComplete ? "Complete" : isCancelled ? "Cancelled" : "Active"}
                 </p>
                 <p className="text-xs text-muted-foreground">Status</p>
               </div>
@@ -296,16 +276,12 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
                     <Card key={agent.agent_id} className="border">
                       <CardContent className="pt-4">
                         <div className="flex items-center gap-3">
-                          <Avatar
-                            className={`h-10 w-10 border-2 ${colorClasses}`}
-                          >
+                          <Avatar className={`h-10 w-10 border-2 ${colorClasses}`}>
                             <AvatarFallback className={colorClasses}>
                               <AgentIcon className="h-5 w-5" />
                             </AvatarFallback>
                           </Avatar>
-                          <h4 className="font-semibold text-sm">
-                            {agent.agent_name}
-                          </h4>
+                          <h4 className="font-semibold text-sm">{agent.agent_name}</h4>
                         </div>
                       </CardContent>
                     </Card>
@@ -445,14 +421,9 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
                       transition={{ duration: 0.3 }}
                       className="flex gap-4"
                     >
-                      <Avatar
-                        className={`h-10 w-10 border-2 ${colorClasses} flex-shrink-0`}
-                      >
+                      <Avatar className={`h-10 w-10 border-2 ${colorClasses} flex-shrink-0`}>
                         {isOrchestrator && (
-                          <AvatarImage
-                            src="/images/moderator-avatar.png"
-                            alt="Moderator"
-                          />
+                          <AvatarImage src="/images/moderator-avatar.png" alt="Moderator" />
                         )}
                         <AvatarFallback className={colorClasses}>
                           <AgentIcon className="h-5 w-5" />
@@ -461,9 +432,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-sm">
-                            {message.agent_name}
-                          </span>
+                          <span className="font-semibold text-sm">{message.agent_name}</span>
                           <Badge variant="outline" className="text-xs">
                             Round {message.round_number}
                           </Badge>
@@ -482,9 +451,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
                           }`}
                         >
                           <CardContent className="pt-3 pb-3">
-                            <p className="text-sm leading-relaxed">
-                              {message.content}
-                            </p>
+                            <p className="text-sm leading-relaxed">{message.content}</p>
                           </CardContent>
                         </Card>
 

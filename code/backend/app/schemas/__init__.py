@@ -1,13 +1,23 @@
 """Pydantic schemas for request and response validation"""
 
 from app.schemas.requests import (
-    StoreSubmissionsRequest, SuggestCampaignRequest, LaunchCampaignRequest, CreateDebateRequest
+    CreateDebateRequest,
+    LaunchCampaignRequest,
+    StoreSubmissionsRequest,
+    SuggestCampaignRequest,
 )
 from app.schemas.responses import (
-    StoreSubmissionsResponse, ClusterResponse, SuggestCampaignResponse, LaunchCampaignResponse,
-    AgentInfo, MessageResponse, InterventionResponse,
-    CreateDebateResponse, DebateListResponse, DebateResponse,
-    ConsensusResponse
+    AgentInfo,
+    ClusterResponse,
+    ConsensusResponse,
+    CreateDebateResponse,
+    DebateListResponse,
+    DebateResponse,
+    InterventionResponse,
+    LaunchCampaignResponse,
+    MessageResponse,
+    StoreSubmissionsResponse,
+    SuggestCampaignResponse,
 )
 
 __all__ = [
@@ -27,4 +37,3 @@ __all__ = [
     "DebateResponse",
     "ConsensusResponse",
 ]
-

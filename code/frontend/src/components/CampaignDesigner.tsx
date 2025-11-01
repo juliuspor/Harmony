@@ -32,7 +32,13 @@ const sourceDisplayInfo: Record<string, { name: string; icon: React.ReactNode }>
   },
 };
 
-export function CampaignDesigner({ projectName, projectGoal, selectedSources, aiSuggestions, onSuggestionsChange }: CampaignDesignerProps) {
+export function CampaignDesigner({
+  projectName,
+  projectGoal,
+  selectedSources,
+  aiSuggestions,
+  onSuggestionsChange,
+}: CampaignDesignerProps) {
   // Map selected sources to suggestion objects
   const suggestions = selectedSources
     .filter((source) => sourceDisplayInfo[source])
@@ -40,7 +46,8 @@ export function CampaignDesigner({ projectName, projectGoal, selectedSources, ai
       id: source,
       title: sourceDisplayInfo[source].name,
       icon: sourceDisplayInfo[source].icon,
-      content: aiSuggestions[source] || `Loading suggestions for ${sourceDisplayInfo[source].name}...`,
+      content:
+        aiSuggestions[source] || `Loading suggestions for ${sourceDisplayInfo[source].name}...`,
     }));
 
   const handleCopy = (content: string) => {
@@ -82,11 +89,7 @@ export function CampaignDesigner({ projectName, projectGoal, selectedSources, ai
                   <span className="text-primary">{suggestion.icon}</span>
                   <span>{suggestion.title}</span>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(suggestion.content)}
-                >
+                <Button variant="outline" size="sm" onClick={() => handleCopy(suggestion.content)}>
                   <Copy className="h-4 w-4" />
                 </Button>
               </CardTitle>
@@ -102,7 +105,6 @@ export function CampaignDesigner({ projectName, projectGoal, selectedSources, ai
           </Card>
         ))}
       </div>
-
     </div>
   );
 }

@@ -2,26 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Loader2,
-  Target,
-  Sparkles,
-  Rocket,
-  Zap,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Target, Sparkles, Rocket, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { StepIndicator } from "@/components/StepIndicator";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -35,9 +20,7 @@ export default function NewProject() {
   const [projectName, setProjectName] = useState("");
   const [projectGoal, setProjectGoal] = useState("");
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
-  const [aiSuggestions, setAiSuggestions] = useState<Record<string, string>>(
-    {}
-  );
+  const [aiSuggestions, setAiSuggestions] = useState<Record<string, string>>({});
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleNext = async () => {
@@ -75,9 +58,7 @@ export default function NewProject() {
         toast.success("Campaign suggestions generated!");
       } catch (error) {
         console.error("Error generating suggestions:", error);
-        toast.error(
-          "Failed to generate campaign suggestions. Please try again."
-        );
+        toast.error("Failed to generate campaign suggestions. Please try again.");
         setIsGenerating(false);
         return;
       } finally {
@@ -205,9 +186,7 @@ export default function NewProject() {
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
                   {/* Gradient Header */}
-                  <div
-                    className={`h-2 bg-gradient-to-r ${getStepGradient()}`}
-                  />
+                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
 
                   <CardHeader className="pb-6 pt-8 px-8">
                     <div className="flex items-center gap-4 mb-4">
@@ -287,9 +266,7 @@ export default function NewProject() {
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
                   {/* Gradient Header */}
-                  <div
-                    className={`h-2 bg-gradient-to-r ${getStepGradient()}`}
-                  />
+                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
 
                   <CardHeader className="pb-6 pt-8 px-8">
                     <div className="flex items-center gap-4 mb-4">
@@ -329,9 +306,7 @@ export default function NewProject() {
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
                   {/* Gradient Header */}
-                  <div
-                    className={`h-2 bg-gradient-to-r ${getStepGradient()}`}
-                  />
+                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
 
                   <CardHeader className="pb-6 pt-8 px-8">
                     <div className="flex items-center gap-4 mb-4">
@@ -408,11 +383,7 @@ export default function NewProject() {
               )}
             </Button>
           ) : (
-            <Button
-              onClick={handleLaunch}
-              size="lg"
-              className="h-12 px-8 font-semibold"
-            >
+            <Button onClick={handleLaunch} size="lg" className="h-12 px-8 font-semibold">
               <Rocket className="mr-2 h-5 w-5" />
               Launch Campaign
             </Button>
@@ -429,15 +400,13 @@ export default function NewProject() {
                   step === currentStep
                     ? `w-12 bg-gradient-to-r ${getStepGradient()}`
                     : step < currentStep
-                    ? "w-8 bg-primary/50"
-                    : "w-8 bg-muted"
+                      ? "w-8 bg-primary/50"
+                      : "w-8 bg-muted"
                 }`}
               />
             ))}
           </div>
-          <p className="text-center text-sm text-muted-foreground mt-3">
-            Step {currentStep} of 3
-          </p>
+          <p className="text-center text-sm text-muted-foreground mt-3">Step {currentStep} of 3</p>
         </div>
       </main>
     </div>

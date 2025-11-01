@@ -2,13 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Sparkles, Network, Users } from "lucide-react";
@@ -41,9 +35,7 @@ function extractTheme(ideas: string[]): string {
   const first = ideas[0];
   const words = first.split(" ").slice(0, 4).join(" ");
   return (
-    words.charAt(0).toUpperCase() +
-    words.slice(1) +
-    (first.split(" ").length > 4 ? "..." : "")
+    words.charAt(0).toUpperCase() + words.slice(1) + (first.split(" ").length > 4 ? "..." : "")
   );
 }
 
@@ -66,18 +58,12 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<ConsensusResult | null>(
-    null
-  );
-  const [expandedClusters, setExpandedClusters] = useState<Set<number>>(
-    new Set()
-  );
+  const [analysisResult, setAnalysisResult] = useState<ConsensusResult | null>(null);
+  const [expandedClusters, setExpandedClusters] = useState<Set<number>>(new Set());
   const [debateId, setDebateId] = useState<string | null>(null);
   const [completedDebateId, setCompletedDebateId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("clusters");
-  const [estimatedTime, setEstimatedTime] = useState<number | undefined>(
-    undefined
-  );
+  const [estimatedTime, setEstimatedTime] = useState<number | undefined>(undefined);
   const loadingSectionRef = useRef<HTMLDivElement>(null);
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
   const [project, setProject] = useState<any>(null);
@@ -91,9 +77,7 @@ export default function ProjectDetail() {
     const fetchProjectData = async () => {
       try {
         // Fetch all campaigns
-        const campaignsResponse = await fetch(
-          "http://localhost:8000/campaigns"
-        );
+        const campaignsResponse = await fetch("http://localhost:8000/campaigns");
         const campaignsData = await campaignsResponse.json();
 
         // Find the campaign with matching ID
@@ -112,9 +96,7 @@ export default function ProjectDetail() {
           fetch(`http://localhost:8000/submissions?project_id=${id}`)
             .then((res) => res.json())
             .then((data) => setSubmissionsCount(data.count || 0))
-            .catch((error) =>
-              console.error("Failed to fetch submissions:", error)
-            );
+            .catch((error) => console.error("Failed to fetch submissions:", error));
 
           // Fetch clusters if available (non-blocking)
           fetch(`http://localhost:8000/projects/${id}/clusters`)
@@ -130,9 +112,7 @@ export default function ProjectDetail() {
                 {
                   method: "PATCH",
                 }
-              ).catch((err) =>
-                console.log("Failed to update campaign cluster count:", err)
-              );
+              ).catch((err) => console.log("Failed to update campaign cluster count:", err));
             })
             .catch((error) => console.log("No clusters available yet:", error))
             .finally(() => setClustersLoading(false));
@@ -146,9 +126,7 @@ export default function ProjectDetail() {
             .then((contributorsResult) =>
               setContributorsCount(contributorsResult.contributors || 0)
             )
-            .catch((error) =>
-              console.log("Failed to fetch contributors:", error)
-            );
+            .catch((error) => console.log("Failed to fetch contributors:", error));
         } else {
           console.error("Campaign not found");
           // Navigate back to dashboard if project not found
@@ -208,10 +186,7 @@ export default function ProjectDetail() {
       console.error("Failed to start debate:", error);
       toast({
         title: "Failed to start debate",
-        description:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
       setIsAnalyzing(false);
@@ -398,8 +373,8 @@ export default function ProjectDetail() {
                       strokeWidth={1.5}
                     />
                     <p className="text-muted-foreground font-medium">
-                      No clusters available yet. Ideas will be clustered once
-                      enough submissions are collected.
+                      No clusters available yet. Ideas will be clustered once enough submissions are
+                      collected.
                     </p>
                   </CardContent>
                 </Card>
@@ -411,8 +386,7 @@ export default function ProjectDetail() {
                       {clusterData.length} idea clusters discovered
                     </h2>
                     <p className="text-lg text-muted-foreground">
-                      AI-powered thematic analysis of {submissionsCount}{" "}
-                      community submissions
+                      AI-powered thematic analysis of {submissionsCount} community submissions
                     </p>
                   </div>
 
@@ -422,12 +396,12 @@ export default function ProjectDetail() {
                       clusterData.length === 2
                         ? "grid-cols-1 lg:grid-cols-2"
                         : clusterData.length === 3
-                        ? "grid-cols-1 lg:grid-cols-3"
-                        : clusterData.length === 4
-                        ? "grid-cols-1 md:grid-cols-2"
-                        : clusterData.length === 5
-                        ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                        : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                          ? "grid-cols-1 lg:grid-cols-3"
+                          : clusterData.length === 4
+                            ? "grid-cols-1 md:grid-cols-2"
+                            : clusterData.length === 5
+                              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                              : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
                     }`}
                   >
                     {clusterData.map((cluster) => {
@@ -527,9 +501,7 @@ export default function ProjectDetail() {
                               <button
                                 className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                                 onClick={() => {
-                                  setExpandedClusters((prev) =>
-                                    new Set(prev).add(cluster.id)
-                                  );
+                                  setExpandedClusters((prev) => new Set(prev).add(cluster.id));
                                 }}
                               >
                                 View all {cluster.ideas.length} ideas →
@@ -542,9 +514,7 @@ export default function ProjectDetail() {
                             <CardContent className="pt-0 pb-6 animate-in slide-in-from-top-2">
                               <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin">
                                 <div className="flex items-center justify-between mb-3 sticky top-0 bg-card py-2 border-b">
-                                  <h5 className="font-semibold text-sm">
-                                    All Ideas
-                                  </h5>
+                                  <h5 className="font-semibold text-sm">All Ideas</h5>
                                   <Button
                                     variant="ghost"
                                     size="sm"
@@ -589,12 +559,9 @@ export default function ProjectDetail() {
               {!isAnalyzing && !analysisResult ? (
                 <Card className="border-2 rounded-2xl">
                   <CardHeader>
-                    <CardTitle className="text-2xl font-bold">
-                      Synthesize
-                    </CardTitle>
+                    <CardTitle className="text-2xl font-bold">Synthesize</CardTitle>
                     <CardDescription className="text-base">
-                      AI agents simulate debate to form consensus from your
-                      collected ideas
+                      AI agents simulate debate to form consensus from your collected ideas
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex h-96 items-center justify-center bg-muted/30 rounded-xl">
@@ -614,10 +581,7 @@ export default function ProjectDetail() {
                   </CardContent>
                 </Card>
               ) : isAnalyzing && !analysisResult ? (
-                <div
-                  ref={loadingSectionRef}
-                  className="w-full overflow-visible"
-                >
+                <div ref={loadingSectionRef} className="w-full overflow-visible">
                   <DebateSimulation
                     key={debateId || "debate-loading"}
                     duration={0} // No auto-complete, wait for real results

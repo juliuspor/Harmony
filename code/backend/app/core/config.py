@@ -46,14 +46,18 @@ TITLE_TEMPERATURE = 0.2
 # Slack OAuth settings
 SLACK_CLIENT_ID = os.getenv("SLACK_CLIENT_ID")
 SLACK_CLIENT_SECRET = os.getenv("SLACK_CLIENT_SECRET")
-SLACK_REDIRECT_URI = os.getenv("SLACK_REDIRECT_URI", "http://localhost:8000/oauth/slack/callback")
+SLACK_REDIRECT_URI = os.getenv(
+    "SLACK_REDIRECT_URI", "http://localhost:8000/oauth/slack/callback"
+)
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")
 
 # Discord OAuth settings
 DISCORD_CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
-DISCORD_REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI", "http://localhost:8000/oauth/discord/callback")
+DISCORD_REDIRECT_URI = os.getenv(
+    "DISCORD_REDIRECT_URI", "http://localhost:8000/oauth/discord/callback"
+)
 DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 DISCORD_DEFAULT_CHANNEL_ID = os.getenv("DISCORD_DEFAULT_CHANNEL_ID")
 
@@ -103,4 +107,3 @@ MIN_ROUNDS_FOR_STALEMATE_CHECK = 5
 # ============================================================================
 MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "baselhack")
-

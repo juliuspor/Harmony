@@ -3,7 +3,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Brain, TrendingUp, Lightbulb, CheckCircle2, Sparkles, MessageSquare, Zap, Clock, ArrowLeft } from "lucide-react";
+import {
+  Brain,
+  TrendingUp,
+  Lightbulb,
+  CheckCircle2,
+  Sparkles,
+  MessageSquare,
+  Zap,
+  Clock,
+  ArrowLeft,
+} from "lucide-react";
 import { LiveDebateView } from "./LiveDebateView";
 import { getConsensusResults } from "@/lib/api";
 import type { DebateResponse } from "@/lib/api";
@@ -55,10 +65,10 @@ export function DebateSimulation({
   const loadingStartedRef = useRef(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Create a unique key for this debate session based on props
-  const sessionKey = debateId 
-    ? `debate-loading-${debateId}` 
+  const sessionKey = debateId
+    ? `debate-loading-${debateId}`
     : `debate-loading-${duration}-${processingTime}`;
 
   // Handle debate completion from LiveDebateView
@@ -66,9 +76,9 @@ export function DebateSimulation({
     try {
       // Fetch consensus results
       if (!debateId) return;
-      
+
       const consensus = await getConsensusResults(debateId);
-      
+
       const consensusResult: ConsensusResult = {
         score: Math.round(consensus.consensus_score),
         semanticAlignment: consensus.semantic_alignment,
@@ -81,16 +91,16 @@ export function DebateSimulation({
         proArguments: consensus.pro_arguments,
         conArguments: consensus.con_arguments,
       };
-      
+
       setResult(consensusResult);
       setIsLoading(false);
       setShowLiveView(false);
       setCompletedDebateId(debateId);
-      
+
       // Clear session storage
       sessionStorage.removeItem(sessionKey);
       sessionStorage.removeItem(`${sessionKey}-progress`);
-      
+
       onComplete?.(consensusResult);
     } catch (error) {
       console.error("Failed to fetch consensus results:", error);
@@ -119,7 +129,7 @@ export function DebateSimulation({
     }
 
     // Check if loading has already started in this session (survives remounts)
-    const hasStarted = sessionStorage.getItem(sessionKey) === 'true';
+    const hasStarted = sessionStorage.getItem(sessionKey) === "true";
     if (hasStarted) {
       loadingStartedRef.current = true;
       setIsLoading(true);
@@ -131,7 +141,7 @@ export function DebateSimulation({
           setProgress(progressValue);
         }
       }
-      
+
       // Restart the progress interval if duration is 0 or negative
       if (duration <= 0) {
         progressIntervalRef.current = setInterval(() => {
@@ -148,7 +158,7 @@ export function DebateSimulation({
           }
         };
       }
-      
+
       // If duration is positive, we shouldn't be restoring (it should have completed)
       // But if we are restoring, just continue with the interval
       progressIntervalRef.current = setInterval(() => {
@@ -158,7 +168,7 @@ export function DebateSimulation({
           return next;
         });
       }, duration / 50);
-      
+
       return () => {
         if (progressIntervalRef.current) {
           clearInterval(progressIntervalRef.current);
@@ -173,7 +183,7 @@ export function DebateSimulation({
     }
 
     loadingStartedRef.current = true;
-    sessionStorage.setItem(sessionKey, 'true');
+    sessionStorage.setItem(sessionKey, "true");
 
     // If duration is 0 or negative, stay in loading state indefinitely
     // (waiting for external result via customResult prop)
@@ -264,9 +274,7 @@ export function DebateSimulation({
               <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2">
                 Debate Transcript
               </h2>
-              <p className="text-muted-foreground">
-                Review the conversation between AI agents
-              </p>
+              <p className="text-muted-foreground">Review the conversation between AI agents</p>
             </div>
             <Button
               variant="outline"
@@ -279,8 +287,8 @@ export function DebateSimulation({
             </Button>
           </div>
         )}
-        <LiveDebateView 
-          debateId={(debateId || completedDebateId)!} 
+        <LiveDebateView
+          debateId={(debateId || completedDebateId)!}
           onComplete={handleDebateComplete}
           viewOnly={isRevisiting}
         />
@@ -385,10 +393,13 @@ export function DebateSimulation({
                   <div className="w-full max-w-md">
                     <div className="mb-2 flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {progress < 30 ? "Creating AI agents..." : 
-                         progress < 60 ? "Simulating debate..." : 
-                         progress < 90 ? "Analyzing consensus..." : 
-                         "Finalizing results..."}
+                        {progress < 30
+                          ? "Creating AI agents..."
+                          : progress < 60
+                            ? "Simulating debate..."
+                            : progress < 90
+                              ? "Analyzing consensus..."
+                              : "Finalizing results..."}
                       </span>
                       <span className="font-medium text-foreground">{Math.round(progress)}%</span>
                     </div>
@@ -404,27 +415,25 @@ export function DebateSimulation({
 
                   {/* Status Messages */}
                   <div className="mt-6 flex flex-wrap justify-center gap-2">
-                    {[
-                      "Creating AI agents",
-                      "Running debate simulation",
-                      "Analyzing consensus",
-                    ].map((msg, i) => (
-                      <motion.div
-                        key={msg}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{
-                          opacity: progress > (i + 1) * 25 ? 1 : 0.4,
-                          scale: progress > (i + 1) * 25 ? 1 : 0.9,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <Badge variant="secondary" className="text-xs">
-                          {msg}
-                        </Badge>
-                      </motion.div>
-                    ))}
+                    {["Creating AI agents", "Running debate simulation", "Analyzing consensus"].map(
+                      (msg, i) => (
+                        <motion.div
+                          key={msg}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{
+                            opacity: progress > (i + 1) * 25 ? 1 : 0.4,
+                            scale: progress > (i + 1) * 25 ? 1 : 0.9,
+                          }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Badge variant="secondary" className="text-xs">
+                            {msg}
+                          </Badge>
+                        </motion.div>
+                      )
+                    )}
                   </div>
-                  
+
                   {/* Time estimate */}
                   {progress < 90 && processingTime !== undefined && (
                     <motion.div
@@ -449,7 +458,10 @@ export function DebateSimulation({
                         {processingTime < 120 ? (
                           <>~{Math.round(processingTime)} seconds</>
                         ) : (
-                          <>~{Math.ceil(processingTime / 60)} minute{Math.ceil(processingTime / 60) > 1 ? 's' : ''}</>
+                          <>
+                            ~{Math.ceil(processingTime / 60)} minute
+                            {Math.ceil(processingTime / 60) > 1 ? "s" : ""}
+                          </>
                         )}
                       </span>
                     </motion.div>
@@ -485,7 +497,7 @@ export function DebateSimulation({
                     AI agents have synthesized collective intelligence
                   </p>
                 </div>
-                
+
                 {/* Button to view transcript - always show when we have a debate ID */}
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -508,68 +520,74 @@ export function DebateSimulation({
 
             {/* Metrics Grid */}
             <div className="grid gap-6 md:grid-cols-3">
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <Card className="relative overflow-hidden shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
-                      <CardContent className="pt-6 pb-6 relative">
-                        <div>
-                          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">
-                            Consensus Score
-                          </p>
-                          <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-1">
-                            {result.score}
-                          </p>
-                          <p className="text-xs font-medium text-blue-500 dark:text-blue-400">out of 100</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <Card className="relative overflow-hidden shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
+                  <CardContent className="pt-6 pb-6 relative">
+                    <div>
+                      <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">
+                        Consensus Score
+                      </p>
+                      <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-1">
+                        {result.score}
+                      </p>
+                      <p className="text-xs font-medium text-blue-500 dark:text-blue-400">
+                        out of 100
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <Card className="relative overflow-hidden shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
-                      <CardContent className="pt-6 pb-6 relative">
-                        <div>
-                          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">
-                            {result.semanticAlignment !== undefined ? "Alignment" : "Confidence"}
-                          </p>
-                          <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-1">
-                            {result.confidence !== undefined 
-                              ? `${Math.round(result.confidence)}%`
-                              : result.semanticAlignment !== undefined
-                              ? `${Math.round(result.semanticAlignment)}%`
-                              : "N/A"}
-                          </p>
-                          <p className="text-xs font-medium text-blue-500 dark:text-blue-400">
-                            {result.semanticAlignment !== undefined ? "semantic match" : "reliability"}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Card className="relative overflow-hidden shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
+                  <CardContent className="pt-6 pb-6 relative">
+                    <div>
+                      <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">
+                        {result.semanticAlignment !== undefined ? "Alignment" : "Confidence"}
+                      </p>
+                      <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-1">
+                        {result.confidence !== undefined
+                          ? `${Math.round(result.confidence)}%`
+                          : result.semanticAlignment !== undefined
+                            ? `${Math.round(result.semanticAlignment)}%`
+                            : "N/A"}
+                      </p>
+                      <p className="text-xs font-medium text-blue-500 dark:text-blue-400">
+                        {result.semanticAlignment !== undefined ? "semantic match" : "reliability"}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Card className="relative overflow-hidden shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
-                      <CardContent className="pt-6 pb-6 relative">
-                        <div>
-                          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Sentiment</p>
-                          <p className="text-4xl font-bold capitalize bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-1">
-                            {result.sentiment}
-                          </p>
-                          <p className="text-xs font-medium text-blue-500 dark:text-blue-400">overall tone</p>
-                        </div>
-                      </CardContent>
-                    </Card>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Card className="relative overflow-hidden shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
+                  <CardContent className="pt-6 pb-6 relative">
+                    <div>
+                      <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">
+                        Sentiment
+                      </p>
+                      <p className="text-4xl font-bold capitalize bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-1">
+                        {result.sentiment}
+                      </p>
+                      <p className="text-xs font-medium text-blue-500 dark:text-blue-400">
+                        overall tone
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               </motion.div>
             </div>
 
@@ -579,33 +597,31 @@ export function DebateSimulation({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-                  <Card className="shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="text-lg font-bold text-foreground">
-                        Summary
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-3">
-                        {result.keyInsights.map((insight, index) => (
-                          <motion.li
-                            key={index}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.5 + index * 0.1 }}
-                            className="flex items-start gap-3 text-sm text-foreground leading-relaxed"
-                          >
-                            <div className="mt-2 h-2 w-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex-shrink-0" />
-                            <span>{insight}</span>
-                          </motion.li>
-                        ))}
-                      </ul>
-                  </CardContent>
-                </Card>
+              <Card className="shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-bold text-foreground">Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {result.keyInsights.map((insight, index) => (
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                        className="flex items-start gap-3 text-sm text-foreground leading-relaxed"
+                      >
+                        <div className="mt-2 h-2 w-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex-shrink-0" />
+                        <span>{insight}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
             </motion.div>
 
             {/* Popular/Unpopular Ideas Grid */}
-            {((result.proArguments && result.proArguments.length > 0) || 
+            {((result.proArguments && result.proArguments.length > 0) ||
               (result.conArguments && result.conArguments.length > 0)) && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -616,56 +632,56 @@ export function DebateSimulation({
                 {/* Popular Ideas */}
                 {result.proArguments && result.proArguments.length > 0 && (
                   <Card className="shadow-md bg-card border border-green-200/50 dark:border-green-800/50 transition-shadow duration-300 hover:shadow-lg rounded-2xl">
-                        <CardHeader className="pb-4">
-                          <CardTitle className="text-lg font-bold text-green-700 dark:text-green-400">
-                            Popular Ideas
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-3">
-                            {result.proArguments.map((argument, index) => (
-                              <motion.li
-                                key={index}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.6 + index * 0.1 }}
-                                className="flex items-start gap-3 text-sm text-foreground leading-relaxed"
-                              >
-                                <div className="mt-2 h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex-shrink-0" />
-                                <span>{argument}</span>
-                              </motion.li>
-                            ))}
-                          </ul>
-                      </CardContent>
-                    </Card>
-                  )}
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-lg font-bold text-green-700 dark:text-green-400">
+                        Popular Ideas
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-3">
+                        {result.proArguments.map((argument, index) => (
+                          <motion.li
+                            key={index}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.6 + index * 0.1 }}
+                            className="flex items-start gap-3 text-sm text-foreground leading-relaxed"
+                          >
+                            <div className="mt-2 h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex-shrink-0" />
+                            <span>{argument}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Unpopular Ideas */}
                 {result.conArguments && result.conArguments.length > 0 && (
                   <Card className="shadow-md bg-card border border-red-200/50 dark:border-red-800/50 transition-shadow duration-300 hover:shadow-lg rounded-2xl">
-                        <CardHeader className="pb-4">
-                          <CardTitle className="text-lg font-bold text-red-700 dark:text-red-400">
-                            Unpopular Ideas
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-3">
-                            {result.conArguments.map((argument, index) => (
-                              <motion.li
-                                key={index}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.6 + index * 0.1 }}
-                                className="flex items-start gap-3 text-sm text-foreground leading-relaxed"
-                              >
-                                <div className="mt-2 h-2 w-2 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex-shrink-0" />
-                                <span>{argument}</span>
-                              </motion.li>
-                            ))}
-                          </ul>
-                      </CardContent>
-                    </Card>
-                  )}
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-lg font-bold text-red-700 dark:text-red-400">
+                        Unpopular Ideas
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-3">
+                        {result.conArguments.map((argument, index) => (
+                          <motion.li
+                            key={index}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.6 + index * 0.1 }}
+                            className="flex items-start gap-3 text-sm text-foreground leading-relaxed"
+                          >
+                            <div className="mt-2 h-2 w-2 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex-shrink-0" />
+                            <span>{argument}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
               </motion.div>
             )}
           </motion.div>
@@ -674,4 +690,3 @@ export function DebateSimulation({
     </div>
   );
 }
-

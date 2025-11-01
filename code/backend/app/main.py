@@ -3,17 +3,15 @@
 import logging
 from contextlib import asynccontextmanager
 
+from app import __version__
+from app.api.oauth_routes import router as oauth_router
+from app.api.routes import router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import __version__
-from app.api.routes import router
-from app.api.oauth_routes import router as oauth_router
-
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -22,26 +20,27 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """
     Manage application lifespan events.
-    
+
     Handles startup (starting listeners) and shutdown (stopping listeners).
     """
-    from app.services import slack_listener, discord_listener
-    
+    from app.services import discord_listener, slack_listener
+
     # Startup
     slack_listener.start_slack_listener()
     discord_listener.start_discord_listener()
-    
+
     yield
-    
+
     # Shutdown
     slack_listener.stop_slack_listener()
     discord_listener.stop_discord_listener()
+
 
 app = FastAPI(
     title="Opinion Clustering API",
     version=__version__,
     description="API for storing and clustering political opinions using semantic similarity",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # CORS middleware configuration
@@ -64,6 +63,5 @@ async def root():
     return {
         "name": "Opinion Clustering API",
         "version": __version__,
-        "status": "running"
+        "status": "running",
     }
-

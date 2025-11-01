@@ -1,12 +1,14 @@
 """Response schemas for API endpoints"""
 
-from pydantic import BaseModel
-from typing import List, Dict, Optional, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
 
 
 class StoreSubmissionsResponse(BaseModel):
     """Response schema for storing submissions"""
+
     ids: List[str]
     message: str
     count: int
@@ -14,6 +16,7 @@ class StoreSubmissionsResponse(BaseModel):
 
 class ClusterResponse(BaseModel):
     """Response schema for clustering"""
+
     clusters: List[List[str]]
     num_clusters: int
     silhouette_score: float
@@ -23,17 +26,20 @@ class ClusterResponse(BaseModel):
 
 class SuggestCampaignResponse(BaseModel):
     """Response schema for campaign suggestions"""
+
     suggestions: Dict[str, str]
 
 
 class LaunchCampaignResponse(BaseModel):
     """Response schema for launching a campaign"""
+
     id: str
     message: str
 
 
 class AgentInfo(BaseModel):
     """Response schema for agent information"""
+
     agent_id: str
     agent_name: str
     cluster_id: int
@@ -42,6 +48,7 @@ class AgentInfo(BaseModel):
 
 class MessageResponse(BaseModel):
     """Response schema for debate messages"""
+
     message_id: str
     content: str
     agent_id: str
@@ -53,6 +60,7 @@ class MessageResponse(BaseModel):
 
 class InterventionResponse(BaseModel):
     """Response schema for orchestrator interventions"""
+
     intervention_id: str
     intervention_type: str
     reason: str
@@ -62,6 +70,7 @@ class InterventionResponse(BaseModel):
 
 class CreateDebateResponse(BaseModel):
     """Response schema for creating a debate"""
+
     debate_id: str
     status: str
     agents: List[AgentInfo]
@@ -70,11 +79,13 @@ class CreateDebateResponse(BaseModel):
 
 class DebateListResponse(BaseModel):
     """Response schema for listing debates"""
+
     debates: List[Dict[str, Any]]
 
 
 class DebateResponse(BaseModel):
     """Response schema for debate details"""
+
     debate_id: str
     project_id: str
     status: str
@@ -89,6 +100,7 @@ class DebateResponse(BaseModel):
 
 class ConsensusResponse(BaseModel):
     """Response schema for consensus analysis"""
+
     consensus_score: float
     semantic_alignment: float
     agreement_ratio: float
@@ -100,4 +112,3 @@ class ConsensusResponse(BaseModel):
     pro_arguments: List[str]
     con_arguments: List[str]
     pairwise_alignment: Dict[str, Any]
-

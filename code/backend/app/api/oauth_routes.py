@@ -1,10 +1,11 @@
 """OAuth routes for Slack and Discord authentication"""
 
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import RedirectResponse, HTMLResponse
+from urllib.parse import urlencode
+
 from app.core import config
 from app.services import oauth
-from urllib.parse import urlencode
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 router = APIRouter(prefix="/oauth", tags=["oauth"])
 
@@ -16,17 +17,20 @@ async def initiate_slack_oauth(project_id: str = Query(None)):
     Redirects user to Slack authorization page.
     """
     if not config.SLACK_CLIENT_ID:
-        raise HTTPException(status_code=500, detail="Slack OAuth not configured. Please set SLACK_CLIENT_ID.")
-    
+        raise HTTPException(
+            status_code=500,
+            detail="Slack OAuth not configured. Please set SLACK_CLIENT_ID.",
+        )
+
     state = oauth.create_oauth_state("slack", project_id)
-    
+
     params = {
         "client_id": config.SLACK_CLIENT_ID,
         "scope": "chat:write,channels:read,groups:read",
         "redirect_uri": config.SLACK_REDIRECT_URI,
-        "state": state
+        "state": state,
     }
-    
+
     auth_url = f"https://slack.com/oauth/v2/authorize?{urlencode(params)}"
     return RedirectResponse(url=auth_url)
 
@@ -54,16 +58,16 @@ async def slack_oauth_callback(code: str = Query(...), state: str = Query(...)):
                 </body>
             </html>
             """,
-            status_code=400
+            status_code=400,
         )
-    
+
     try:
         # Exchange code for token
         token_data = await oauth.exchange_slack_code(code)
-        
+
         # Store token
         oauth.store_token("slack", token_data)
-        
+
         return HTMLResponse(
             content="""
             <html>
@@ -81,7 +85,7 @@ async def slack_oauth_callback(code: str = Query(...), state: str = Query(...)):
             </html>
             """
         )
-        
+
     except Exception as e:
         return HTMLResponse(
             content=f"""
@@ -99,7 +103,7 @@ async def slack_oauth_callback(code: str = Query(...), state: str = Query(...)):
                 </body>
             </html>
             """,
-            status_code=500
+            status_code=500,
         )
 
 
@@ -110,18 +114,21 @@ async def initiate_discord_oauth(project_id: str = Query(None)):
     Redirects user to Discord authorization page.
     """
     if not config.DISCORD_CLIENT_ID:
-        raise HTTPException(status_code=500, detail="Discord OAuth not configured. Please set DISCORD_CLIENT_ID.")
-    
+        raise HTTPException(
+            status_code=500,
+            detail="Discord OAuth not configured. Please set DISCORD_CLIENT_ID.",
+        )
+
     state = oauth.create_oauth_state("discord", project_id)
-    
+
     params = {
         "client_id": config.DISCORD_CLIENT_ID,
         "redirect_uri": config.DISCORD_REDIRECT_URI,
         "response_type": "code",
         "scope": "webhook.incoming",
-        "state": state
+        "state": state,
     }
-    
+
     auth_url = f"https://discord.com/api/oauth2/authorize?{urlencode(params)}"
     return RedirectResponse(url=auth_url)
 
@@ -149,17 +156,17 @@ async def discord_oauth_callback(code: str = Query(...), state: str = Query(...)
                 </body>
             </html>
             """,
-            status_code=400
+            status_code=400,
         )
-    
+
     try:
         # Exchange code for token
         token_data = await oauth.exchange_discord_code(code)
-        
+
         # For Discord webhook, the token includes webhook info
         # Store it for later use
         oauth.store_token("discord", token_data)
-        
+
         return HTMLResponse(
             content="""
             <html>
@@ -177,7 +184,7 @@ async def discord_oauth_callback(code: str = Query(...), state: str = Query(...)
             </html>
             """
         )
-        
+
     except Exception as e:
         return HTMLResponse(
             content=f"""
@@ -195,7 +202,7 @@ async def discord_oauth_callback(code: str = Query(...), state: str = Query(...)
                 </body>
             </html>
             """,
-            status_code=500
+            status_code=500,
         )
 
 
@@ -211,17 +218,17 @@ async def get_oauth_status(platform: str, user_id: str = "default"):
             "connected": True,
             "platform": platform,
             "method": "bot_token",
-            "stored_at": "pre-configured"
+            "stored_at": "pre-configured",
         }
-    
+
     if platform == "discord" and config.DISCORD_BOT_TOKEN:
         return {
             "connected": True,
             "platform": platform,
             "method": "bot_token",
-            "stored_at": "pre-configured"
+            "stored_at": "pre-configured",
         }
-    
+
     # Otherwise check OAuth tokens
     token_data = oauth.get_token(platform, user_id)
     if token_data:
@@ -229,10 +236,6 @@ async def get_oauth_status(platform: str, user_id: str = "default"):
             "connected": True,
             "platform": platform,
             "method": "oauth",
-            "stored_at": token_data.get("stored_at")
+            "stored_at": token_data.get("stored_at"),
         }
-    return {
-        "connected": False,
-        "platform": platform
-    }
-
+    return {"connected": False, "platform": platform}
