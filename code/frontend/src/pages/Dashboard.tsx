@@ -162,65 +162,46 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-6">
+      <header className="border-b-2 border-border bg-card shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-8 py-5">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold text-foreground">Harmony</h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold text-foreground tracking-tight">Harmony</h1>
                 <img src="/harmony_logo.png" alt="Harmony Logo" className="h-8 w-8" />
               </div>
-              <p className="mt-1 text-muted-foreground">
-                Transforming opinions into intelligence
-              </p>
+              <div className="flex items-center gap-6">
+                <p className="text-sm text-muted-foreground font-medium">
+                  Transforming community opinions into collective intelligence
+                </p>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="text-muted-foreground font-medium">
+                    <span className="text-foreground font-bold text-base">{projects.length}</span> active
+                  </span>
+                  <span className="text-muted-foreground font-bold">•</span>
+                  <span className="text-muted-foreground font-medium">
+                    <span className="text-foreground font-bold text-base">{totalInsights}</span> insights
+                  </span>
+                </div>
+              </div>
             </div>
-            <Button onClick={() => navigate("/projects/new")} size="lg">
+            <Button 
+              onClick={() => navigate("/projects/new")} 
+              size="lg"
+              className="font-semibold"
+            >
               <Plus className="mr-2 h-5 w-5" />
-              Create New Project
+              New Project
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
-        <div className="mb-8 grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Active Projects
-                  </p>
-                  <p className="mt-2 text-3xl font-bold text-foreground">
-                    {projects.length}
-                  </p>
-                </div>
-                <Lightbulb className="h-12 w-12 text-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Insights Generated
-                  </p>
-                  <p className="mt-2 text-3xl font-bold text-foreground">
-                    {totalInsights}
-                  </p>
-                </div>
-                <TrendingUp className="h-12 w-12 text-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="mb-8">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-foreground">
-              Your Projects
+      <main className="container mx-auto px-8 py-12">
+        <div className="mb-12">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-3xl font-semibold text-foreground tracking-tight">
+              Your projects
             </h2>
             <div className="flex gap-3">
               <Select value={filterBy} onValueChange={setFilterBy}>
@@ -247,44 +228,51 @@ export default function Dashboard() {
               </Select>
             </div>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {loading ? (
-              <div className="col-span-full text-center py-12 text-muted-foreground">
+              <div className="col-span-full text-center py-20 text-muted-foreground">
                 Loading campaigns...
               </div>
             ) : projects.length === 0 ? (
-              <div className="col-span-full text-center py-12 text-muted-foreground">
+              <div className="col-span-full text-center py-20 text-muted-foreground">
                 No campaigns yet. Create your first project to get started!
               </div>
             ) : (
               projects.map((project) => (
                 <Card
                   key={project.id}
-                  className="cursor-pointer transition-all hover:shadow-lg overflow-hidden"
+                  className="group cursor-pointer transition-all duration-300 hover:shadow-2xl overflow-hidden border-2 rounded-2xl bg-card hover:border-primary/50"
                   onClick={() => navigate(`/projects/${project.id}`)}
                 >
-                  <div className="w-full h-32 overflow-hidden">
+                  <div className="relative w-full h-48 overflow-hidden">
                     <img 
                       src={project.imageUrl} 
                       alt={project.title} 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-4 right-4">
+                      <div className="px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-foreground flex items-center gap-1.5 shadow-lg">
+                        <Lightbulb className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+                        {project.ideasCount}
+                      </div>
+                    </div>
                   </div>
-                  <CardHeader>
-                    <CardTitle className="text-xl">{project.title}</CardTitle>
-                    <CardDescription className="mt-2 h-10 line-clamp-2">
+                  <CardHeader className="pb-3 pt-5">
+                    <CardTitle className="text-xl font-bold tracking-tight">
+                      {project.title}
+                    </CardTitle>
+                    <CardDescription className="mt-2 line-clamp-2 text-sm leading-relaxed">
                       {project.goal}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold text-foreground">
-                          {project.ideasCount}
-                        </span>
-                        <span className="text-muted-foreground">new ideas</span>
-                      </div>
-                      <span className="text-muted-foreground">
+                  <CardContent className="pb-5">
+                    <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <div className="h-2 w-2 rounded-full bg-green-500" />
+                        Active
+                      </span>
+                      <span>
                         {getRelativeTime(project.lastActivityDate)}
                       </span>
                     </div>
@@ -294,72 +282,61 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-        <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground">
-              Live Activity Feed
-        </h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-3xl font-semibold text-foreground tracking-tight">
+            Live activity
+          </h2>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            Live
+          </div>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Recent Ideas submitted by Users
-            </CardTitle>
-            <CardDescription>
-              Real-time feed of ideas submitted across all projects
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-2 rounded-2xl overflow-hidden bg-card">
+          <CardContent className="p-0">
             {liveMessages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
                 <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
-                <p>No messages yet. Messages will appear here as they arrive.</p>
+                <p className="font-medium">No messages yet. Ideas will appear here as they arrive.</p>
               </div>
             ) : (
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scroll-smooth">
+              <div className="max-h-[500px] overflow-y-auto">
                 {liveMessages.map((msg, index) => {
                   const isNew = index === 0 && !previousMessageIds.has(msg.id);
                   return (
                     <div
                       key={msg.id}
-                      className={`flex gap-3 p-4 rounded-lg border transition-all animate-in slide-in-from-top-2 fade-in duration-500 ${
+                      className={`flex gap-4 px-6 py-5 border-b last:border-b-0 transition-all ${
                         isNew 
-                          ? 'border-primary bg-primary/10 hover:bg-primary/15 shadow-lg shadow-primary/20' 
-                          : 'border-border bg-muted/30 hover:bg-muted/50'
+                          ? 'bg-primary/5 hover:bg-primary/10 border-l-4 border-l-primary' 
+                          : 'hover:bg-muted/50 border-l-4 border-l-transparent'
                       }`}
-                      style={{ 
-                        animationDelay: `${index * 50}ms`,
-                        animationFillMode: 'backwards'
-                      }}
                     >
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 pt-0.5">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          isNew 
-                            ? 'bg-primary/20 ring-2 ring-primary animate-pulse' 
-                            : 'bg-primary/10 ring-2 ring-primary/20'
+                          isNew ? 'bg-primary/10' : 'bg-muted'
                         }`}>
-                          <User className="h-5 w-5 text-primary" />
+                          <User className={`h-4 w-4 ${isNew ? 'text-primary' : 'text-muted-foreground'}`} strokeWidth={2} />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-sm text-foreground">
-                            Anonymous User
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-bold text-sm text-foreground">
+                            Anonymous
                           </span>
                           {isNew && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-medium animate-in fade-in">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">
                               NEW
                             </span>
                           )}
                           <span className="text-xs text-muted-foreground">•</span>
-                          <span className="text-xs text-primary font-medium">
-                            {msg.project_name}
-                          </span>
-                          <span className="text-xs text-muted-foreground ml-auto">
+                          <span className="text-xs text-muted-foreground font-medium">
                             {msg.timestamp ? getRelativeTime(msg.timestamp) : "just now"}
                           </span>
+                          <span className="text-xs text-muted-foreground ml-auto truncate max-w-[200px] font-medium">
+                            {msg.project_name}
+                          </span>
                         </div>
-                        <p className="text-sm text-foreground break-words leading-relaxed">
+                        <p className="text-sm text-foreground leading-relaxed">
                           {msg.message}
                         </p>
                       </div>

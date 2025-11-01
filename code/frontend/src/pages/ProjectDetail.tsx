@@ -18,18 +18,19 @@ import type { ConsensusResult } from "@/components/DebateSimulation";
 interface ClusterVisualizationData {
   id: number;
   theme: string;
-  color: string;
+  summary: string;
+  gradient: { from: string; to: string; accent: string };
   ideas: { text: string }[];
 }
 
-// Neutral color palette for clusters
-const CLUSTER_COLORS = [
-  "hsl(200, 25%, 55%)", // Slate Blue
-  "hsl(180, 20%, 50%)", // Muted Teal
-  "hsl(260, 25%, 55%)", // Soft Purple
-  "hsl(20, 30%, 55%)", // Warm Taupe
-  "hsl(160, 22%, 52%)", // Sage Green
-  "hsl(220, 20%, 50%)", // Cool Gray-Blue
+// Modern gradient color palette for clusters
+const CLUSTER_GRADIENTS = [
+  { from: "#667eea", to: "#764ba2", accent: "#667eea" }, // Purple
+  { from: "#f093fb", to: "#f5576c", accent: "#f093fb" }, // Pink
+  { from: "#4facfe", to: "#00f2fe", accent: "#4facfe" }, // Cyan
+  { from: "#43e97b", to: "#38f9d7", accent: "#43e97b" }, // Green
+  { from: "#fa709a", to: "#fee140", accent: "#fa709a" }, // Coral
+  { from: "#30cfd0", to: "#330867", accent: "#30cfd0" }, // Teal-Purple
 ];
 
 function extractTheme(ideas: string[]): string {
@@ -45,13 +46,14 @@ function extractTheme(ideas: string[]): string {
 
 function transformClustersToVisualization(
   clusters: string[][],
-  titles?: string[]
+  titles?: string[],
+  summaries?: string[]
 ): ClusterVisualizationData[] {
   return clusters.map((ideas, index) => ({
     id: index + 1,
     theme: titles && titles[index] ? titles[index] : extractTheme(ideas),
-    color: CLUSTER_COLORS[index % CLUSTER_COLORS.length],
-    similarity: Math.round((0.75 + Math.random() * 0.2) * 100), // Mock similarity for now
+    summary: summaries && summaries[index] ? summaries[index] : "",
+    gradient: CLUSTER_GRADIENTS[index % CLUSTER_GRADIENTS.length],
     ideas: ideas.map((text) => ({ text })),
   }));
 }
@@ -155,7 +157,8 @@ export default function ProjectDetail() {
     if (clustersData && clustersData.clusters) {
       return transformClustersToVisualization(
         clustersData.clusters,
-        clustersData.titles
+        clustersData.titles,
+        clustersData.summaries
       );
     }
     return [];
@@ -199,276 +202,252 @@ export default function ProjectDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-6">
+      <header className="border-b-2 border-border bg-card shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-8 py-4">
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
-            className="mb-4"
+            className="mb-4 -ml-4 text-foreground hover:text-foreground/80 transition-colors font-semibold"
+            size="sm"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+            Back
           </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
+          <div className="flex items-start justify-between gap-12 pb-2">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-4xl font-bold text-foreground mb-2 tracking-tight leading-tight">
                 {project.title}
               </h1>
-              <p className="mt-1 text-muted-foreground">{project.goal}</p>
+              <p className="text-base text-muted-foreground max-w-3xl leading-relaxed font-medium mb-3">{project.goal}</p>
+              <div className="flex items-center gap-5 text-sm">
+                <span className="text-muted-foreground font-medium">
+                  <span className="text-foreground font-bold text-base">{submissionsCount}</span> ideas
+                </span>
+                <span className="text-muted-foreground font-bold">•</span>
+                <span className="text-muted-foreground font-medium">
+                  <span className="text-foreground font-bold text-base">{contributorsCount}</span> contributors
+                </span>
+                <span className="text-muted-foreground font-bold">•</span>
+                <span className="text-muted-foreground font-medium">
+                  <span className="text-foreground font-bold text-base">{clustersData?.num_clusters || 0}</span> clusters
+                </span>
+                {clustersData?.silhouette_score && (
+                  <>
+                    <span className="text-muted-foreground font-bold">•</span>
+                    <span className="text-muted-foreground font-medium">
+                      <span className="text-foreground font-bold text-base">{Math.round((clustersData.silhouette_score + 1) * 50)}%</span> consensus
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
-            <Badge className="bg-accent text-accent-foreground">Active</Badge>
+            <div className="flex items-center gap-2 shrink-0 pt-1">
+              <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+              <span className="text-sm text-foreground font-bold">Active</span>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
-        <div className="mb-8 grid gap-6 md:grid-cols-4">
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <p className="text-sm font-medium text-muted-foreground">
-                Total Ideas
-              </p>
-              <p className="mt-2 text-4xl font-bold text-foreground">
-                {submissionsCount}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <p className="text-sm font-medium text-muted-foreground">
-                Contributors
-              </p>
-              <p className="mt-2 text-4xl font-bold text-foreground">
-                {contributorsCount}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <p className="text-sm font-medium text-muted-foreground">
-                Themes Identified
-              </p>
-              <p className="mt-2 text-4xl font-bold text-foreground">
-                {clustersData?.num_clusters || 0}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <p className="text-sm font-medium text-muted-foreground">
-                Consensus Score
-              </p>
-              <p className="mt-2 text-4xl font-bold text-foreground">
-                {clustersData?.silhouette_score 
-                  ? `${Math.round((clustersData.silhouette_score + 1) * 50)}%`
-                  : 'N/A'}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Synthesize Section */}
-        <div ref={synthesizeSectionRef} className="mt-8">
-          <Tabs defaultValue="clusters" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="clusters">
+      <main className="container mx-auto px-8 py-12">
+        {/* Tabs Section */}
+        <div className="mb-8">
+          <Tabs defaultValue="clusters" className="space-y-8">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-12 p-1 bg-muted rounded-xl border-2">
+              <TabsTrigger value="clusters" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
                 <Network className="mr-2 h-4 w-4" />
                 Cluster Info
               </TabsTrigger>
-              <TabsTrigger value="debate">
+              <TabsTrigger value="debate" className="rounded-lg font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
                 <Users className="mr-2 h-4 w-4" />
                 Agent Debate
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="clusters" className="space-y-4">
+            <TabsContent value="clusters" className="space-y-8">
               {clusterData.length === 0 ? (
-                <Card>
+                <Card className="border-2">
                   <CardContent className="pt-6 text-center py-12">
-                    <Network className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">
+                    <Network className="mx-auto h-16 w-16 text-muted-foreground mb-4" strokeWidth={1.5} />
+                    <p className="text-muted-foreground font-medium">
                       No clusters available yet. Ideas will be clustered once enough submissions are collected.
                     </p>
                   </CardContent>
                 </Card>
               ) : (
-                <Card className="border border-border/50 shadow-sm bg-card text-card-foreground rounded-lg">
-                  <CardContent className="pt-6">
-                    {/* Header */}
-                    <div className="text-center mb-2">
-                      <h3 className="text-2xl font-bold mb-1">Idea Islands</h3>
-                      <p className="text-muted-foreground text-sm">
-                        {clusterData.length} groups of similar ideas · Click to
-                        explore
-                      </p>
-                    </div>
-
-                  {/* Bubble Circle */}
-                  <div className="relative z-10 rounded-lg border border-border/50 pb-4 mb-8 overflow-visible">
-                    <div className="flex items-center justify-center">
-                      <div className="relative w-[520px] h-[420px]">
-                        <div className="relative w-full h-full">
-                          {clusterData.map((cluster, index) => {
-                            const isExpanded = expandedCluster === cluster.id;
-                            const size = 90 + cluster.ideas.length * 15;
-
-                            // Centered radial layout
-                            const angle =
-                              (index * 2 * Math.PI) / clusterData.length -
-                              Math.PI / 2;
-                            const radius = 30; // circle radius
-                            const centerX = 35; // move circle more to the left
-                            const centerY = 38; // move circle up slightly
-                            const left = centerX + radius * Math.cos(angle);
-                            const top = centerY + radius * Math.sin(angle);
-
-                            return (
-                              <div
-                                key={cluster.id}
-                                className="absolute z-0"
-                                style={{
-                                  left: `${left}%`,
-                                  top: `${top}%`,
-                                  transform: "translate(-50%, -50%)",
-                                  animation: `float ${
-                                    3 + index * 0.5
-                                  }s ease-in-out infinite`,
-                                }}
-                              >
-                                <div
-                                  className="rounded-full flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-2xl"
-                                  style={{
-                                    width: `${size}px`,
-                                    height: `${size}px`,
-                                    backgroundColor: cluster.color,
-                                    opacity: isExpanded ? 1 : 0.9,
-                                    transform: isExpanded
-                                      ? "scale(1.15)"
-                                      : "scale(1)",
-                                  }}
-                                  onClick={() =>
-                                    setExpandedCluster(
-                                      isExpanded ? null : cluster.id
-                                    )
-                                  }
-                                >
-                                  <div className="text-center text-white p-4">
-                                    <div className="text-base font-bold px-2 line-clamp-3 leading-tight">
-                                      {cluster.theme}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
+                <div className="space-y-10">
+                  {/* Prominent Header Section */}
+                  <div className="text-center">
+                    <h2 className="text-4xl font-bold text-foreground mb-3 tracking-tight">
+                      {clusterData.length} idea clusters discovered
+                    </h2>
+                    <p className="text-lg text-muted-foreground">
+                      AI-powered thematic analysis of {submissionsCount} community submissions
+                    </p>
                   </div>
 
-                  {/* Expanded Details (well below bubbles, no overlap) */}
-                  {expandedCluster !== null && (
-                    <div className="relative z-20 mt-4">
-                      <Card
-                        className="border-4 animate-in slide-in-from-bottom-4"
-                        style={{
-                          borderColor:
-                            clusterData.find((c) => c.id === expandedCluster)
-                              ?.color || "transparent",
-                        }}
-                      >
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div
-                                className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg"
-                                style={{
-                                  backgroundColor: clusterData.find(
-                                    (c) => c.id === expandedCluster
-                                  )?.color,
-                                }}
-                              >
-                                {
-                                  clusterData.find(
-                                    (c) => c.id === expandedCluster
-                                  )?.ideas.length
+                  {/* Cluster Cards Grid */}
+                  <div 
+                    className={`grid gap-5 ${
+                      clusterData.length === 2 ? 'grid-cols-1 lg:grid-cols-2' :
+                      clusterData.length === 3 ? 'grid-cols-1 lg:grid-cols-3' :
+                      clusterData.length === 4 ? 'grid-cols-1 md:grid-cols-2' :
+                      clusterData.length === 5 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+                      'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                    }`}
+                  >
+                    {clusterData.map((cluster) => {
+                      const isExpanded = expandedCluster === cluster.id;
+                      
+                      return (
+                        <Card
+                          key={cluster.id}
+                          className={`group relative overflow-hidden transition-all duration-500 border-0 shadow-sm hover:shadow-xl rounded-3xl ${
+                            isExpanded ? 'shadow-2xl' : ''
+                          }`}
+                          style={
+                            isExpanded
+                              ? {
+                                  boxShadow: `0 0 0 1px ${cluster.gradient.accent}, 0 0 0 5px transparent`,
                                 }
+                              : undefined
+                          }
+                        >
+                          {/* Gradient Header with Cluster Number */}
+                          <div
+                            className="relative h-24 px-6 py-4 flex items-center justify-between overflow-hidden cursor-pointer"
+                            style={{
+                              background: `linear-gradient(135deg, ${cluster.gradient.from} 0%, ${cluster.gradient.to} 100%)`,
+                            }}
+                            onClick={() =>
+                              setExpandedCluster(
+                                isExpanded ? null : cluster.id
+                              )
+                            }
+                          >
+                            {/* Decorative element */}
+                            <div className="absolute -right-12 -top-12 w-40 h-40 rounded-full bg-white/10" />
+                            
+                            <div className="relative z-10 flex items-center gap-4 flex-1">
+                              <div className="h-14 w-14 rounded-xl bg-white/95 flex items-center justify-center shadow-lg">
+                                <span className="text-2xl font-bold" style={{ color: cluster.gradient.from }}>
+                                  {cluster.id}
+                                </span>
                               </div>
-                              <div>
-                                <CardTitle className="text-2xl">
-                                  {
-                                    clusterData.find(
-                                      (c) => c.id === expandedCluster
-                                    )?.theme
-                                  }
-                                </CardTitle>
-                                <CardDescription className="text-base mt-1">
-                                  All ideas in this group
-                                </CardDescription>
+                              <div className="text-white flex-1">
+                                <h4 className="text-xl font-bold mb-1 drop-shadow-md">
+                                  {cluster.theme}
+                                </h4>
+                                <div className="flex items-center gap-2">
+                                  <Users className="h-4 w-4" />
+                                  <span className="text-sm font-medium">
+                                    {cluster.ideas.length} contributions
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setExpandedCluster(null)}
+                            
+                            <div 
+                              className={`relative z-10 transform transition-transform duration-300 ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
                             >
-                              Close
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid gap-3 md:grid-cols-2">
-                            {clusterData
-                              .find((c) => c.id === expandedCluster)
-                              ?.ideas.map((idea, i) => (
-                                <div
-                                  key={i}
-                                  className="p-4 rounded-lg border-l-4 bg-muted/30 hover:bg-muted/50 transition-colors"
-                                  style={{
-                                    borderLeftColor: clusterData.find(
-                                      (c) => c.id === expandedCluster
-                                    )?.color,
-                                  }}
+                              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+                                <svg
+                                  className="w-5 h-5 text-white"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
                                 >
-                                  <p className="text-sm">{idea.text}</p>
-                                </div>
-                              ))}
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2.5}
+                                    d="M19 9l-7 7-7-7"
+                                  />
+                                </svg>
+                              </div>
+                            </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  )}
-                  </CardContent>
-                </Card>
-              )}
 
-              <style>{`
-                @keyframes float {
-                  0%, 100% { transform: translateY(0px); }
-                  50% { transform: translateY(-10px); }
-                }
-              `}</style>
+                          {/* Summary Section - Always Visible */}
+                          <CardContent className="pt-7 pb-6 px-7">
+                            {cluster.summary && (
+                              <div className="mb-5">
+                                <p className="text-base text-foreground/70 leading-relaxed font-normal">
+                                  {cluster.summary}
+                                </p>
+                              </div>
+                            )}
+                            
+                            {!isExpanded && (
+                              <button 
+                                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                                onClick={() => setExpandedCluster(cluster.id)}
+                              >
+                                View all {cluster.ideas.length} ideas →
+                              </button>
+                            )}
+                          </CardContent>
+
+                          {/* Expanded Ideas List */}
+                          {isExpanded && (
+                            <CardContent className="pt-0 pb-6 animate-in slide-in-from-top-2">
+                              <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin">
+                                <div className="flex items-center justify-between mb-3 sticky top-0 bg-card py-2 border-b">
+                                  <h5 className="font-semibold text-sm">All Ideas</h5>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setExpandedCluster(null);
+                                    }}
+                                  >
+                                    Collapse
+                                  </Button>
+                                </div>
+                                {cluster.ideas.map((idea, i) => (
+                                  <div
+                                    key={i}
+                                    className="p-3 rounded-lg border-l-4 bg-muted/40 hover:bg-muted/60 transition-colors text-sm"
+                                    style={{
+                                      borderLeftColor: cluster.gradient.accent,
+                                    }}
+                                  >
+                                    <span className="font-medium text-muted-foreground mr-2">#{i + 1}</span>
+                                    {idea.text}
+                                  </div>
+                                ))}
+                              </div>
+                            </CardContent>
+                          )}
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="debate">
               {!isAnalyzing && !analysisResult ? (
-                <Card>
+                <Card className="border-2 rounded-2xl">
                   <CardHeader>
-                    <CardTitle>Synthesize</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-2xl font-bold">Synthesize</CardTitle>
+                    <CardDescription className="text-base">
                       AI agents simulate debate to form consensus from your
                       collected ideas
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="flex h-96 items-center justify-center bg-muted/30">
+                  <CardContent className="flex h-96 items-center justify-center bg-muted/30 rounded-xl">
                     <div className="text-center">
-                      <Sparkles className="mx-auto h-16 w-16 text-muted-foreground" />
-                      <p className="mt-4 text-muted-foreground mb-6">
+                      <Sparkles className="mx-auto h-16 w-16 text-muted-foreground mb-4" strokeWidth={1.5} />
+                      <p className="text-muted-foreground mb-6 font-medium">
                         Start the simulated debate to synthesize insights
                       </p>
                       <Button
                         size="lg"
-                        className="bg-primary hover:bg-primary/90"
                         onClick={handleStartAnalysis}
                       >
                         <Sparkles className="mr-2 h-5 w-5" />

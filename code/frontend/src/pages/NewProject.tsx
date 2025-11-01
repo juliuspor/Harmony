@@ -110,43 +110,49 @@ export default function NewProject() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-6">
-          <Button variant="ghost" onClick={() => navigate("/")} className="mb-4">
+      <header className="border-b-2 border-border bg-card shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-8 py-4">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/")} 
+            className="mb-4 -ml-4 text-foreground hover:text-foreground/80 transition-colors font-semibold"
+            size="sm"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+            Back
           </Button>
-          <h1 className="text-3xl font-bold text-foreground">Create New Project</h1>
-          <p className="mt-1 text-muted-foreground">Let's set up your Harmony campaign</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2 tracking-tight leading-tight">Create new project</h1>
+          <p className="text-base text-muted-foreground font-medium">Set up your Harmony campaign in three simple steps</p>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-8 py-12">
         <StepIndicator steps={steps} currentStep={currentStep} />
 
-        <div className="mt-8">
+        <div className="mt-10 max-w-3xl mx-auto">
           {currentStep === 1 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Define Your Mission</CardTitle>
-                <CardDescription>Tell us about your project and what you're trying to achieve</CardDescription>
+            <Card className="border-2 bg-card rounded-2xl">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold tracking-tight">Define your mission</CardTitle>
+                <CardDescription className="text-base">Tell us about your project and what you're trying to achieve</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="project-name">Project Name</Label>
+                  <Label htmlFor="project-name" className="text-sm font-semibold">Project name</Label>
                   <Input
                     id="project-name"
                     placeholder="e.g., Make Basel Greener"
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="project-goal">Project Goal</Label>
+                  <Label htmlFor="project-goal" className="text-sm font-semibold">Project goal</Label>
                   <Textarea
                     id="project-goal"
                     placeholder="Describe your mission. What question are you trying to answer? What problem are you solving?"
-                    rows={5}
+                    rows={6}
                     value={projectGoal}
                     onChange={(e) => setProjectGoal(e.target.value)}
                   />
@@ -156,10 +162,10 @@ export default function NewProject() {
           )}
 
           {currentStep === 2 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Connect Data Sources</CardTitle>
-                <CardDescription>Where will your ideas come from? Select one or more sources</CardDescription>
+            <Card className="border-2 bg-card rounded-2xl">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold tracking-tight">Connect data sources</CardTitle>
+                <CardDescription className="text-base">Where will your ideas come from? Select one or more sources</CardDescription>
               </CardHeader>
               <CardContent>
                 <DataSourceSelector selectedSources={selectedSources} onSourcesChange={setSelectedSources} />
@@ -168,10 +174,10 @@ export default function NewProject() {
           )}
 
           {currentStep === 3 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Design Your Campaign</CardTitle>
-                <CardDescription>Let our AI help you create the perfect campaign</CardDescription>
+            <Card className="border-2 bg-card rounded-2xl">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold tracking-tight">Design your campaign</CardTitle>
+                <CardDescription className="text-base">Let our AI help you create the perfect campaign</CardDescription>
               </CardHeader>
               <CardContent>
                 <CampaignDesigner 
@@ -186,13 +192,22 @@ export default function NewProject() {
           )}
         </div>
 
-        <div className="mt-8 flex justify-between">
-          <Button variant="outline" onClick={handleBack} disabled={currentStep === 1 || isGenerating}>
+        <div className="mt-12 flex justify-between max-w-3xl mx-auto">
+          <Button 
+            variant="outline" 
+            onClick={handleBack} 
+            disabled={currentStep === 1 || isGenerating}
+            size="lg"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
           {currentStep < 3 ? (
-            <Button onClick={handleNext} disabled={isGenerating}>
+            <Button 
+              onClick={handleNext} 
+              disabled={isGenerating}
+              size="lg"
+            >
               {isGenerating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -206,7 +221,10 @@ export default function NewProject() {
               )}
             </Button>
           ) : (
-            <Button onClick={handleLaunch}>
+            <Button 
+              onClick={handleLaunch}
+              size="lg"
+            >
               <Check className="mr-2 h-4 w-4" />
               Launch Campaign
             </Button>
