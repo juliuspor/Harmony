@@ -1,6 +1,6 @@
 # Harmony
 
-An intelligent platform that transforms community opinions into **intelligence** through clustering, A2A debate simulation, and consensus analysis.
+An intelligent platform that transforms community opinions into **intelligence** through clustering, A2A simulation, and consensus analysis.
 
 ## Features
 
