@@ -1,19 +1,19 @@
 # Harmony
 
-An intelligent platform that transforms community opinions into **collective intelligence** through AI-powered clustering, debate simulation, and consensus analysis.
+An intelligent platform that transforms community opinions into **intelligence** through clustering, A2A debate simulation, and consensus analysis.
 
 ## Features
+
+### Ideation Intelligence Platform 
+- **Campaign Management**: Create and launch Ideation campaigns to collect community input from different sources. 
+- **Real-time Monitoring**: Live ingestion showing submissions as they arrive from connected platforms.
 
 ### Semantic Intelligence
 - **Semantic Clustering**: Automatically cluster similar opinions and ideas using vector embeddings.
 
 ### A2A Communication
-- **AI Debate Simulation**: Run multi-agent debates with A2A communication dynamically created from multiple opinion clusters.
-- **Consensus Analysis**: Calculate consensus scores, semantic alignment, and convergence metrics between agents during the live discussion. 
-
-### Platform 
-- **Campaign Management**: Create and launch campaigns to collect community input from Slack and Discord 
-- **Real-time Monitoring**: Live dashboard showing submissions as they arrive from connected platforms
+- **AI Debate and Conversation Simulation**: Run multi-agent debate simulations using A2A communication. The agents are dynamically created from k opinion clusters.
+- **Consensus Assessment**: Calculate consensus scores, semantic alignment, and convergence metrics between agents during the live discussion. 
 
 ## Architecture
 
