@@ -53,7 +53,8 @@ Summary:"""
                 {"role": "system", "content": "You are a helpful assistant that summarizes groups of text submissions, identifying common themes and patterns."},
                 {"role": "user", "content": prompt}
             ],
-            "max_tokens": config.SUMMARIZATION_MAX_TOKENS
+            "max_tokens": config.SUMMARIZATION_MAX_TOKENS,
+            "temperature": config.SUMMARIZATION_TEMPERATURE
         }
         
         print(f"Summarizing cluster {cluster_index + 1} with model {config.OPENAI_MODEL}")

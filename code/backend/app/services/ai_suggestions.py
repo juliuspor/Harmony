@@ -91,7 +91,8 @@ No Markdown formatting, only new lines afer the hello message, just plain text. 
                     "schema": schema
                 }
             },
-            max_tokens=2000
+            max_tokens=2000,
+            temperature=config.SUGGESTIONS_TEMPERATURE
         )
         
         # Parse the structured response
