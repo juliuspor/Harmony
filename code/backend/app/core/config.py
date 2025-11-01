@@ -19,7 +19,7 @@ EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY_HACK")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
-OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "2000"))
+OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
 
 SUMMARIZATION_MAX_TOKENS = 300
 SUMMARIZATION_TEMPERATURE = 0.3
@@ -46,8 +46,8 @@ DISCORD_DEFAULT_CHANNEL_ID = os.getenv("DISCORD_DEFAULT_CHANNEL_ID")  # Default 
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 
 # Debate Settings
-DEFAULT_MAX_ROUNDS = 4
-DEFAULT_MAX_MESSAGES = 20
+DEFAULT_MAX_ROUNDS = 3
+DEFAULT_MAX_MESSAGES = 30
 
 # Orchestrator Intervention Settings
 INTERVENTION_REPETITION_THRESHOLD = 2  # Number of similar messages before intervention
@@ -63,15 +63,15 @@ CONSENSUS_SEMANTIC_WEIGHT = 0.70
 
 # Ratio of explicit agreement vs disagreement keywords
 # in messages (e.g., "I agree" vs "I disagree")
-CONSENSUS_AGREEMENT_WEIGHT = 0.10
+CONSENSUS_AGREEMENT_WEIGHT = 0.20
 
 # Measures if agents' positions became more similar
 # over time by comparing early vs late round positions
-CONSENSUS_CONVERGENCE_WEIGHT = 0.10
+CONSENSUS_CONVERGENCE_WEIGHT = 0.05
 
 # Tracks how many counter-arguments were addressed
 # or resolved during the debate
-CONSENSUS_RESOLUTION_WEIGHT = 0.10
+CONSENSUS_RESOLUTION_WEIGHT = 0.05
 
 # Debate Generation Settings
 PERSONA_GENERATION_TEMPERATURE = 0.7
