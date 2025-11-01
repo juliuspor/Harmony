@@ -5,15 +5,14 @@ An intelligent platform that transforms community opinions into **collective int
 ## Features
 
 ### Semantic Intelligence
-- **Semantic Clustering**: Automatically group similar opinions using AI embeddings and vector similarity
-- **Vector Search**: ChromaDB-powered semantic search for finding similar opinions
+- **Semantic Clustering**: Automatically cluster similar opinions and ideas using vector embeddings.
 
-### Multi-Agent AI
-- **AI Debate Simulation**: Run multi-agent debates with agent-to-agent communication representing different opinion clusters
-- **Consensus Analysis**: Calculate consensus scores, semantic alignment, and convergence metrics between agents
+### A2A Communication
+- **AI Debate Simulation**: Run multi-agent debates with A2A communication dynamically created from multiple opinion clusters.
+- **Consensus Analysis**: Calculate consensus scores, semantic alignment, and convergence metrics between agents during the live discussion. 
 
-### Platform Integration
-- **Campaign Management**: Create and launch campaigns to collect community input from Slack and Discord
+### Platform 
+- **Campaign Management**: Create and launch campaigns to collect community input from Slack and Discord 
 - **Real-time Monitoring**: Live dashboard showing submissions as they arrive from connected platforms
 
 ## Architecture
@@ -90,7 +89,7 @@ graph TB
 
 **Backend**: FastAPI • MongoDB • ChromaDB • OpenAI/CrewAI • Slack/Discord SDK  
 **Frontend**: React + TypeScript • Vite • Tailwind CSS  
-**Intelligence**: Multi-agent debates with Agent-to-Agent (A2A) communication
+**Intelligence**: A2A Communication (Crew AI), Chroma DB clustering (bge-small-en-v1.5)
 
 ## Getting Started
 
@@ -159,10 +158,10 @@ Frontend will be available at `http://localhost:5173`
 
 ## How It Works
 
-1. **Create a Campaign** - Define your mission, connect data sources (Slack, Discord), design your campaign with AI-generated messages
+1. **Create a Campaign** - Define your mission, connect data sources, kickstart your campaign with AI-generated messages
 2. **Collect Submissions** - Posts campaign messages to platforms, monitors channels, stores submissions with embeddings
-3. **Analyze Opinions** - Cluster submissions by semantic similarity, view AI-generated summaries and statistics
-4. **Run AI Debates** - Create AI agents representing clusters, calculate consensus metrics and alignment scores
+3. **Analyze Opinions** - Cluster the community inputs using embeddings, view AI-generated summaries 
+4. **Run AI Debates** - Dynamically spawn AI agents representing the k-clusters, calculate consensus metrics and alignment scores during the live debate. 
 
 ## API Endpoints
 
@@ -200,24 +199,38 @@ BaselHack/
 ├── code/
 │   ├── backend/
 │   │   ├── app/
-│   │   │   ├── api/              # API routes and OAuth
-│   │   │   ├── core/             # Configuration
-│   │   │   ├── services/         # Business logic
-│   │   │   │   ├── clustering.py
-│   │   │   │   ├── debate.py
-│   │   │   │   ├── ai_suggestions.py
-│   │   │   │   ├── slack_listener.py
-│   │   │   │   └── discord_listener.py
-│   │   │   └── schemas/          # Pydantic models
-│   │   ├── requirements.txt
-│   │   └── Dockerfile
+│   │   │   ├── api/                          # API routes (main + OAuth endpoints)
+│   │   │   ├── core/                         # Configuration & environment settings
+│   │   │   ├── services/                     # Business logic layer
+│   │   │   │   ├── ai_suggestions.py         # AI campaign generation
+│   │   │   │   ├── clustering.py             # Semantic clustering with ChromaDB
+│   │   │   │   ├── consensus_analysis.py     # Consensus metrics & alignment
+│   │   │   │   ├── debate.py                 # Multi-agent debate orchestration
+│   │   │   │   ├── *_storage.py              # MongoDB persistence (campaigns, debates)
+│   │   │   │   ├── *_listener.py             # Platform listeners (Slack, Discord)
+│   │   │   │   └── ...                       # OAuth, summarization, database, ...
+│   │   │   ├── schemas/                      # Pydantic request/response models
+│   │   │   └── main.py                       # FastAPI app initialization
+│   │   ├── chroma_db/                        # ChromaDB persistent storage
+│   │   ├── requirements.txt                  # Python dependencies
+│   │   └── Dockerfile                        # Backend container config
+│   ├── data/                                 # Runtime data (OAuth tokens)
 │   ├── frontend/
 │   │   ├── src/
-│   │   │   ├── components/       # React components
-│   │   │   ├── pages/            # Page components
-│   │   │   └── lib/              # Utilities
-│   │   └── package.json
-│   └── docker-compose.yml
-├── chroma_db/                    # Vector database storage
-└── README.md
+│   │   │   ├── components/                   # React components
+│   │   │   │   ├── ui/                       # shadcn/ui component library (40+ components)
+│   │   │   │   ├── CampaignDesigner.tsx      # Campaign creation wizard
+│   │   │   │   ├── DataSourceSelector.tsx    # Platform integration UI
+│   │   │   │   ├── DebateSimulation.tsx      # Debate visualization
+│   │   │   │   └── LiveDebateView.tsx        # Real-time debate display
+│   │   │   ├── pages/                        # Main page views (Dashboard, ProjectDetail, etc.)
+│   │   │   ├── hooks/                        # Custom React hooks
+│   │   │   └── lib/                          # API client & utilities
+│   │   ├── public/                           # Static assets (images, icons, logos)
+│   │   ├── package.json                      # Node dependencies
+│   │   └── vite.config.ts                    # Build configuration
+│   └── docker-compose.yml                    # Service orchestration (MongoDB + Backend)
+├── assets/                                   # Additional project assets
+├── documentation/                            # Project documentation
+└── README.md                                 # This file
 ```
