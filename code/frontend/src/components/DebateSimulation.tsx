@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Brain, TrendingUp, Lightbulb, CheckCircle2, Sparkles, MessageSquare, Zap, Clock } from "lucide-react";
 import { LiveDebateView } from "./LiveDebateView";
 import { getConsensusResults } from "@/lib/api";
@@ -49,6 +50,7 @@ export function DebateSimulation({
   const [result, setResult] = useState<ConsensusResult | null>(customResult || null);
   const [progress, setProgress] = useState(0);
   const [showLiveView, setShowLiveView] = useState(false);
+  const [completedDebateId, setCompletedDebateId] = useState<string | null>(null);
   // Use refs to track if loading has started and preserve state across re-renders
   const loadingStartedRef = useRef(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -83,6 +85,7 @@ export function DebateSimulation({
       setResult(consensusResult);
       setIsLoading(false);
       setShowLiveView(false);
+      setCompletedDebateId(debateId);
       
       // Clear session storage
       sessionStorage.removeItem(sessionKey);
@@ -235,7 +238,7 @@ export function DebateSimulation({
         progressIntervalRef.current = null;
       }
     };
-  }, [duration, onComplete, autoStart, customResult, sessionKey]);
+  }, [duration, onComplete, autoStart, customResult, sessionKey, debateId]);
 
   // If custom result is provided, show it immediately
   useEffect(() => {
@@ -250,9 +253,39 @@ export function DebateSimulation({
     }
   }, [customResult, sessionKey]);
 
-  // Show live debate view if we have a debateId
-  if (showLiveView && debateId) {
-    return <LiveDebateView debateId={debateId} onComplete={handleDebateComplete} />;
+  // Show live debate view if we have a debateId (either during debate or when revisiting)
+  if (showLiveView && (debateId || completedDebateId)) {
+    const isRevisiting = Boolean(completedDebateId || (debateId && result));
+    return (
+      <div className="space-y-6">
+        {isRevisiting && (
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2">
+                Debate Transcript
+              </h2>
+              <p className="text-muted-foreground">
+                Review the conversation between AI agents
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setShowLiveView(false)}
+              className="gap-2"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              Back to Summary
+            </Button>
+          </div>
+        )}
+        <LiveDebateView 
+          debateId={(debateId || completedDebateId)!} 
+          onComplete={handleDebateComplete}
+          viewOnly={isRevisiting}
+        />
+      </div>
+    );
   }
 
   return (
@@ -435,20 +468,42 @@ export function DebateSimulation({
             className="space-y-8"
           >
             {/* Header */}
-            <div className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="mb-3"
-              >
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
-                  Consensus Reached
-                </h2>
-              </motion.div>
-              <p className="text-muted-foreground">
-                AI agents have synthesized collective intelligence
-              </p>
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="mb-2"
+                  >
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                      Consensus Reached
+                    </h2>
+                  </motion.div>
+                  <p className="text-muted-foreground">
+                    AI agents have synthesized collective intelligence
+                  </p>
+                </div>
+                
+                {/* Button to view transcript - always show when we have a debate ID */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
+                >
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setShowLiveView(true)}
+                    disabled={!completedDebateId && !debateId}
+                    className="gap-2"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    View Transcript
+                  </Button>
+                </motion.div>
+              </div>
             </div>
 
             {/* Metrics Grid */}
@@ -518,7 +573,7 @@ export function DebateSimulation({
               </motion.div>
             </div>
 
-            {/* Key Insights */}
+            {/* Summary */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -527,7 +582,7 @@ export function DebateSimulation({
                   <Card className="shadow-md bg-card border border-blue-200/50 dark:border-blue-800/50 rounded-2xl">
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg font-bold text-foreground">
-                        Key Insights
+                        Summary
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -549,7 +604,7 @@ export function DebateSimulation({
                 </Card>
             </motion.div>
 
-            {/* Pro/Con Arguments Grid */}
+            {/* Popular/Unpopular Ideas Grid */}
             {((result.proArguments && result.proArguments.length > 0) || 
               (result.conArguments && result.conArguments.length > 0)) && (
               <motion.div
@@ -558,12 +613,12 @@ export function DebateSimulation({
                 transition={{ delay: 0.5 }}
                 className="grid gap-4 md:grid-cols-2"
               >
-                {/* Pro Arguments */}
+                {/* Popular Ideas */}
                 {result.proArguments && result.proArguments.length > 0 && (
                   <Card className="shadow-md bg-card border border-green-200/50 dark:border-green-800/50 transition-shadow duration-300 hover:shadow-lg rounded-2xl">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-lg font-bold text-green-700 dark:text-green-400">
-                            Pro Arguments
+                            Popular Ideas
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -585,12 +640,12 @@ export function DebateSimulation({
                     </Card>
                   )}
 
-                {/* Con Arguments */}
+                {/* Unpopular Ideas */}
                 {result.conArguments && result.conArguments.length > 0 && (
                   <Card className="shadow-md bg-card border border-red-200/50 dark:border-red-800/50 transition-shadow duration-300 hover:shadow-lg rounded-2xl">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-lg font-bold text-red-700 dark:text-red-400">
-                            Con Arguments
+                            Unpopular Ideas
                           </CardTitle>
                         </CardHeader>
                         <CardContent>

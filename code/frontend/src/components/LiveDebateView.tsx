@@ -25,6 +25,7 @@ import { getDebateStatus } from "@/lib/api";
 interface LiveDebateViewProps {
   debateId: string;
   onComplete?: (debateData: DebateResponse) => void;
+  viewOnly?: boolean; // If true, don't call onComplete for already-completed debates
 }
 
 interface Message {
@@ -95,7 +96,7 @@ const getAgentIcon = (agentId: string) => {
   return icons[iconIndex];
 };
 
-export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
+export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveDebateViewProps) {
   const [debate, setDebate] = useState<DebateResponse | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -140,13 +141,13 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
         setMessages(data.messages || []);
         setIsLoading(false);
 
-        // If debate is complete, stop polling and call onComplete
+        // If debate is complete, stop polling and call onComplete (unless in viewOnly mode)
         if (data.status === "completed" || data.status === "cancelled") {
           if (pollIntervalRef.current) {
             clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
           }
-          if (data.status === "completed" && onComplete) {
+          if (data.status === "completed" && onComplete && !viewOnly) {
             onComplete(data);
           }
         }
@@ -170,7 +171,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
         clearInterval(pollIntervalRef.current);
       }
     };
-  }, [debateId, onComplete]);
+  }, [debateId, onComplete, viewOnly]);
 
   if (isLoading && !debate) {
     return (

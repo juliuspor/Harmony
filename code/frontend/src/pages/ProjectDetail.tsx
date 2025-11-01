@@ -73,6 +73,7 @@ export default function ProjectDetail() {
     new Set()
   );
   const [debateId, setDebateId] = useState<string | null>(null);
+  const [completedDebateId, setCompletedDebateId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("clusters");
   const [estimatedTime, setEstimatedTime] = useState<number | undefined>(
     undefined
@@ -220,6 +221,10 @@ export default function ProjectDetail() {
   const handleAnalysisComplete = (result: ConsensusResult) => {
     setAnalysisResult(result);
     setIsAnalyzing(false);
+    // Preserve the debate ID for viewing transcript later
+    if (debateId) {
+      setCompletedDebateId(debateId);
+    }
     setDebateId(null);
 
     // Scroll to synthesize section to move the analysis UI to the top
@@ -628,6 +633,7 @@ export default function ProjectDetail() {
                     key="debate-result"
                     result={analysisResult}
                     autoStart={false}
+                    debateId={completedDebateId || undefined}
                   />
                 </div>
               ) : null}
