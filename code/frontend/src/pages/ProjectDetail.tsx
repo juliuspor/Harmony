@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -64,6 +65,8 @@ export default function ProjectDetail() {
     null
   );
   const [expandedCluster, setExpandedCluster] = useState<number | null>(null);
+  const [debateId, setDebateId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("clusters");
   const loadingSectionRef = useRef<HTMLDivElement>(null);
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
   const [project, setProject] = useState<any>(null);
@@ -175,6 +178,9 @@ export default function ProjectDetail() {
   const handleAnalysisComplete = (result: ConsensusResult) => {
     setAnalysisResult(result);
     setIsAnalyzing(false);
+    setDebateId(null);
+    
+    // Scroll to synthesize section to move the analysis UI to the top
     setTimeout(() => {
       synthesizeSectionRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -269,7 +275,7 @@ export default function ProjectDetail() {
 
         {/* Synthesize Section */}
         <div ref={synthesizeSectionRef} className="mt-8">
-          <Tabs defaultValue="clusters" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="clusters">
                 <Network className="mr-2 h-4 w-4" />
@@ -278,6 +284,13 @@ export default function ProjectDetail() {
               <TabsTrigger value="debate">
                 <Users className="mr-2 h-4 w-4" />
                 Agent Debate
+                {isAnalyzing && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="ml-2 h-2 w-2 rounded-full bg-primary"
+                  />
+                )}
               </TabsTrigger>
             </TabsList>
 
@@ -483,14 +496,16 @@ export default function ProjectDetail() {
                   className="w-full overflow-visible"
                 >
                   <DebateSimulation
-                    duration={5000}
+                    key={debateId || "debate-loading"}
+                    duration={0} // No auto-complete, wait for real results
                     autoStart={true}
                     onComplete={handleAnalysisComplete}
+                    debateId={debateId || undefined}
                   />
                 </div>
               ) : analysisResult ? (
                 <div className="w-full overflow-visible pb-4">
-                  <DebateSimulation result={analysisResult} autoStart={false} />
+                  <DebateSimulation key="debate-result" result={analysisResult} autoStart={false} />
                 </div>
               ) : null}
             </TabsContent>
