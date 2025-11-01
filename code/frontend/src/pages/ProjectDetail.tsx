@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,80 +67,81 @@ export default function ProjectDetail() {
   const [expandedCluster, setExpandedCluster] = useState<number | null>(null);
   const loadingSectionRef = useRef<HTMLDivElement>(null);
   const synthesizeSectionRef = useRef<HTMLDivElement>(null);
+  const [project, setProject] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [submissionsCount, setSubmissionsCount] = useState(0);
+  const [clustersData, setClustersData] = useState<any>(null);
 
-  const projectsData: Record<string, any> = {
-    "1": {
-      id: "1",
-      title: "Green City Basel",
-      goal: "Collecting the best ideas for making Basel more sustainable",
-      status: "collecting",
-      ideasCount: 23,
-      lastActivity: "2 hours ago",
-    },
-    "2": {
-      id: "2",
-      title: "Team-Building Adventure",
-      goal: "Ideation on the best team-building activities for the next quarter.",
-      status: "synthesizing",
-      ideasCount: 45,
-      lastActivity: "1 day ago",
-    },
-    "3": {
-      id: "3",
-      title: "From Chemical Plants to Food Production",
-      goal: "Ideating on how to bring together industry professionals from diverse backgrounds?",
-      status: "synthesizing",
-      ideasCount: 23,
-      lastActivity: "3 days ago",
-    },
-  };
+  // Fetch project data from backend
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      try {
+        // Fetch all campaigns
+        const campaignsResponse = await fetch("http://localhost:8000/campaigns");
+        const campaignsData = await campaignsResponse.json();
+        
+        // Find the campaign with matching ID
+        const campaign = campaignsData.campaigns.find((c: any) => c.id === id);
+        
+        if (campaign) {
+          setProject({
+            id: campaign.id,
+            title: campaign.project_name,
+            goal: campaign.project_goal,
+            status: "collecting",
+          });
+          
+          // Fetch submissions count
+          try {
+            const submissionsResponse = await fetch(
+              `http://localhost:8000/submissions?project_id=${id}`
+            );
+            const submissionsData = await submissionsResponse.json();
+            setSubmissionsCount(submissionsData.count || 0);
+          } catch (error) {
+            console.error("Failed to fetch submissions:", error);
+          }
+          
+          // Fetch clusters if available
+          try {
+            const clustersResponse = await fetch(
+              `http://localhost:8000/projects/${id}/clusters`
+            );
+            if (clustersResponse.ok) {
+              const clustersResult = await clustersResponse.json();
+              setClustersData(clustersResult);
+            }
+          } catch (error) {
+            console.log("No clusters available yet:", error);
+          }
+        } else {
+          console.error("Campaign not found");
+          // Navigate back to dashboard if project not found
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Failed to fetch project data:", error);
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const project = projectsData[id || "1"] || projectsData["1"];
+    if (id) {
+      fetchProjectData();
+    }
+  }, [id, navigate]);
 
-  const mockBackendResponse = {
-    clusters: [
-      [
-        "Create more rooftop gardens on public buildings",
-        "Transform parking lots into pocket parks",
-        "Plant vertical gardens on building facades",
-        "Install green walls at bus stops",
-      ],
-      [
-        "Expand bike lane network across the city",
-        "Implement electric bus fleet",
-        "Create car-free zones in downtown",
-        "Build more park-and-ride facilities",
-        "Introduce bike-sharing stations",
-      ],
-      [
-        "Install solar panels on all municipal buildings",
-        "Create community solar programs",
-        "Subsidize residential solar installations",
-      ],
-      [
-        "Implement city-wide composting program",
-        "Ban single-use plastics in restaurants",
-        "Create repair cafes for electronics",
-        "Establish zero-waste grocery stores",
-      ],
-      [
-        "Host monthly sustainability workshops",
-        "Create neighborhood green teams",
-        "Launch eco-challenge campaigns",
-      ],
-    ],
-    num_clusters: 5,
-    silhouette_score: 0.73,
-  };
-
-  const clusterData = useMemo(
-    () =>
-      transformClustersToVisualization(
-        mockBackendResponse.clusters,
-        mockBackendResponse.silhouette_score
-      ),
-    []
-  );
+  // Use actual clusters data if available, otherwise show empty state
+  const clusterData = useMemo(() => {
+    if (clustersData && clustersData.clusters) {
+      return transformClustersToVisualization(
+        clustersData.clusters,
+        clustersData.silhouette_score
+      );
+    }
+    return [];
+  }, [clustersData]);
 
   const handleStartAnalysis = () => {
     if (analysisResult) setAnalysisResult(null);
@@ -163,6 +164,20 @@ export default function ProjectDetail() {
       });
     }, 100);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading project...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -196,7 +211,7 @@ export default function ProjectDetail() {
                 Total Ideas
               </p>
               <p className="mt-2 text-4xl font-bold text-foreground">
-                {project.ideasCount}
+                {submissionsCount}
               </p>
             </CardContent>
           </Card>
@@ -241,16 +256,26 @@ export default function ProjectDetail() {
             </TabsList>
 
             <TabsContent value="clusters" className="space-y-4">
-              <Card className="border border-border/50 shadow-sm bg-card text-card-foreground rounded-lg">
-                <CardContent className="pt-6">
-                  {/* Header */}
-                  <div className="text-center mb-2">
-                    <h3 className="text-2xl font-bold mb-1">Idea Islands</h3>
-                    <p className="text-muted-foreground text-sm">
-                      {clusterData.length} groups of similar ideas · Click to
-                      explore
+              {clusterData.length === 0 ? (
+                <Card>
+                  <CardContent className="pt-6 text-center py-12">
+                    <Network className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">
+                      No clusters available yet. Ideas will be clustered once enough submissions are collected.
                     </p>
-                  </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="border border-border/50 shadow-sm bg-card text-card-foreground rounded-lg">
+                  <CardContent className="pt-6">
+                    {/* Header */}
+                    <div className="text-center mb-2">
+                      <h3 className="text-2xl font-bold mb-1">Idea Islands</h3>
+                      <p className="text-muted-foreground text-sm">
+                        {clusterData.length} groups of similar ideas · Click to
+                        explore
+                      </p>
+                    </div>
 
                   {/* Bubble Circle */}
                   <div className="relative z-10 rounded-lg border border-border/50 pb-4 mb-8 overflow-visible">
@@ -398,8 +423,9 @@ export default function ProjectDetail() {
                       </Card>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
 
               <style>{`
                 @keyframes float {
