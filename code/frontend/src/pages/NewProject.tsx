@@ -347,7 +347,7 @@ export default function NewProject() {
               onClick={handleNext} 
               disabled={isGenerating}
               size="lg"
-              className={`h-12 px-8 font-semibold bg-gradient-to-r ${getStepGradient()} hover:opacity-90 transition-opacity shadow-lg`}
+              className="h-12 px-8 font-semibold"
             >
               {isGenerating ? (
                 <>
@@ -365,7 +365,7 @@ export default function NewProject() {
             <Button 
               onClick={handleLaunch}
               size="lg"
-              className={`h-12 px-8 font-semibold bg-gradient-to-r ${getStepGradient()} hover:opacity-90 transition-opacity shadow-lg`}
+              className="h-12 px-8 font-semibold"
             >
               <Rocket className="mr-2 h-5 w-5" />
               Launch Campaign

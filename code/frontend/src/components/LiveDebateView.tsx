@@ -2,9 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Users, Sparkles, CheckCircle2, Clock, MessageSquare } from "lucide-react";
+import { Users, Sparkles, CheckCircle2, Clock, MessageSquare, User, Bot, Brain, Lightbulb, Zap, Target, Shield, UserCircle } from "lucide-react";
 import type { DebateResponse } from "@/lib/api";
 import { getDebateStatus } from "@/lib/api";
 
@@ -44,13 +44,29 @@ const getAgentColor = (agentId: string): string => {
   return `${colors[colorIndex].bg} ${colors[colorIndex].text} ${colors[colorIndex].border}`;
 };
 
-// Get agent initials for avatar
-const getAgentInitials = (name: string): string => {
-  const words = name.split(" ");
-  if (words.length >= 2) {
-    return `${words[0][0]}${words[1][0]}`.toUpperCase();
+// Get agent icon based on their ID
+const getAgentIcon = (agentId: string) => {
+  // Icons array for consistent assignment
+  const icons = [
+    Bot,
+    Brain,
+    Lightbulb,
+    User,
+    Zap,
+    Target,
+    UserCircle,
+    Sparkles,
+  ];
+  
+  // Orchestrator gets shield icon
+  if (agentId === "orchestrator") {
+    return Shield;
   }
-  return name.slice(0, 2).toUpperCase();
+  
+  // Hash the agent_id to get consistent icon
+  const hash = agentId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const iconIndex = hash % icons.length;
+  return icons[iconIndex];
 };
 
 export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
@@ -246,6 +262,7 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                 {messages.map((message, index) => {
                   const isOrchestrator = message.agent_id === "orchestrator";
                   const colorClasses = getAgentColor(message.agent_id);
+                  const AgentIcon = getAgentIcon(message.agent_id);
                   
                   return (
                     <motion.div
@@ -256,8 +273,11 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                       className="flex gap-4"
                     >
                       <Avatar className={`h-10 w-10 border-2 ${colorClasses} flex-shrink-0`}>
+                        {isOrchestrator && (
+                          <AvatarImage src="/images/moderator-avatar.png" alt="Moderator" />
+                        )}
                         <AvatarFallback className={colorClasses}>
-                          {isOrchestrator ? "🎭" : getAgentInitials(message.agent_name)}
+                          <AgentIcon className="h-5 w-5" />
                         </AvatarFallback>
                       </Avatar>
                       
@@ -325,13 +345,14 @@ export function LiveDebateView({ debateId, onComplete }: LiveDebateViewProps) {
                 .filter(agent => agent.agent_id !== "orchestrator")
                 .map((agent) => {
                   const colorClasses = getAgentColor(agent.agent_id);
+                  const AgentIcon = getAgentIcon(agent.agent_id);
                   return (
                     <Card key={agent.agent_id} className="border">
                       <CardContent className="pt-4">
                         <div className="flex items-start gap-3">
                           <Avatar className={`h-10 w-10 border-2 ${colorClasses}`}>
                             <AvatarFallback className={colorClasses}>
-                              {getAgentInitials(agent.agent_name)}
+                              <AgentIcon className="h-5 w-5" />
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
