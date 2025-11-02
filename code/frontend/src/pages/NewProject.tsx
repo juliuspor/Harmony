@@ -124,15 +124,15 @@ export default function NewProject() {
   };
 
   const getStepGradient = () => {
-    return "from-blue-500 to-cyan-500";
+    return "from-primary to-accent";
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
@@ -222,7 +222,7 @@ export default function NewProject() {
                         placeholder="e.g., Make Basel Greener"
                         value={projectName}
                         onChange={(e) => setProjectName(e.target.value)}
-                        className="h-12 text-base border-2 focus:border-blue-400 transition-colors"
+                        className="h-12 text-base border-2 focus:border-primary transition-colors"
                       />
                       <p className="text-xs text-muted-foreground">
                         Choose a clear, memorable name for your project
@@ -245,7 +245,7 @@ export default function NewProject() {
                         rows={8}
                         value={projectGoal}
                         onChange={(e) => setProjectGoal(e.target.value)}
-                        className="text-base border-2 focus:border-blue-400 transition-colors resize-none"
+                        className="text-base border-2 focus:border-primary transition-colors resize-none"
                       />
                       <p className="text-xs text-muted-foreground">
                         Be specific about your objectives and desired outcomes

@@ -300,7 +300,7 @@ export default function ProjectDetail() {
                             ease: "easeInOut",
                           }}
                         >
-                          <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 blur-xl" />
+                          <div className="w-32 h-32 rounded-full bg-gradient-to-r from-primary to-accent blur-xl" />
                         </motion.div>
 
                         {/* Icon container */}
@@ -324,7 +324,7 @@ export default function ProjectDetail() {
                               ease: "easeInOut",
                             }}
                           >
-                            <div className="relative p-6 rounded-3xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border-2 border-blue-200/50 dark:border-blue-800/30">
+                            <div className="relative p-6 rounded-3xl bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/30">
                               <motion.div
                                 animate={{
                                   rotate: [0, -360],
@@ -336,7 +336,7 @@ export default function ProjectDetail() {
                                 }}
                               >
                                 <Network
-                                  className="h-16 w-16 text-blue-600 dark:text-blue-400"
+                                  className="h-16 w-16 text-primary"
                                   strokeWidth={1.5}
                                 />
                               </motion.div>

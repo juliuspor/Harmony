@@ -42,18 +42,18 @@ interface Message {
 const getAgentColor = (agentId: string): string => {
   const colors = [
     {
-      bg: "bg-blue-100",
-      text: "text-blue-700",
-      border: "border-blue-200",
+      bg: "bg-primary/10",
+      text: "text-primary",
+      border: "border-primary/30",
     },
-    { bg: "bg-sky-100", text: "text-sky-700", border: "border-sky-200" },
+    { bg: "bg-accent/10", text: "text-accent", border: "border-accent/30" },
     { bg: "bg-green-100", text: "text-green-700", border: "border-green-200" },
     {
       bg: "bg-orange-100",
       text: "text-orange-700",
       border: "border-orange-200",
     },
-    { bg: "bg-cyan-100", text: "text-cyan-700", border: "border-cyan-200" },
+    { bg: "bg-primary/15", text: "text-primary", border: "border-primary/40" },
     { bg: "bg-teal-100", text: "text-teal-700", border: "border-teal-200" },
   ];
 
@@ -164,7 +164,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
 
   if (isLoading && !debate) {
     return (
-      <Card className="border-2">
+      <Card className="border-2 rounded-2xl">
         <CardContent className="pt-6 text-center py-12">
           <motion.div
             animate={{ rotate: 360 }}
@@ -181,7 +181,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
 
   if (error) {
     return (
-      <Card className="border-2 border-destructive">
+      <Card className="border-2 border-destructive rounded-2xl">
         <CardContent className="pt-6 text-center py-12">
           <p className="text-destructive font-medium">{error}</p>
         </CardContent>
@@ -197,10 +197,10 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
     <div className="space-y-6">
       {/* Header Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-2 border-gray-200 dark:border-gray-800">
+        <Card className="border-2 border-gray-200 dark:border-gray-800 rounded-2xl">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Users className="h-8 w-8 text-blue-500" />
+              <Users className="h-8 w-8 text-primary" />
               <div>
                 <p className="text-2xl font-bold">{debate?.agents?.length || 0}</p>
                 <p className="text-xs text-muted-foreground">Agents</p>
@@ -209,10 +209,10 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-gray-200 dark:border-gray-800">
+        <Card className="border-2 border-gray-200 dark:border-gray-800 rounded-2xl">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <MessageSquare className="h-8 w-8 text-blue-500" />
+              <MessageSquare className="h-8 w-8 text-primary" />
               <div>
                 <p className="text-2xl font-bold">{messages.length}</p>
                 <p className="text-xs text-muted-foreground">Messages</p>
@@ -221,10 +221,10 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-gray-200 dark:border-gray-800">
+        <Card className="border-2 border-gray-200 dark:border-gray-800 rounded-2xl">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Clock className="h-8 w-8 text-blue-500" />
+              <Clock className="h-8 w-8 text-primary" />
               <div>
                 <p className="text-2xl font-bold">{currentRound}</p>
                 <p className="text-xs text-muted-foreground">Round</p>
@@ -233,7 +233,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-gray-200 dark:border-gray-800">
+        <Card className="border-2 border-gray-200 dark:border-gray-800 rounded-2xl">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               {isComplete ? (
@@ -243,7 +243,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
                   <span className="text-red-600 text-xl">✕</span>
                 </div>
               ) : (
-                <Sparkles className="h-8 w-8 text-blue-500" />
+                <Sparkles className="h-8 w-8 text-primary" />
               )}
               <div>
                 <p className="text-sm font-bold capitalize">
@@ -257,7 +257,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
       </div>
 
       {/* Agents Panel */}
-      <Card className="border-2 border-gray-200 dark:border-gray-800">
+      <Card className="border-2 border-gray-200 dark:border-gray-800 rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
@@ -268,20 +268,34 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
           {debate?.agents && debate.agents.length > 0 ? (
             <div className="flex flex-wrap gap-4">
               {debate.agents
-                .filter((agent) => agent.agent_id !== "orchestrator")
+                .sort((a, b) => {
+                  // Orchestrator (Larkus Manz) always comes first
+                  if (a.agent_id === "orchestrator") return -1;
+                  if (b.agent_id === "orchestrator") return 1;
+                  return 0;
+                })
                 .map((agent) => {
                   const colorClasses = getAgentColor(agent.agent_id);
                   const AgentIcon = getAgentIcon(agent.agent_id);
+                  const isOrchestrator = agent.agent_id === "orchestrator";
                   return (
-                    <Card key={agent.agent_id} className="border">
+                    <Card key={agent.agent_id} className="border rounded-xl">
                       <CardContent className="pt-4">
                         <div className="flex items-center gap-3">
                           <Avatar className={`h-10 w-10 border-2 ${colorClasses}`}>
+                            {isOrchestrator && (
+                              <AvatarImage src="/images/moderator-avatar.png" alt="Moderator" />
+                            )}
                             <AvatarFallback className={colorClasses}>
                               <AgentIcon className="h-5 w-5" />
                             </AvatarFallback>
                           </Avatar>
-                          <h4 className="font-semibold text-sm">{agent.agent_name}</h4>
+                          <div>
+                            <h4 className="font-semibold text-sm">{agent.agent_name}</h4>
+                            {isOrchestrator && (
+                              <p className="text-xs text-muted-foreground">Moderator</p>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -297,10 +311,10 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
       </Card>
 
       {/* Main Debate Area */}
-      <Card className="border-2 border-gray-200 dark:border-gray-800">
+      <Card className="border-2 border-gray-200 dark:border-gray-800 rounded-2xl">
         <CardHeader className="border-b bg-muted/30">
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-blue-500" />
+            <MessageSquare className="h-5 w-5 text-primary" />
             Live Debate
             {!isComplete && !isCancelled && (
               <motion.div
@@ -339,7 +353,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
-                      className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 via-sky-500/20 to-cyan-500/20 blur-2xl"
+                      className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 via-accent/20 to-primary/20 blur-2xl"
                     />
 
                     {/* Main icon container */}
@@ -353,7 +367,7 @@ export function LiveDebateView({ debateId, onComplete, viewOnly = false }: LiveD
                           repeat: Infinity,
                           ease: "linear",
                         }}
-                        className="h-24 w-24 rounded-2xl bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-cyan-500/10 backdrop-blur-sm border border-border/50 flex items-center justify-center shadow-lg"
+                        className="h-24 w-24 rounded-2xl bg-gradient-to-br from-primary/10 via-accent/10 to-primary/10 backdrop-blur-sm border border-border/50 flex items-center justify-center shadow-lg"
                       >
                         <motion.div
                           animate={{
