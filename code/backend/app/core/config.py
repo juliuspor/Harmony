@@ -12,7 +12,7 @@ MAX_WORDS_PER_SUBMISSION = 1000
 # ============================================================================
 # Clustering Configuration
 # ============================================================================
-K_RANGE = [2, 3, 4]  # Range of cluster counts to evaluate
+K_RANGE = [2, 3, 4, 5, 6]  # Range of cluster counts to evaluate
 RANDOM_STATE = 42  # Random seed for reproducibility
 KMEANS_N_INIT = 10  # Number of k-means initializations
 
