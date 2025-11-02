@@ -1,22 +1,33 @@
 # Harmony
 
-An intelligent platform that transforms community opinions into **intelligence** through clustering, A2A simulation, and consensus analysis.
+**Turning Chaos into Consensus: An AI-Powered Platform for Democratic Intelligence**
+
+Harmony transforms fragmented community voices into actionable insights through semantic clustering, **Agent-to-Agent (A2A) simulation**, and real-time consensus analysis.
+
+## Inspiration
+
+In today's digital landscape, organizations struggle to make sense of scattered community feedback across platforms like Slack, Discord, and email. Traditional surveys and polls miss the nuance, while manual analysis doesn't scale. **What if we could automatically cluster similar ideas, then watch AI agents debate on behalf of these opinion groups to discover unexpected consensus?**
+
+Harmony was born from this question: How do we democratize decision-making at scale while preserving the richness of diverse perspectives?
 
 ## Features
 
-### Ideation Intelligence Platform 
-- **Campaign Management**: Create and launch ideation campaigns to collect community input from different sources. 
-- **OAuth Authentication**: Secure Sources ingestion integration with automatic token management
-- **Real-time Monitoring**: Live ingestion showing submissions as they arrive from connected platforms.
+### Intelligent Campaign Orchestration
+- **AI-Generated Campaigns**: Launch sophisticated ideation campaigns with AI-crafted prompts tailored to your mission
+- **Multi-Platform Integration**: Seamlessly connect Slack, Discord, and other platforms with OAuth 2.0 security
+- **Real-Time Stream Processing**: Watch submissions flow in live as your community engages across channels
 
-### Semantic Intelligence
-- **Semantic Clustering**: Automatically cluster similar opinions and ideas using vector embeddings.
+### Semantic Intelligence Engine
+- **Clustering**: Leverage state-of-the-art vector embeddings (`bge-small-en-v1.5`) to automatically group similar opinions into meaningful clusters
+- **Context-Aware Grouping**: Discover hidden patterns and themes that traditional keyword analysis would miss
 
-### A2A Communication
-- **AI Debate and Conversation Simulation**: Run multi-agent debate simulations using A2A communication. The agents are dynamically created from k opinion clusters.
-- **Consensus Assessment**: Calculate consensus scores, semantic alignment, and convergence metrics between agents during the live discussion. 
+### Agent-to-Agent (A2A) Simulation
+- **Multi-Agent Orchestration**: Dynamically spawn AI agents, each representing a distinct opinion cluster from your community
+- **Live Debate Visualization**: Watch AI agents engage in structured debates, building on each other's arguments in real-time
+- **Consensus Analytics**: Track semantic alignment, convergence metrics, and consensus scores as the debate unfolds
+- **Emergent Insights**: Discover unexpected common ground and novel solutions through agent interaction
 
-## Architecture
+## System Architecture
 
 ```mermaid
 graph TB
@@ -86,25 +97,31 @@ graph TB
     style Consensus fill:#f0f9ff
 ```
 
-### Tech Stack
+## Tech Stack
 
-**Backend**: FastAPI • MongoDB • ChromaDB • OpenAI/CrewAI • Slack/Discord SDK  
-**Frontend**: React + TypeScript • Vite • Tailwind CSS  
-**Intelligence**: A2A Communication (Crew AI), Chroma DB clustering (bge-small-en-v1.5)
+
+| Layer | Technologies |
+|-------|-------------|
+| **Backend** | Python, FastAPI, MongoDB, ChromaDB |
+| **Frontend** | React + TypeScript, Vite, Tailwind CSS |
+| **AI/ML** | OpenAI GPT-4, CrewAI (A2A Orchestration), BGE Embeddings (Semantic Search) |
 
 ## Getting Started
 
 ### Prerequisites
 
-- Docker
+- Docker + Docker Compose
 
-### Setup Instructions
+### Quick Start
 
-**1. Configure Environment Variables**
+**1. Configure Environment**
 
-Create a `.env` file in the `code` directory:
+Create an `.env` file in the `code` directory:
 
 ```bash
+# For local development
+BASE_URL=http://localhost:8000
+
 # OpenAI API Key (required for AI features)
 OPENAI_API_KEY_HACK=your_openai_api_key
 
@@ -113,15 +130,18 @@ SLACK_CLIENT_ID=your_slack_client_id
 SLACK_CLIENT_SECRET=your_slack_client_secret
 SLACK_BOT_TOKEN=your_slack_bot_token
 SLACK_APP_TOKEN=your_slack_app_token
+SLACK_REDIRECT_URI=http://localhost:8000/oauth/slack/callback
 
 # Discord Integration (optional)
 DISCORD_CLIENT_ID=your_discord_client_id
 DISCORD_CLIENT_SECRET=your_discord_client_secret
 DISCORD_BOT_TOKEN=your_discord_bot_token
 DISCORD_DEFAULT_CHANNEL_ID=your_discord_channel_id
+DISCORD_REDIRECT_URI=http://localhost:8000/oauth/discord/callback
+
 ```
 
-**2. Start All Services**
+**2. Start Services**
 
 ```bash
 cd code
@@ -135,10 +155,10 @@ That's it! Docker Compose will orchestrate all services:
 
 ## How It Works
 
-1. **Create a Campaign** - Define your mission, connect data sources, kickstart your campaign with AI-generated messages
-2. **Collect Submissions** - Posts campaign messages to platforms, monitors channels, stores submissions with embeddings
-3. **Analyze Opinions** - Cluster the community inputs using embeddings, view AI-generated summaries 
-4. **Run AI Debates** - Dynamically spawn AI agents representing the k-clusters, calculate consensus metrics and alignment scores during the live debate.
+1. **Launch Campaigns** - Define your mission with AI enhanced and engaging prompts, then auto-post to **various** channels
+2. **Gather Intelligence** - Community members respond with messages in real-time. Each submission gets vectorized and stored with semantic embeddings
+3. **Discover Patterns** - ChromaDB clusters similar opinions. AI summarizes each cluster theme with compelling visualization of the opinion landscape
+4. **Retrieve Consensus** - Dynamically generate AI agents that debate in structured rounds. Retrieve consensus and find common ground
 
 ## API Endpoints
 
@@ -212,3 +232,11 @@ BaselHack/
 ├── documentation/                            # Project documentation
 └── README.md                                 # This file
 ```
+
+---
+
+## Built at Basel Hack 2025
+
+Harmony represents our vision for the future of collective intelligence where technology amplifies human wisdom rather than replacing it.
+
+*Made with ❤️ and lots of ☕*
