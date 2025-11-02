@@ -224,7 +224,7 @@ export default function ProjectDetail() {
               <Button
                 variant="ghost"
                 onClick={() => navigate("/")}
-                className="text-foreground hover:text-foreground/80 transition-colors font-semibold"
+                className="text-foreground hover:text-primary hover:bg-primary/10 transition-colors font-semibold"
                 size="sm"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -573,7 +573,7 @@ export default function ProjectDetail() {
                       <p className="text-muted-foreground mb-6 font-medium">
                         Start the simulated debate to synthesize insights
                       </p>
-                      <Button size="lg" onClick={handleStartAnalysis}>
+                      <Button size="lg" onClick={handleStartAnalysis} className="rounded-xl">
                         <Sparkles className="mr-2 h-5 w-5" />
                         Start Simulation
                       </Button>

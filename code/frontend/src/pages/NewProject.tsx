@@ -140,7 +140,7 @@ export default function NewProject() {
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
-            className="mb-4 -ml-4 text-foreground hover:text-foreground/80 transition-colors font-semibold"
+            className="mb-4 -ml-4 text-foreground hover:text-primary hover:bg-primary/10 transition-colors font-semibold"
             size="sm"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
