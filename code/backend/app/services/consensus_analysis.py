@@ -63,11 +63,11 @@ def calculate_consensus_score(debate_id: str) -> Dict[str, Any]:
     sentiment = calculate_sentiment(messages)
 
     return {
-        "consensus_score": round(consensus_score, 2),
-        "semantic_alignment": round(semantic_alignment * 100, 2),
-        "agreement_ratio": round(agreement_ratio * 100, 2),
-        "convergence_score": round(convergence_score * 100, 2),
-        "resolution_rate": round(resolution_rate * 100, 2),
+        "consensus_score": float(round(consensus_score, 2)),
+        "semantic_alignment": float(round(semantic_alignment * 100, 2)),
+        "agreement_ratio": float(round(agreement_ratio * 100, 2)),
+        "convergence_score": float(round(convergence_score * 100, 2)),
+        "resolution_rate": float(round(resolution_rate * 100, 2)),
         "sentiment": sentiment,
     }
 
