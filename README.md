@@ -18,7 +18,7 @@ Harmony was born from this question: How do we democratize decision-making at sc
 - **Real-Time Stream Processing**: Watch submissions flow in live as your community engages across channels
 
 ### Semantic Intelligence Engine
-- **Neural Clustering**: Leverage state-of-the-art vector embeddings (`bge-small-en-v1.5`) to automatically group similar opinions into meaningful clusters
+- **Clustering**: Leverage state-of-the-art vector embeddings (`bge-small-en-v1.5`) to automatically group similar opinions into meaningful clusters
 - **Context-Aware Grouping**: Discover hidden patterns and themes that traditional keyword analysis would miss
 
 ### Agent-to-Agent (A2A) Simulation
