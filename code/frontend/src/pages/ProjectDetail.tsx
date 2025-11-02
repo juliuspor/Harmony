@@ -335,10 +335,7 @@ export default function ProjectDetail() {
                                   ease: "linear",
                                 }}
                               >
-                                <Network
-                                  className="h-16 w-16 text-primary"
-                                  strokeWidth={1.5}
-                                />
+                                <Network className="h-16 w-16 text-primary" strokeWidth={1.5} />
                               </motion.div>
                             </div>
                           </motion.div>

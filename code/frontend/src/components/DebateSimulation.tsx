@@ -528,15 +528,11 @@ export function DebateSimulation({
                 <Card className="relative overflow-hidden shadow-md bg-card border border-primary/30 rounded-2xl">
                   <CardContent className="pt-6 pb-6 relative">
                     <div>
-                      <p className="text-sm font-semibold text-primary mb-3">
-                        Consensus Score
-                      </p>
+                      <p className="text-sm font-semibold text-primary mb-3">Consensus Score</p>
                       <p className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-1">
                         {result.score}
                       </p>
-                      <p className="text-xs font-medium text-primary">
-                        out of 100
-                      </p>
+                      <p className="text-xs font-medium text-primary">out of 100</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -576,15 +572,11 @@ export function DebateSimulation({
                 <Card className="relative overflow-hidden shadow-md bg-card border border-primary/30 rounded-2xl">
                   <CardContent className="pt-6 pb-6 relative">
                     <div>
-                      <p className="text-sm font-semibold text-primary mb-3">
-                        Sentiment
-                      </p>
+                      <p className="text-sm font-semibold text-primary mb-3">Sentiment</p>
                       <p className="text-4xl font-bold capitalize bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-1">
                         {result.sentiment}
                       </p>
-                      <p className="text-xs font-medium text-primary">
-                        overall tone
-                      </p>
+                      <p className="text-xs font-medium text-primary">overall tone</p>
                     </div>
                   </CardContent>
                 </Card>
