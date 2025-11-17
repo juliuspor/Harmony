@@ -10,7 +10,6 @@ from app.services.debate_storage import (
     add_debate_agent,
     add_debate_message,
     add_intervention,
-    create_debate,
     get_debate_messages,
     update_debate_status,
 )
@@ -78,7 +77,7 @@ Opinions/Ideas:
 {cluster_summary}
 
 Create a persona with:
-1. Role: A specific role/title (e.g., "Urban Sustainability Advocate", "Community Development Expert")
+1. Role: A specific role/title (e.g., "Digital Marketing Strategist", "Brand Awareness Specialist")
 2. Goal: What this agent wants to achieve in the debate (one sentence)
 3. Backstory: A brief 2-3 sentence backstory that explains why this agent holds these views
 
