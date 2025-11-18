@@ -180,9 +180,8 @@ export default function Dashboard() {
                 initial={{ rotate: -10, scale: 0 }}
                 animate={{ rotate: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center shadow-lg"
               >
-                <img src="/harmony_logo.png" alt="Harmony Logo" className="h-8 w-8" />
+                <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-12 w-12" />
               </motion.div>
               <div>
                 <div className="flex items-center gap-3 mb-1">
