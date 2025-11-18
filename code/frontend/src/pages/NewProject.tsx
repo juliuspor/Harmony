@@ -32,7 +32,7 @@ export default function NewProject() {
       toast.error("Please select at least one data source");
       return;
     }
-
+    
     // When moving from step 2 to step 3, generate AI suggestions
     if (currentStep === 2) {
       setIsGenerating(true);
@@ -48,11 +48,11 @@ export default function NewProject() {
             connected_sources: selectedSources,
           }),
         });
-
+        
         if (!response.ok) {
           throw new Error("Failed to generate campaign suggestions");
         }
-
+        
         const data = await response.json();
         setAiSuggestions(data.suggestions);
         toast.success("Campaign suggestions generated!");
@@ -65,7 +65,7 @@ export default function NewProject() {
         setIsGenerating(false);
       }
     }
-
+    
     if (currentStep < 3) {
       setCurrentStep((currentStep + 1) as Step);
     }
@@ -128,55 +128,54 @@ export default function NewProject() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Decorative Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-      </div>
-
-      <header className="border-b-2 border-border bg-card/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-8 py-5">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="mb-4 -ml-4 text-foreground hover:text-primary hover:bg-primary/10 transition-colors font-semibold"
-            size="sm"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center gap-4">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
-            >
-              <Sparkles className="h-7 w-7 text-white" />
-            </motion.div>
-            <div>
-              <h1 className="text-4xl font-bold text-foreground mb-1 tracking-tight leading-tight">
-                Create New Project
-              </h1>
-              <p className="text-base text-muted-foreground font-medium">
-                Launch your Harmony campaign in three simple steps
-              </p>
+    <div className="min-h-screen bg-[#1E1E1E]">
+      <header className="border-b border-border/30 bg-[#1E1E1E] backdrop-blur-sm sticky top-0 z-50 h-14">
+        <div className="px-6 h-full flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
+              <h1 className="text-xl font-semibold text-white">Adobe Harmony</h1>
+              <div className="h-6 w-px bg-border/30" />
+              <div className="flex items-center gap-3">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className={`h-8 w-8 rounded-lg bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-md`}
+                >
+                  <Sparkles className="h-4 w-4 text-white" />
+                </motion.div>
+                <h2 className="text-lg font-medium text-white">
+                  Create New Campaign
+                </h2>
+              </div>
             </div>
-          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-8 py-12 relative z-10">
-        {/* Enhanced Step Indicator */}
-        <div className="mb-12 max-w-6xl mx-auto">
-          <StepIndicator steps={steps} currentStep={currentStep} />
-        </div>
+      <main className="w-full bg-[#1E1E1E] min-h-screen px-3">
+        <div className="w-full rounded-t-2xl px-32 pt-8 pb-24 min-h-screen relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/bg.webp)' }}>
+
+          {/* Back Button */}
+          <div className="mb-8 max-w-6xl mx-auto relative z-10">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="text-white hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </div>
+
+          {/* Enhanced Step Indicator */}
+          <div className="mb-6 max-w-6xl mx-auto relative z-10">
+        <StepIndicator steps={steps} currentStep={currentStep} />
+          </div>
 
         {/* Step Content with Animation */}
-        <div className="mt-10 max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <AnimatePresence mode="wait">
-            {currentStep === 1 && (
+          {currentStep === 1 && (
               <motion.div
                 key="step1"
                 initial={{ opacity: 0, x: 20 }}
@@ -185,10 +184,7 @@ export default function NewProject() {
                 transition={{ duration: 0.3 }}
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
-                  {/* Gradient Header */}
-                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
-
-                  <CardHeader className="pb-6 pt-8 px-8">
+                  <CardHeader className="pb-6 pt-6 px-8">
                     <div className="flex items-center gap-4 mb-4">
                       <div
                         className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
@@ -204,7 +200,7 @@ export default function NewProject() {
                         </CardDescription>
                       </div>
                     </div>
-                  </CardHeader>
+              </CardHeader>
 
                   <CardContent className="space-y-8 px-8 pb-8">
                     <div className="space-y-3">
@@ -217,17 +213,17 @@ export default function NewProject() {
                         </span>
                         Project Name
                       </Label>
-                      <Input
-                        id="project-name"
-                        placeholder="e.g., Make Basel Greener"
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
+                  <Input
+                    id="project-name"
+                    placeholder="e.g., Make Basel Greener"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
                         className="h-12 text-base border-2 focus:border-primary transition-colors"
-                      />
+                  />
                       <p className="text-xs text-muted-foreground">
                         Choose a clear, memorable name for your project
                       </p>
-                    </div>
+                </div>
 
                     <div className="space-y-3">
                       <Label
@@ -239,24 +235,24 @@ export default function NewProject() {
                         </span>
                         Project Goal
                       </Label>
-                      <Textarea
-                        id="project-goal"
+                  <Textarea
+                    id="project-goal"
                         placeholder="Describe your mission in detail. What question are you trying to answer? What problem are you solving? What impact do you want to make?"
                         rows={8}
-                        value={projectGoal}
-                        onChange={(e) => setProjectGoal(e.target.value)}
+                    value={projectGoal}
+                    onChange={(e) => setProjectGoal(e.target.value)}
                         className="text-base border-2 focus:border-primary transition-colors resize-none"
-                      />
+                  />
                       <p className="text-xs text-muted-foreground">
                         Be specific about your objectives and desired outcomes
                       </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                </div>
+              </CardContent>
+            </Card>
               </motion.div>
-            )}
+          )}
 
-            {currentStep === 2 && (
+          {currentStep === 2 && (
               <motion.div
                 key="step2"
                 initial={{ opacity: 0, x: 20 }}
@@ -265,10 +261,7 @@ export default function NewProject() {
                 transition={{ duration: 0.3 }}
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
-                  {/* Gradient Header */}
-                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
-
-                  <CardHeader className="pb-6 pt-8 px-8">
+                  <CardHeader className="pb-6 pt-6 px-8">
                     <div className="flex items-center gap-4 mb-4">
                       <div
                         className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
@@ -284,19 +277,19 @@ export default function NewProject() {
                         </CardDescription>
                       </div>
                     </div>
-                  </CardHeader>
+              </CardHeader>
 
                   <CardContent className="px-8 pb-8">
                     <DataSourceSelector
                       selectedSources={selectedSources}
                       onSourcesChange={setSelectedSources}
                     />
-                  </CardContent>
-                </Card>
+              </CardContent>
+            </Card>
               </motion.div>
-            )}
+          )}
 
-            {currentStep === 3 && (
+          {currentStep === 3 && (
               <motion.div
                 key="step3"
                 initial={{ opacity: 0, x: 20 }}
@@ -305,10 +298,7 @@ export default function NewProject() {
                 transition={{ duration: 0.3 }}
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
-                  {/* Gradient Header */}
-                  <div className={`h-2 bg-gradient-to-r ${getStepGradient()}`} />
-
-                  <CardHeader className="pb-6 pt-8 px-8">
+                  <CardHeader className="pb-6 pt-6 px-8">
                     <div className="flex items-center gap-4 mb-4">
                       <div
                         className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
@@ -324,20 +314,20 @@ export default function NewProject() {
                         </CardDescription>
                       </div>
                     </div>
-                  </CardHeader>
+              </CardHeader>
 
                   <CardContent className="px-8 pb-8">
-                    <CampaignDesigner
-                      projectName={projectName}
-                      projectGoal={projectGoal}
-                      selectedSources={selectedSources}
-                      aiSuggestions={aiSuggestions}
-                      onSuggestionsChange={setAiSuggestions}
-                    />
-                  </CardContent>
-                </Card>
+                <CampaignDesigner 
+                  projectName={projectName} 
+                  projectGoal={projectGoal}
+                  selectedSources={selectedSources}
+                  aiSuggestions={aiSuggestions}
+                  onSuggestionsChange={setAiSuggestions}
+                />
+              </CardContent>
+            </Card>
               </motion.div>
-            )}
+          )}
           </AnimatePresence>
         </div>
 
@@ -359,8 +349,8 @@ export default function NewProject() {
               className="h-12 px-8 font-semibold border-2"
             >
               <ArrowLeft className="mr-2 h-5 w-5" />
-              Back
-            </Button>
+            Back
+          </Button>
           )}
 
           {currentStep < 3 ? (
@@ -407,6 +397,7 @@ export default function NewProject() {
             ))}
           </div>
           <p className="text-center text-sm text-muted-foreground mt-3">Step {currentStep} of 3</p>
+        </div>
         </div>
       </main>
     </div>
