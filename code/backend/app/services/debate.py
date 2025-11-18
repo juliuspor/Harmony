@@ -414,7 +414,7 @@ def run_debate(
         add_debate_agent(
             debate_id,
             "orchestrator",
-            "Larkus Manz",
+            "Moderator",
             -1,
             "Facilitates productive debate",
         )
@@ -440,7 +440,7 @@ You are participating in a structured debate. Guidelines:
 - Maintain respectful and constructive discourse
 - Keep responses under {config.AGENT_MESSAGE_MAX_WORDS} words"""
 
-        orchestrator_system = """You are Larkus Manz, a Debate Moderator. Your role is to facilitate productive debate by maintaining focus, preventing repetition, detecting stalemates, and ensuring respectful discourse. 
+        orchestrator_system = """You are the Moderator. Your role is to facilitate productive debate by maintaining focus, preventing repetition, detecting stalemates, and ensuring respectful discourse. 
 
 Intervene when:
 - The debate becomes repetitive
@@ -462,7 +462,7 @@ Keep interventions brief and constructive."""
         add_debate_message(
             debate_id,
             "orchestrator",
-            "Larkus Manz",
+            "Moderator",
             opening,
             round_number,
             "orchestrator_message",
@@ -533,7 +533,7 @@ Keep interventions brief and constructive."""
                 add_debate_message(
                     debate_id,
                     "orchestrator",
-                    "Larkus Manz",
+                    "Moderator",
                     intervention_msg,
                     round_number,
                     "orchestrator_message",
@@ -559,7 +559,7 @@ Keep interventions brief and constructive."""
         add_debate_message(
             debate_id,
             "orchestrator",
-            "Larkus Manz",
+            "Moderator",
             final_msg,
             round_number,
             "orchestrator_message",

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ArrowRight, Check, Loader2, Target, Sparkles, Rocket, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Target, Rocket, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { StepIndicator } from "@/components/StepIndicator";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -135,19 +135,7 @@ export default function NewProject() {
               <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
               <h1 className="text-xl font-semibold text-white">Adobe Harmony</h1>
               <div className="h-6 w-px bg-border/30" />
-              <div className="flex items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  className={`h-8 w-8 rounded-lg bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-md`}
-                >
-                  <Sparkles className="h-4 w-4 text-white" />
-                </motion.div>
-                <h2 className="text-lg font-medium text-white">
-                  Create New Campaign
-                </h2>
-              </div>
+              <h2 className="text-lg font-medium text-white">Create New Campaign</h2>
             </div>
         </div>
       </header>
@@ -185,20 +173,13 @@ export default function NewProject() {
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
                   <CardHeader className="pb-6 pt-6 px-8">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div
-                        className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
-                      >
-                        <Target className="h-8 w-8 text-white" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-3xl font-bold tracking-tight">
-                          Define Your Mission
-                        </CardTitle>
-                        <CardDescription className="text-base mt-1">
-                          Tell us what you want to achieve and why it matters
-                        </CardDescription>
-                      </div>
+                    <div className="mb-4">
+                      <CardTitle className="text-3xl font-bold tracking-tight">
+                        Define Your Mission
+                      </CardTitle>
+                      <CardDescription className="text-base mt-1">
+                        Tell us what you want to achieve and why it matters
+                      </CardDescription>
                     </div>
               </CardHeader>
 
@@ -262,20 +243,13 @@ export default function NewProject() {
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
                   <CardHeader className="pb-6 pt-6 px-8">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div
-                        className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
-                      >
-                        <Zap className="h-8 w-8 text-white" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-3xl font-bold tracking-tight">
-                          Connect Data Sources
-                        </CardTitle>
-                        <CardDescription className="text-base mt-1">
-                          Choose where your community ideas will come from
-                        </CardDescription>
-                      </div>
+                    <div className="mb-4">
+                      <CardTitle className="text-3xl font-bold tracking-tight">
+                        Connect Data Sources
+                      </CardTitle>
+                      <CardDescription className="text-base mt-1">
+                        Choose where your community ideas will come from
+                      </CardDescription>
                     </div>
               </CardHeader>
 
@@ -299,20 +273,13 @@ export default function NewProject() {
               >
                 <Card className="border-2 bg-card/95 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
                   <CardHeader className="pb-6 pt-6 px-8">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div
-                        className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getStepGradient()} flex items-center justify-center shadow-lg`}
-                      >
-                        <Rocket className="h-8 w-8 text-white" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-3xl font-bold tracking-tight">
-                          Launch Your Campaign
-                        </CardTitle>
-                        <CardDescription className="text-base mt-1">
-                          AI-powered messages crafted for your audience
-                        </CardDescription>
-                      </div>
+                    <div className="mb-4">
+                      <CardTitle className="text-3xl font-bold tracking-tight">
+                        Launch Your Campaign
+                      </CardTitle>
+                      <CardDescription className="text-base mt-1">
+                        AI-powered messages crafted for your audience
+                      </CardDescription>
                     </div>
               </CardHeader>
 
