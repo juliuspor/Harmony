@@ -131,12 +131,10 @@ export default function NewProject() {
     <div className="min-h-screen bg-[#1E1E1E]">
       <header className="border-b border-border/30 bg-[#1E1E1E] backdrop-blur-sm sticky top-0 z-50 h-14">
         <div className="px-6 h-full flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
-              <h1 className="text-xl font-semibold text-white">Adobe Harmony</h1>
-              <div className="h-6 w-px bg-border/30" />
-              <h2 className="text-lg font-medium text-white">Create New Campaign</h2>
-            </div>
+          <div className="flex items-center gap-3">
+            <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
+            <h1 className="text-xl font-semibold text-white">Adobe Harmony</h1>
+          </div>
         </div>
       </header>
 
