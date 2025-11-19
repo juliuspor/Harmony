@@ -169,9 +169,6 @@ export default function Dashboard() {
         <div className="px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-3">
             <motion.div
-              initial={{ rotate: -10, scale: 0 }}
-              animate={{ rotate: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
               className="flex items-center gap-3"
             >
               <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
