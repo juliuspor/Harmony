@@ -42,7 +42,7 @@ const trendData = [
 
 // Use Basel image for all projects
 const getProjectImage = (): string => {
-  return "/images/projects/Basel.jpeg";
+  return "/images/projects/adobe_sneaker.jpg";
 };
 
 // Function to calculate relative time
