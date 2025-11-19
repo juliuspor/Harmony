@@ -196,7 +196,7 @@ export default function NewProject() {
                       </Label>
                   <Input
                     id="project-name"
-                    placeholder="e.g., Make Basel Greener"
+                    placeholder="A new Harmony campaign to help launch the product"
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                         className="h-12 text-base border-2 focus:border-primary transition-colors"
