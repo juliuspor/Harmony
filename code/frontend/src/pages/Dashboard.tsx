@@ -364,10 +364,12 @@ export default function Dashboard() {
                               className="absolute bottom-4 right-4"
                               whileHover={{ scale: 1.05 }}
                             >
-                              <div className="px-4 py-2 rounded-full bg-white/95 backdrop-blur-md text-sm font-bold text-foreground flex items-center gap-2 shadow-xl">
+                              <div className="px-4 py-2 rounded-full bg-slate-900/90 text-white border border-white/10 backdrop-blur-md text-sm font-semibold flex items-center gap-2 shadow-lg shadow-black/40">
                                 <Lightbulb className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
-                                {project.ideasCount}
-                                <span className="text-xs font-normal text-muted-foreground">
+                                <span className="text-base font-bold leading-none">
+                                  {project.ideasCount}
+                                </span>
+                                <span className="text-[11px] font-medium text-white/70 uppercase tracking-[0.2em]">
                                   ideas
                                 </span>
                               </div>
