@@ -374,10 +374,10 @@ export default function ProjectDetail() {
                   {/* Prominent Header Section */}
                   <div className="text-center">
                     <h2 className="text-4xl font-bold text-foreground mb-3 tracking-tight">
-                      {clusterData.length} idea clusters discovered
+                      {clusterData.length} {clusterData.length === 1 ? 'theme' : 'themes'} discovered in your contributions
                     </h2>
                     <p className="text-lg text-muted-foreground">
-                      AI-powered thematic analysis of {submissionsCount} community submissions
+                      AI-powered insights from {submissionsCount} {submissionsCount === 1 ? 'voice' : 'voices'}
                     </p>
                   </div>
 
