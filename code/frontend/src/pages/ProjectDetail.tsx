@@ -219,27 +219,21 @@ export default function ProjectDetail() {
     <div className="min-h-screen bg-[#1E1E1E]">
       <header className="border-b border-border/30 bg-[#1E1E1E] backdrop-blur-sm sticky top-0 z-50 h-14">
         <div className="px-6 h-full flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
-              <h1 className="text-xl font-semibold text-white">Adobe Harmony</h1>
-              <div className="h-6 w-px bg-border/30" />
+            <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 onClick={() => navigate("/")}
-                className="h-9 px-3 text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="h-9 w-9 p-0 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
               >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-          </Button>
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg font-medium text-white">
-                  {project.title}
-                </h2>
-                <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0 shadow-sm">
-                  <div className="h-2 w-2 rounded-full bg-white animate-pulse mr-2" />
-                  Active
-                </Badge>
-              </div>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div className="h-6 w-px bg-border/30" />
+              <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
+              <h1 className="text-xl font-semibold text-white">Adobe Harmony</h1>
+              <div className="h-6 w-px bg-border/30" />
+              <h2 className="text-lg font-medium text-white">
+                {project.title}
+              </h2>
           </div>
         </div>
       </header>

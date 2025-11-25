@@ -63,6 +63,18 @@ const getRelativeTime = (isoDate: string): string => {
   return `${diffDays} days ago`;
 };
 
+// Function to format user display name
+const formatUserName = (userId?: string): string => {
+  if (!userId) return "Contributor";
+  
+  // Check if it's a Slack user ID format (starts with U and is alphanumeric)
+  if (/^U[A-Z0-9]{8,}$/.test(userId)) {
+    return "Contributor";
+  }
+  
+  return userId;
+};
+
 const SlackIcon = ({ className = "" }: { className?: string }) => (
   <svg
     viewBox="0 0 124 124"
@@ -416,14 +428,6 @@ export default function Dashboard() {
                                 </span>
                               </div>
                             </motion.div>
-
-                            {/* Status Badge */}
-                            <div className="absolute top-4 left-4">
-                              <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0 shadow-lg">
-                                <div className="h-2 w-2 rounded-full bg-white animate-pulse mr-2" />
-                                Active
-                              </Badge>
-                            </div>
                           </div>
 
                           <CardHeader className="pb-3 pt-6">
@@ -525,7 +529,7 @@ export default function Dashboard() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <span className="font-bold text-sm text-foreground">
-                                {msg.user_id || "Anonymous"}
+                                {formatUserName(msg.user_id)}
                               </span>
                               {isNew && (
                                 <motion.span
