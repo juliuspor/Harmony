@@ -227,11 +227,11 @@ export default function ProjectDetail() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div className="h-6 w-px bg-border/30" />
+              <div className="h-6 w-px bg-border/30 mx-1" />
               <img src="/images/adobe-logo.svg" alt="Adobe Logo" className="h-7 w-7" />
               <h1 className="text-xl font-semibold text-white">Adobe Harmony</h1>
-              <div className="h-6 w-px bg-border/30" />
-              <h2 className="text-lg font-medium text-white">
+              <div className="h-7 w-px bg-gray-600 mx-3" />
+              <h2 className="text-lg font-medium text-gray-300">
                 {project.title}
               </h2>
           </div>
