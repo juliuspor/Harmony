@@ -217,7 +217,7 @@ export default function NewProject() {
                   <Textarea
                     id="project-goal"
                         placeholder="Describe your mission in detail. What question are you trying to answer? What problem are you solving? What impact do you want to make?"
-                        rows={8}
+                        rows={4}
                     value={projectGoal}
                     onChange={(e) => setProjectGoal(e.target.value)}
                         className="text-base border-2 focus:border-primary transition-colors resize-none"
